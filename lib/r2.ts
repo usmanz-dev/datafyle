@@ -28,7 +28,9 @@ export async function uploadFile(
       ContentType: contentType,
     })
   )
-  return `${process.env.CLOUDFLARE_R2_PUBLIC_URL}/${key}`
+  return process.env.CLOUDFLARE_R2_PUBLIC_URL
+    ? `${process.env.CLOUDFLARE_R2_PUBLIC_URL}/${key}`
+    : key
 }
 
 export async function getSignedDownloadUrl(key: string): Promise<string> {
