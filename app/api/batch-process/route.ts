@@ -1,9 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { auth } from '@clerk/nextjs/server'
 import { z } from 'zod'
-import { processDocument } from '@/lib/processDocument'
+import { inngest } from '@/inngest/client'
 
-const schema = z.object({ documentId: z.string().min(1) })
+const schema = z.object({
+  documentIds: z.array(z.string().min(1)).min(1).max(500),
+})
 
 export async function POST(req: NextRequest) {
   try {
@@ -17,10 +19,14 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Invalid request' }, { status: 400 })
     }
 
-    const result = await processDocument(body.data.documentId, userId)
-    return NextResponse.json(result)
+    await inngest.send({
+      name: 'doc/batch',
+      data: { documentIds: body.data.documentIds, userId },
+    })
+
+    return NextResponse.json({ success: true, total: body.data.documentIds.length })
   } catch (error) {
-    console.error('Processing error:', error)
-    return NextResponse.json({ error: 'Processing failed' }, { status: 500 })
+    console.error('Batch process error:', error)
+    return NextResponse.json({ error: 'Failed to queue batch' }, { status: 500 })
   }
 }
