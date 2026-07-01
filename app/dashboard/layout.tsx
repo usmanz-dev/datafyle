@@ -13,10 +13,14 @@ export default async function DashboardLayout({
     redirect('/sign-in')
   }
 
-  await prisma.user.update({
-    where: { clerkId: userId },
-    data: { lastLoginAt: new Date() },
-  })
+  try {
+    await prisma.user.update({
+      where: { clerkId: userId },
+      data: { lastLoginAt: new Date() },
+    })
+  } catch {
+    // User may not exist in DB yet if webhook hasn't fired
+  }
 
   return <>{children}</>
 }
