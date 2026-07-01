@@ -1,0 +1,104 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model User {
+  id                  String         @id @default(cuid())
+  clerkId             String         @unique
+  email               String         @unique
+  name                String?
+  plan                String         @default("free")
+  docsUsed            Int            @default(0)
+  docsLimit           Int            @default(10)
+  paidAt              DateTime?
+  cancelledAt         DateTime?
+  previousPlan        String?
+  lastLoginAt         DateTime?
+  totalDocsProcessed  Int            @default(0)
+  createdAt           DateTime       @default(now())
+  documents           Document[]
+  subscription        Subscription?
+  vendorPatterns      VendorPattern[]
+  teamMemberships     TeamMember[]
+}
+
+model Document {
+  id              String    @id @default(cuid())
+  userId          String
+  user            User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  fileName        String
+  fileType        String
+  fileUrl         String
+  fileSize        Int
+  status          String    @default("pending")
+  extractedData   Json?
+  anomalyData     Json?
+  confidenceScore Float?
+  uploadedByName  String?
+  createdAt       DateTime  @default(now())
+}
+
+model VendorPattern {
+  id           String    @id @default(cuid())
+  userId       String
+  user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  vendorName   String
+  avgAmount    Float?
+  invoiceCount Int       @default(1)
+  patternData  Json?
+  lastSeen     DateTime  @default(now())
+
+  @@unique([userId, vendorName])
+}
+
+model Subscription {
+  id          String    @id @default(cuid())
+  userId      String    @unique
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  paddleSubId String
+  plan        String
+  status      String
+  renewsAt    DateTime?
+  createdAt   DateTime  @default(now())
+}
+
+model Team {
+  id        String       @id @default(cuid())
+  name      String
+  ownerId   String
+  plan      String       @default("starter")
+  createdAt DateTime     @default(now())
+  members   TeamMember[]
+}
+
+model TeamMember {
+  id          String    @id @default(cuid())
+  teamId      String
+  team        Team      @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  userId      String?
+  user        User?     @relation(fields: [userId], references: [id])
+  role        String    @default("member")
+  inviteEmail String
+  status      String    @default("pending")
+  joinedAt    DateTime?
+}
+
+model BlogPost {
+  id             String    @id @default(cuid())
+  title          String
+  slug           String    @unique
+  content        String    @db.Text
+  tags           String[]
+  featuredImage  String?
+  seoTitle       String?
+  seoDescription String?
+  published      Boolean   @default(false)
+  publishedAt    DateTime?
+  createdAt      DateTime  @default(now())
+}
