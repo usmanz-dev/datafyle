@@ -6,6 +6,8 @@ const nextConfig: NextConfig = {
     "@react-pdf/renderer",
     "mammoth",
     "xlsx",
+    "exceljs",
+    "googleapis",
   ],
 };
 

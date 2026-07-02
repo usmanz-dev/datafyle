@@ -37,7 +37,17 @@ export async function GET(req: NextRequest) {
       return a?.isAnomaly
     })
 
-    return NextResponse.json({ docs: vendorDocs, chartData, anomaliesCount: anomalies.length })
+    const pattern = await prisma.vendorPattern.findUnique({
+      where: { userId_vendorName: { userId: user.id, vendorName } },
+    })
+
+    return NextResponse.json({
+      docs: vendorDocs,
+      chartData,
+      anomaliesCount: anomalies.length,
+      invoiceCount: pattern?.invoiceCount ?? vendorDocs.length,
+      avgAmount: pattern?.avgAmount ?? null,
+    })
   } catch (error) {
     console.error('Vendors error:', error)
     return NextResponse.json({ error: 'Failed to fetch vendor data' }, { status: 500 })

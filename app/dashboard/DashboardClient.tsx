@@ -7,48 +7,22 @@ import {
   TrendingUp, FileCheck, Zap, BarChart3, ChevronLeft, ChevronRight,
   CheckSquare, Square, Download,
 } from 'lucide-react'
-import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet'
 import { UploadZone } from '@/components/UploadZone'
-import { ExtractedDataTable } from '@/components/ExtractedDataTable'
-import { LineItemsTable } from '@/components/LineItemsTable'
-import { AnomalyBanner } from '@/components/AnomalyBanner'
 import { ReportButton } from '@/components/ReportButton'
+import { DocumentDetail, type DocRow } from '@/components/DocumentDetail'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
 interface ExtractedData {
   vendor?: { value?: string | null; confidence?: number }
-  invoiceNumber?: { value?: string | null; confidence?: number }
-  date?: { value?: string | null; confidence?: number }
-  dueDate?: { value?: string | null; confidence?: number }
   totalAmount?: { value?: number | null; confidence?: number }
   currency?: { value?: string | null; confidence?: number }
-  taxAmount?: { value?: number | null; confidence?: number }
-  documentType?: string
-  lineItems?: { description?: string; quantity?: number; unitPrice?: number; total?: number }[]
-  summary?: string
-  overallConfidence?: number
   [key: string]: unknown
 }
 
 interface AnomalyData {
   isAnomaly: boolean
   severity: 'CRITICAL' | 'HIGH' | 'LOW' | null
-  anomalies: { type: string; severity: string; reason: string }[]
-  recommendation: string
-}
-
-interface DocRow {
-  id: string
-  fileName: string
-  fileType: string
-  fileSize: number
-  status: string
-  extractedData: unknown
-  anomalyData: unknown
-  confidenceScore: number | null
-  uploadedByName: string | null
-  createdAt: string
 }
 
 interface Props {
@@ -125,6 +99,7 @@ export function DashboardClient({ firstName, user, initialStats, initialDocument
   const [deleting, setDeleting] = useState<string | null>(null)
   const [greeting, setGreeting] = useState('Good morning')
   const [exporting, setExporting] = useState(false)
+  const [sheetsExporting, setSheetsExporting] = useState(false)
 
   // greeting based on local time
   useEffect(() => {
@@ -195,31 +170,59 @@ export function DashboardClient({ firstName, user, initialStats, initialDocument
     }
   }
 
-  // ── Export selected ────────────────────────────────────────────────────────
+  // ── Export helpers ─────────────────────────────────────────────────────────
+  async function downloadExcel(ids: string[], filename = 'datafyle-export.xlsx') {
+    const res = await fetch('/api/export/excel', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ documentIds: ids }),
+    })
+    if (!res.ok) throw new Error('Export failed')
+    const blob = await res.blob()
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url; a.download = filename; a.click()
+    URL.revokeObjectURL(url)
+  }
+
   async function exportSelected() {
     setExporting(true)
+    try { await downloadExcel([...selected]) }
+    catch { alert('Export failed. Please try again.') }
+    finally { setExporting(false) }
+  }
+
+  async function exportAll() {
+    setExporting(true)
+    try { await downloadExcel(docs.map((d) => d.id)) }
+    catch { alert('Export failed. Please try again.') }
+    finally { setExporting(false) }
+  }
+
+  async function exportSheets() {
+    setSheetsExporting(true)
     try {
-      const res = await fetch('/api/export/excel', {
+      const ids = selected.size > 0 ? [...selected] : docs.map((d) => d.id)
+      const res = await fetch('/api/export/sheets', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ documentIds: [...selected] }),
+        body: JSON.stringify({ documentIds: ids }),
       })
-      if (!res.ok) {
-        alert('Export is not available yet. Coming in Phase 5.')
-        return
-      }
-      const blob = await res.blob()
-      const url = URL.createObjectURL(blob)
-      const a = document.createElement('a')
-      a.href = url
-      a.download = `datafyle-export.xlsx`
-      a.click()
-      URL.revokeObjectURL(url)
+      const data = await res.json()
+      if (!res.ok) { alert(data.error ?? 'Google Sheets export failed'); return }
+      window.open(data.spreadsheetUrl, '_blank')
     } catch {
-      alert('Export failed. Please try again.')
+      alert('Google Sheets export failed. Please try again.')
     } finally {
-      setExporting(false)
+      setSheetsExporting(false)
     }
+  }
+
+  // ── Document deleted from detail panel ──────────────────────────────────────
+  function handleDocumentDeleted(id: string) {
+    setDocs((prev) => prev.filter((d) => d.id !== id))
+    setSelected((prev) => { const n = new Set(prev); n.delete(id); return n })
+    setViewDoc(null)
   }
 
   // ── Usage bar ──────────────────────────────────────────────────────────────
@@ -346,8 +349,8 @@ export function DashboardClient({ firstName, user, initialStats, initialDocument
                 className="w-full pl-9 pr-4 py-2 text-sm border border-[#E2E8F0] rounded-lg bg-white text-[#1E293B] placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 focus:border-[#2563EB] min-h-10"
               />
             </div>
-            <div className="flex items-center gap-2 ml-auto">
-              {selected.size > 0 && (
+            <div className="flex items-center gap-2 ml-auto flex-wrap">
+              {selected.size > 0 ? (
                 <button
                   onClick={exportSelected}
                   disabled={exporting}
@@ -355,6 +358,32 @@ export function DashboardClient({ firstName, user, initialStats, initialDocument
                 >
                   {exporting ? <Loader2 size={14} className="animate-spin" /> : <Download size={14} />}
                   Export {selected.size} selected
+                </button>
+              ) : (
+                <button
+                  onClick={exportAll}
+                  disabled={exporting || docs.length === 0}
+                  className="inline-flex items-center gap-1.5 px-3 py-2 text-sm font-medium bg-white border border-[#E2E8F0] text-[#1E293B] rounded-lg hover:bg-[#F8FAFC] transition-colors disabled:opacity-50 shadow-sm min-h-10"
+                >
+                  {exporting ? <Loader2 size={14} className="animate-spin" /> : <Download size={14} className="text-[#2563EB]" />}
+                  Export All
+                </button>
+              )}
+              {['professional', 'business', 'enterprise'].includes(user.plan) && (
+                <button
+                  onClick={exportSheets}
+                  disabled={sheetsExporting || docs.length === 0}
+                  className="inline-flex items-center gap-1.5 px-3 py-2 text-sm font-medium bg-white border border-[#E2E8F0] text-[#1E293B] rounded-lg hover:bg-[#F8FAFC] transition-colors disabled:opacity-50 shadow-sm min-h-10"
+                >
+                  {sheetsExporting ? (
+                    <Loader2 size={14} className="animate-spin text-green-600" />
+                  ) : (
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" className="shrink-0">
+                      <rect width="24" height="24" rx="4" fill="#34A853" />
+                      <path d="M5 7h14M5 12h14M5 17h14" stroke="white" strokeWidth="2" strokeLinecap="round" />
+                    </svg>
+                  )}
+                  {selected.size > 0 ? `Sheets (${selected.size})` : 'Google Sheets'}
                 </button>
               )}
               <span className="text-xs text-slate-400">
@@ -571,67 +600,11 @@ export function DashboardClient({ firstName, user, initialStats, initialDocument
         </div>
       </div>
 
-      {/* ── Document detail Sheet ──────────────────────────────────────────────── */}
-      <Sheet open={!!viewDoc} onOpenChange={(open) => { if (!open) setViewDoc(null) }}>
-        <SheetContent side="right" className="w-full max-w-xl overflow-y-auto p-6">
-          {viewDoc && (
-            <>
-              <SheetHeader className="mb-5">
-                <SheetTitle className="text-base font-bold text-[#1E293B] truncate pr-6">
-                  {viewDoc.fileName}
-                </SheetTitle>
-                <p className="text-xs text-slate-500 mt-1">
-                  {formatBytes(viewDoc.fileSize)} · Uploaded {formatDate(viewDoc.createdAt)}
-                  {viewDoc.uploadedByName ? ` by ${viewDoc.uploadedByName}` : ''}
-                </p>
-                {viewDoc.confidenceScore != null && (
-                  <div className="inline-flex items-center gap-1.5 mt-2">
-                    <span className="text-xs text-slate-500">Overall confidence:</span>
-                    <span
-                      className={`text-xs font-bold px-2 py-0.5 rounded-full ${
-                        viewDoc.confidenceScore >= 90
-                          ? 'bg-green-100 text-green-700'
-                          : viewDoc.confidenceScore >= 70
-                          ? 'bg-yellow-100 text-yellow-700'
-                          : 'bg-red-100 text-red-600'
-                      }`}
-                    >
-                      {Math.round(viewDoc.confidenceScore)}%
-                    </span>
-                  </div>
-                )}
-              </SheetHeader>
-
-              {/* Anomaly banner */}
-              <AnomalyBanner anomalyData={viewDoc.anomalyData as AnomalyData | null} />
-
-              {/* Extracted fields */}
-              {viewDoc.extractedData && (
-                <div className="mb-5">
-                  <h3 className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-3">
-                    Extracted Data
-                  </h3>
-                  <ExtractedDataTable data={viewDoc.extractedData as ExtractedData} />
-                </div>
-              )}
-
-              {/* Line items */}
-              {(() => {
-                const items = (viewDoc.extractedData as ExtractedData | null)?.lineItems
-                if (!items || items.length === 0) return null
-                return (
-                  <div className="mb-5">
-                    <h3 className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-3">
-                      Line Items
-                    </h3>
-                    <LineItemsTable items={items} />
-                  </div>
-                )
-              })()}
-            </>
-          )}
-        </SheetContent>
-      </Sheet>
+      <DocumentDetail
+        doc={viewDoc}
+        onClose={() => setViewDoc(null)}
+        onDelete={handleDocumentDeleted}
+      />
     </div>
   )
 }
