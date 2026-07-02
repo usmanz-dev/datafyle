@@ -5,7 +5,7 @@ import {
   FileText, FileSpreadsheet, FileCode2, Image as ImageIcon, File,
   AlertTriangle, Trash2, Eye, Search, Loader2, Upload,
   TrendingUp, FileCheck, Zap, BarChart3, ChevronLeft, ChevronRight,
-  CheckSquare, Square, Download,
+  CheckSquare, Square, Download, Users,
 } from 'lucide-react'
 import { UploadZone } from '@/components/UploadZone'
 import { ReportButton } from '@/components/ReportButton'
@@ -28,6 +28,7 @@ interface AnomalyData {
 interface Props {
   firstName: string | null
   user: {
+    id: string
     plan: string
     docsUsed: number
     docsLimit: number
@@ -39,6 +40,9 @@ interface Props {
     fieldsExtracted: number
   }
   initialDocuments: DocRow[]
+  isTeamAdmin: boolean
+  teamMembers: { userId: string; name: string }[]
+  currentUserId: string
 }
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -89,10 +93,11 @@ const PAGE_SIZE = 20
 
 // ─── Component ────────────────────────────────────────────────────────────────
 
-export function DashboardClient({ firstName, user, initialStats, initialDocuments }: Props) {
+export function DashboardClient({ firstName, user, initialStats, initialDocuments, isTeamAdmin, teamMembers, currentUserId }: Props) {
   const [docs, setDocs] = useState<DocRow[]>(initialDocuments)
   const [showUpload, setShowUpload] = useState(false)
   const [search, setSearch] = useState('')
+  const [memberFilter, setMemberFilter] = useState<string | null>(null)
   const [page, setPage] = useState(1)
   const [selected, setSelected] = useState<Set<string>>(new Set())
   const [viewDoc, setViewDoc] = useState<DocRow | null>(null)
@@ -123,8 +128,9 @@ export function DashboardClient({ firstName, user, initialStats, initialDocument
     return () => clearInterval(id)
   }, [docs, fetchDocs])
 
-  // ── Search + filter ────────────────────────────────────────────────────────
+  // ── Search + member filter ─────────────────────────────────────────────────
   const filtered = docs.filter((d) => {
+    if (memberFilter && d.userId !== memberFilter) return false
     if (!search) return true
     const q = search.toLowerCase()
     const vendor = (d.extractedData as ExtractedData | null)?.vendor?.value?.toLowerCase() ?? ''
@@ -139,6 +145,20 @@ export function DashboardClient({ firstName, user, initialStats, initialDocument
     setPage(1)
     setSelected(new Set())
   }
+
+  function onMemberFilterChange(val: string) {
+    setMemberFilter(val || null)
+    setPage(1)
+    setSelected(new Set())
+  }
+
+  // Build member filter options (self + team members, excluding duplicates)
+  const filterOptions = isTeamAdmin
+    ? [
+        { userId: currentUserId, name: 'My Documents' },
+        ...teamMembers.filter((m) => m.userId !== currentUserId),
+      ]
+    : []
 
   // ── Selection ──────────────────────────────────────────────────────────────
   function toggleSelect(id: string) {
@@ -349,6 +369,21 @@ export function DashboardClient({ firstName, user, initialStats, initialDocument
                 className="w-full pl-9 pr-4 py-2 text-sm border border-[#E2E8F0] rounded-lg bg-white text-[#1E293B] placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 focus:border-[#2563EB] min-h-10"
               />
             </div>
+            {isTeamAdmin && filterOptions.length > 1 && (
+              <div className="relative">
+                <Users size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
+                <select
+                  value={memberFilter ?? ''}
+                  onChange={(e) => onMemberFilterChange(e.target.value)}
+                  className="pl-8 pr-8 py-2 text-sm border border-[#E2E8F0] rounded-lg bg-white text-[#1E293B] focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 focus:border-[#2563EB] min-h-10 appearance-none cursor-pointer"
+                >
+                  <option value="">All Members</option>
+                  {filterOptions.map((m) => (
+                    <option key={m.userId} value={m.userId}>{m.name}</option>
+                  ))}
+                </select>
+              </div>
+            )}
             <div className="flex items-center gap-2 ml-auto flex-wrap">
               {selected.size > 0 ? (
                 <button

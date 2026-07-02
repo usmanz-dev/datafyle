@@ -16,22 +16,50 @@ export default async function DashboardPage() {
   const now = new Date()
   const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1)
 
+  // Check if user is a team admin (owns a team)
+  const team = await prisma.team.findFirst({
+    where: { ownerId: user.id },
+    include: {
+      members: {
+        where: { status: 'accepted', userId: { not: null } },
+        select: { userId: true, inviteEmail: true, user: { select: { name: true, email: true } } },
+      },
+    },
+  })
+
+  // Collect all user IDs to fetch docs for
+  const teamMemberIds = team
+    ? team.members.map((m) => m.userId!).filter(Boolean)
+    : []
+  const allUserIds = [user.id, ...teamMemberIds.filter((id) => id !== user.id)]
+
   const [thisMonthCount, anomaliesCount, documents] = await Promise.all([
     prisma.document.count({
-      where: { userId: user.id, createdAt: { gte: startOfMonth } },
+      where: { userId: { in: allUserIds }, createdAt: { gte: startOfMonth } },
     }),
     prisma.document.count({
       where: {
-        userId: user.id,
+        userId: { in: allUserIds },
         anomalyData: { path: ['isAnomaly'], equals: true },
       },
     }),
     prisma.document.findMany({
-      where: { userId: user.id },
+      where: { userId: { in: allUserIds } },
       orderBy: { createdAt: 'desc' },
       take: 200,
     }),
   ])
+
+  // Build team member list for filter dropdown
+  const teamMembers = team
+    ? team.members.map((m) => ({
+        userId: m.userId!,
+        name: m.user?.name ?? m.user?.email ?? m.inviteEmail,
+      }))
+    : []
+
+  // Welcome banner for new team members
+  const welcomeTeam = false // handled client-side via ?welcome=team
 
   return (
     <DashboardClient
@@ -41,6 +69,7 @@ export default async function DashboardPage() {
         docsUsed: user.docsUsed,
         docsLimit: user.docsLimit,
         totalDocsProcessed: user.totalDocsProcessed,
+        id: user.id,
       }}
       initialStats={{
         thisMonthCount,
@@ -49,6 +78,7 @@ export default async function DashboardPage() {
       }}
       initialDocuments={documents.map((d) => ({
         id: d.id,
+        userId: d.userId,
         fileName: d.fileName,
         fileType: d.fileType,
         fileSize: d.fileSize,
@@ -59,6 +89,9 @@ export default async function DashboardPage() {
         uploadedByName: d.uploadedByName,
         createdAt: d.createdAt.toISOString(),
       }))}
+      isTeamAdmin={!!team}
+      teamMembers={teamMembers}
+      currentUserId={user.id}
     />
   )
 }

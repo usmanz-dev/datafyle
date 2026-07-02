@@ -38,6 +38,7 @@ interface AnomalyData {
 
 export interface DocRow {
   id: string
+  userId?: string
   fileName: string
   fileType: string
   fileSize: number

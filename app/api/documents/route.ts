@@ -10,8 +10,24 @@ export async function GET() {
     const user = await prisma.user.findUnique({ where: { clerkId: userId } })
     if (!user) return NextResponse.json({ error: 'User not found' }, { status: 401 })
 
+    // If user is a team admin, include all accepted team member documents
+    const team = await prisma.team.findFirst({
+      where: { ownerId: user.id },
+      select: {
+        members: {
+          where: { status: 'accepted', userId: { not: null } },
+          select: { userId: true },
+        },
+      },
+    })
+
+    const memberIds = team
+      ? team.members.map((m) => m.userId!).filter(Boolean)
+      : []
+    const allUserIds = [user.id, ...memberIds.filter((id) => id !== user.id)]
+
     const documents = await prisma.document.findMany({
-      where: { userId: user.id },
+      where: { userId: { in: allUserIds } },
       orderBy: { createdAt: 'desc' },
       take: 200,
     })
@@ -19,6 +35,7 @@ export async function GET() {
     return NextResponse.json({
       documents: documents.map((d) => ({
         id: d.id,
+        userId: d.userId,
         fileName: d.fileName,
         fileType: d.fileType,
         fileSize: d.fileSize,
