@@ -1,0 +1,218 @@
+import { Document, Page, View, Text, StyleSheet } from '@react-pdf/renderer'
+
+const MONTH_NAMES = [
+  'January', 'February', 'March', 'April', 'May', 'June',
+  'July', 'August', 'September', 'October', 'November', 'December',
+]
+
+const styles = StyleSheet.create({
+  page: { padding: 40, backgroundColor: '#FFFFFF', fontFamily: 'Helvetica' },
+  header: { marginBottom: 24, paddingBottom: 16, borderBottomWidth: 2, borderBottomColor: '#2563EB' },
+  brand: { fontSize: 22, fontWeight: 'bold', color: '#2563EB' },
+  subtitle: { fontSize: 11, color: '#64748B', marginTop: 4 },
+  sectionTitle: { fontSize: 13, fontWeight: 'bold', color: '#1E293B', marginBottom: 10, marginTop: 20 },
+  statsRow: { flexDirection: 'row', gap: 12, marginBottom: 12 },
+  statBox: { flex: 1, backgroundColor: '#F8FAFC', borderRadius: 8, padding: 14, borderWidth: 1, borderColor: '#E2E8F0' },
+  statLabel: { fontSize: 9, color: '#64748B', marginBottom: 4 },
+  statValue: { fontSize: 18, fontWeight: 'bold', color: '#1E293B' },
+  table: { borderWidth: 1, borderColor: '#E2E8F0', borderRadius: 6, overflow: 'hidden' },
+  tableHeader: { flexDirection: 'row', backgroundColor: '#2563EB', padding: '8 12' },
+  tableHeaderText: { color: '#FFFFFF', fontSize: 10, fontWeight: 'bold', flex: 1 },
+  tableRow: { flexDirection: 'row', padding: '7 12', borderBottomWidth: 1, borderBottomColor: '#E2E8F0', backgroundColor: '#FFFFFF' },
+  tableRowAlt: { flexDirection: 'row', padding: '7 12', borderBottomWidth: 1, borderBottomColor: '#E2E8F0', backgroundColor: '#F8FAFC' },
+  tableCell: { fontSize: 10, color: '#1E293B', flex: 1 },
+  tableCellRight: { fontSize: 10, color: '#1E293B', flex: 1, textAlign: 'right' },
+  footer: { position: 'absolute', bottom: 24, left: 40, right: 40, flexDirection: 'row', justifyContent: 'space-between' },
+  footerText: { fontSize: 9, color: '#94A3B8' },
+})
+
+interface DocItem {
+  id: string
+  fileName: string
+  confidenceScore: number | null
+  extractedData: unknown
+  anomalyData: unknown
+}
+
+interface ReportProps {
+  month: number
+  year: number
+  userEmail: string
+  totalDocuments: number
+  totalAmount: number
+  anomaliesCount: number
+  averageConfidence: number
+  top5Vendors: { name: string; amount: number }[]
+  typeMap: Record<string, number>
+  docs: DocItem[]
+}
+
+export function MonthlyReportDocument(props: ReportProps) {
+  const {
+    month, year, userEmail, totalDocuments, totalAmount,
+    anomaliesCount, averageConfidence, top5Vendors, typeMap, docs,
+  } = props
+
+  const monthLabel = `${MONTH_NAMES[month - 1]} ${year}`
+
+  return (
+    <Document title={`Datafyle Report — ${monthLabel}`} author="Datafyle">
+      {/* Page 1 — Overview */}
+      <Page size="A4" style={styles.page}>
+        <View style={styles.header}>
+          <Text style={styles.brand}>Datafyle</Text>
+          <Text style={styles.subtitle}>Monthly Report — {monthLabel}</Text>
+          <Text style={styles.subtitle}>{userEmail}</Text>
+        </View>
+
+        <Text style={styles.sectionTitle}>Overview</Text>
+        <View style={styles.statsRow}>
+          <View style={styles.statBox}>
+            <Text style={styles.statLabel}>TOTAL DOCUMENTS</Text>
+            <Text style={styles.statValue}>{totalDocuments}</Text>
+          </View>
+          <View style={styles.statBox}>
+            <Text style={styles.statLabel}>TOTAL AMOUNT</Text>
+            <Text style={styles.statValue}>${totalAmount.toLocaleString(undefined, { maximumFractionDigits: 0 })}</Text>
+          </View>
+        </View>
+        <View style={styles.statsRow}>
+          <View style={styles.statBox}>
+            <Text style={styles.statLabel}>ANOMALIES</Text>
+            <Text style={{ ...styles.statValue, color: anomaliesCount > 0 ? '#EF4444' : '#22C55E' }}>
+              {anomaliesCount}
+            </Text>
+          </View>
+          <View style={styles.statBox}>
+            <Text style={styles.statLabel}>AVG ACCURACY</Text>
+            <Text style={styles.statValue}>{averageConfidence}%</Text>
+          </View>
+        </View>
+
+        {Object.keys(typeMap).length > 0 && (
+          <View>
+            <Text style={styles.sectionTitle}>Documents by Type</Text>
+            <View style={styles.table}>
+              <View style={styles.tableHeader}>
+                <Text style={styles.tableHeaderText}>Type</Text>
+                <Text style={{ ...styles.tableHeaderText, textAlign: 'right' }}>Count</Text>
+              </View>
+              {Object.entries(typeMap).map(([type, count], i) => (
+                <View key={type} style={i % 2 === 0 ? styles.tableRow : styles.tableRowAlt}>
+                  <Text style={styles.tableCell}>{type.charAt(0).toUpperCase() + type.slice(1)}</Text>
+                  <Text style={styles.tableCellRight}>{count}</Text>
+                </View>
+              ))}
+            </View>
+          </View>
+        )}
+
+        <View style={styles.footer}>
+          <Text style={styles.footerText}>Generated by Datafyle</Text>
+          <Text style={styles.footerText}>{monthLabel} | Page 1</Text>
+        </View>
+      </Page>
+
+      {/* Page 2 — Top Vendors */}
+      {top5Vendors.length > 0 && (
+        <Page size="A4" style={styles.page}>
+          <View style={styles.header}>
+            <Text style={styles.brand}>Datafyle</Text>
+            <Text style={styles.subtitle}>Top Vendors — {monthLabel}</Text>
+          </View>
+          <Text style={styles.sectionTitle}>Top 5 Vendors by Amount</Text>
+          <View style={styles.table}>
+            <View style={styles.tableHeader}>
+              <Text style={styles.tableHeaderText}>Vendor</Text>
+              <Text style={{ ...styles.tableHeaderText, textAlign: 'right' }}>Total Amount</Text>
+            </View>
+            {top5Vendors.map((v, i) => (
+              <View key={v.name} style={i % 2 === 0 ? styles.tableRow : styles.tableRowAlt}>
+                <Text style={styles.tableCell}>{v.name}</Text>
+                <Text style={styles.tableCellRight}>${v.amount.toLocaleString(undefined, { maximumFractionDigits: 2 })}</Text>
+              </View>
+            ))}
+          </View>
+          <View style={styles.footer}>
+            <Text style={styles.footerText}>Generated by Datafyle</Text>
+            <Text style={styles.footerText}>{monthLabel} | Page 2</Text>
+          </View>
+        </Page>
+      )}
+
+      {/* Page 3 — All Documents */}
+      <Page size="A4" style={styles.page}>
+        <View style={styles.header}>
+          <Text style={styles.brand}>Datafyle</Text>
+          <Text style={styles.subtitle}>All Documents — {monthLabel}</Text>
+        </View>
+        <Text style={styles.sectionTitle}>Documents ({totalDocuments})</Text>
+        <View style={styles.table}>
+          <View style={styles.tableHeader}>
+            <Text style={{ ...styles.tableHeaderText, flex: 2 }}>File Name</Text>
+            <Text style={styles.tableHeaderText}>Vendor</Text>
+            <Text style={{ ...styles.tableHeaderText, textAlign: 'right' }}>Amount</Text>
+            <Text style={{ ...styles.tableHeaderText, textAlign: 'right' }}>Score</Text>
+          </View>
+          {docs.slice(0, 30).map((doc, i) => {
+            const data = doc.extractedData as { vendor?: { value?: string }; totalAmount?: { value?: number } } | null
+            return (
+              <View key={doc.id} style={i % 2 === 0 ? styles.tableRow : styles.tableRowAlt}>
+                <Text style={{ ...styles.tableCell, flex: 2 }}>
+                  {doc.fileName.length > 28 ? doc.fileName.slice(0, 25) + '...' : doc.fileName}
+                </Text>
+                <Text style={styles.tableCell}>{data?.vendor?.value?.slice(0, 15) ?? '—'}</Text>
+                <Text style={styles.tableCellRight}>
+                  {data?.totalAmount?.value ? `$${data.totalAmount.value.toLocaleString()}` : '—'}
+                </Text>
+                <Text style={styles.tableCellRight}>{doc.confidenceScore ?? '—'}%</Text>
+              </View>
+            )
+          })}
+        </View>
+        <View style={styles.footer}>
+          <Text style={styles.footerText}>Generated by Datafyle</Text>
+          <Text style={styles.footerText}>{monthLabel} | Page 3</Text>
+        </View>
+      </Page>
+
+      {/* Page 4 — Anomalies */}
+      {anomaliesCount > 0 && (
+        <Page size="A4" style={styles.page}>
+          <View style={styles.header}>
+            <Text style={styles.brand}>Datafyle</Text>
+            <Text style={{ ...styles.subtitle, color: '#EF4444' }}>Anomalies — {monthLabel}</Text>
+          </View>
+          <Text style={styles.sectionTitle}>Anomalies Found ({anomaliesCount})</Text>
+          <View style={styles.table}>
+            <View style={styles.tableHeader}>
+              <Text style={{ ...styles.tableHeaderText, flex: 2 }}>File Name</Text>
+              <Text style={styles.tableHeaderText}>Severity</Text>
+              <Text style={{ ...styles.tableHeaderText, flex: 2 }}>Reason</Text>
+            </View>
+            {docs
+              .filter((d) => (d.anomalyData as { isAnomaly?: boolean } | null)?.isAnomaly)
+              .map((doc, i) => {
+                const a = doc.anomalyData as { severity?: string; anomalies?: { reason: string }[] } | null
+                return (
+                  <View key={doc.id} style={i % 2 === 0 ? styles.tableRow : styles.tableRowAlt}>
+                    <Text style={{ ...styles.tableCell, flex: 2 }}>{doc.fileName.slice(0, 25)}</Text>
+                    <Text style={{ ...styles.tableCell, color: a?.severity === 'CRITICAL' ? '#EF4444' : '#F59E0B' }}>
+                      {a?.severity ?? '—'}
+                    </Text>
+                    <Text style={{ ...styles.tableCell, flex: 2 }}>
+                      {a?.anomalies?.[0]?.reason?.slice(0, 40) ?? '—'}
+                    </Text>
+                  </View>
+                )
+              })}
+          </View>
+          <View style={styles.footer}>
+            <Text style={styles.footerText}>Generated by Datafyle</Text>
+            <Text style={styles.footerText}>{monthLabel} | Page 4</Text>
+          </View>
+        </Page>
+      )}
+    </Document>
+  )
+}
