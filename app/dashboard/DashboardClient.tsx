@@ -10,6 +10,8 @@ import {
 import { UploadZone } from '@/components/UploadZone'
 import { ReportButton } from '@/components/ReportButton'
 import { DocumentDetail, type DocRow } from '@/components/DocumentDetail'
+import { UpgradeModal } from '@/components/UpgradeModal'
+import { hasFeature } from '@/lib/plans'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -105,6 +107,7 @@ export function DashboardClient({ firstName, user, initialStats, initialDocument
   const [greeting, setGreeting] = useState('Good morning')
   const [exporting, setExporting] = useState(false)
   const [sheetsExporting, setSheetsExporting] = useState(false)
+  const [upgradeModal, setUpgradeModal] = useState<{ feature: string; requiredPlan: string } | null>(null)
 
   // greeting based on local time
   useEffect(() => {
@@ -248,7 +251,8 @@ export function DashboardClient({ firstName, user, initialStats, initialDocument
   // ── Usage bar ──────────────────────────────────────────────────────────────
   const usagePct = user.docsLimit > 0 ? Math.round((user.docsUsed / user.docsLimit) * 100) : 0
   const barColor =
-    usagePct > 90 ? '#EF4444' : usagePct > 80 ? '#F59E0B' : '#2563EB'
+    usagePct >= 90 ? '#EF4444' : usagePct >= 75 ? '#F59E0B' : '#2563EB'
+  const atLimit = usagePct >= 100
 
   // ── Stats ──────────────────────────────────────────────────────────────────
   const stats = [
@@ -291,13 +295,27 @@ export function DashboardClient({ firstName, user, initialStats, initialDocument
             <p className="text-sm text-slate-500 mt-0.5">Here's what's happening with your documents.</p>
           </div>
           <div className="flex items-center gap-3">
-            <ReportButton />
+            <ReportButton
+              onLocked={!hasFeature(user.plan, 'monthly_report')
+                ? () => setUpgradeModal({ feature: 'Monthly PDF Report', requiredPlan: 'starter' })
+                : undefined}
+            />
             <button
-              onClick={() => setShowUpload((v) => !v)}
-              className="inline-flex items-center gap-2 bg-[#2563EB] text-white px-5 py-2.5 rounded-lg font-medium text-sm hover:bg-blue-700 transition-colors min-h-11"
+              onClick={() => {
+                if (atLimit) {
+                  setUpgradeModal({ feature: 'Document uploads', requiredPlan: user.plan === 'free' ? 'starter' : user.plan })
+                  return
+                }
+                setShowUpload((v) => !v)
+              }}
+              className={`inline-flex items-center gap-2 px-5 py-2.5 rounded-lg font-medium text-sm transition-colors min-h-11 ${
+                atLimit
+                  ? 'bg-slate-200 text-slate-400 cursor-not-allowed'
+                  : 'bg-[#2563EB] text-white hover:bg-blue-700'
+              }`}
             >
               <Upload size={16} />
-              Upload Documents
+              {atLimit ? 'Limit Reached' : 'Upload Documents'}
             </button>
           </div>
         </div>
@@ -404,23 +422,27 @@ export function DashboardClient({ firstName, user, initialStats, initialDocument
                   Export All
                 </button>
               )}
-              {['professional', 'business', 'enterprise'].includes(user.plan) && (
-                <button
-                  onClick={exportSheets}
-                  disabled={sheetsExporting || docs.length === 0}
-                  className="inline-flex items-center gap-1.5 px-3 py-2 text-sm font-medium bg-white border border-[#E2E8F0] text-[#1E293B] rounded-lg hover:bg-[#F8FAFC] transition-colors disabled:opacity-50 shadow-sm min-h-10"
-                >
-                  {sheetsExporting ? (
-                    <Loader2 size={14} className="animate-spin text-green-600" />
-                  ) : (
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" className="shrink-0">
-                      <rect width="24" height="24" rx="4" fill="#34A853" />
-                      <path d="M5 7h14M5 12h14M5 17h14" stroke="white" strokeWidth="2" strokeLinecap="round" />
-                    </svg>
-                  )}
-                  {selected.size > 0 ? `Sheets (${selected.size})` : 'Google Sheets'}
-                </button>
-              )}
+              <button
+                onClick={() => {
+                  if (!hasFeature(user.plan, 'google_sheets')) {
+                    setUpgradeModal({ feature: 'Google Sheets Export', requiredPlan: 'professional' })
+                    return
+                  }
+                  exportSheets()
+                }}
+                disabled={sheetsExporting || docs.length === 0}
+                className="inline-flex items-center gap-1.5 px-3 py-2 text-sm font-medium bg-white border border-[#E2E8F0] text-[#1E293B] rounded-lg hover:bg-[#F8FAFC] transition-colors disabled:opacity-50 shadow-sm min-h-10"
+              >
+                {sheetsExporting ? (
+                  <Loader2 size={14} className="animate-spin text-green-600" />
+                ) : (
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" className="shrink-0">
+                    <rect width="24" height="24" rx="4" fill="#34A853" />
+                    <path d="M5 7h14M5 12h14M5 17h14" stroke="white" strokeWidth="2" strokeLinecap="round" />
+                  </svg>
+                )}
+                {selected.size > 0 ? `Sheets (${selected.size})` : 'Google Sheets'}
+              </button>
               <span className="text-xs text-slate-400">
                 {filtered.length} document{filtered.length !== 1 ? 's' : ''}
               </span>
@@ -639,6 +661,13 @@ export function DashboardClient({ firstName, user, initialStats, initialDocument
         doc={viewDoc}
         onClose={() => setViewDoc(null)}
         onDelete={handleDocumentDeleted}
+      />
+
+      <UpgradeModal
+        isOpen={upgradeModal !== null}
+        onClose={() => setUpgradeModal(null)}
+        feature={upgradeModal?.feature ?? ''}
+        requiredPlan={upgradeModal?.requiredPlan ?? 'starter'}
       />
     </div>
   )

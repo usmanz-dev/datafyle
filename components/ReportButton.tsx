@@ -18,7 +18,11 @@ function getRecentMonths(count = 4) {
   return months
 }
 
-export function ReportButton() {
+interface ReportButtonProps {
+  onLocked?: () => void
+}
+
+export function ReportButton({ onLocked }: ReportButtonProps = {}) {
   const [open, setOpen] = useState(false)
   const [loading, setLoading] = useState<string | null>(null)
   const ref = useRef<HTMLDivElement>(null)
@@ -66,7 +70,7 @@ export function ReportButton() {
   return (
     <div ref={ref} className="relative">
       <button
-        onClick={() => !isLoading && setOpen((o) => !o)}
+        onClick={() => { if (onLocked) { onLocked(); return } if (!isLoading) setOpen((o) => !o) }}
         disabled={isLoading}
         className="inline-flex items-center gap-2 px-4 py-2.5 bg-white border border-[#E2E8F0] rounded-lg text-sm font-medium text-[#1E293B] hover:bg-[#F8FAFC] transition-colors disabled:opacity-60 disabled:cursor-not-allowed shadow-sm"
       >
