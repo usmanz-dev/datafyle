@@ -4,9 +4,7 @@ import { parseFile } from '@/lib/parsers'
 import { extractWithClaude } from '@/lib/claude'
 import { getVendorPattern, saveVendorPattern } from '@/lib/memory'
 import { detectAnomaly } from '@/lib/anomaly'
-import { Resend } from 'resend'
-
-const resend = new Resend(process.env.RESEND_API_KEY)
+import { sendAnomalyAlert } from '@/lib/emails/anomalyAlert'
 
 function extractVendorHint(text: string): string {
   const lines = text.split('\n').filter((l) => l.trim().length > 2)
@@ -86,18 +84,14 @@ export async function processDocument(documentId: string, clerkUserId: string) {
     })
 
     if (anomalyData.severity === 'CRITICAL' || anomalyData.severity === 'HIGH') {
-      await resend.emails.send({
-        from: process.env.RESEND_FROM_EMAIL ?? 'noreply@datafyle.com',
+      await sendAnomalyAlert({
         to: user.email,
-        subject: `Anomaly detected in ${document.fileName}`,
-        text: [
-          `An anomaly was detected in your document "${document.fileName}".`,
-          `Severity: ${anomalyData.severity}`,
-          `Reason: ${anomalyData.anomalies[0]?.reason ?? 'Unknown'}`,
-          `Recommendation: ${anomalyData.recommendation}`,
-          ``,
-          `Log in to review: https://datafyle.com/dashboard`,
-        ].join('\n'),
+        fileName: document.fileName,
+        vendor: vendorName,
+        amount: totalAmount,
+        severity: anomalyData.severity,
+        anomalies: anomalyData.anomalies,
+        recommendation: anomalyData.recommendation,
       })
     }
 
