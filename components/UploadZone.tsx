@@ -59,7 +59,10 @@ export function UploadZone({ onUploadComplete }: Props) {
           const res = await fetch('/api/upload', { method: 'POST', body: fd })
           const data = await res.json()
           if (!res.ok) {
-            update(item.id, { status: 'error', error: data.error ?? 'Upload failed' })
+            const msg = data.error === 'limit'
+              ? 'Monthly limit reached — upgrade your plan'
+              : data.error ?? 'Upload failed'
+            update(item.id, { status: 'error', error: msg })
           } else {
             update(item.id, { status: 'done', documentId: data.documentId })
             successIds.push(data.documentId)

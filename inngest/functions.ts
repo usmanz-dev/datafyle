@@ -3,6 +3,18 @@ import { prisma } from '@/lib/prisma'
 import { processDocument } from '@/lib/processDocument'
 import { Resend } from 'resend'
 
+// ─── Monthly docs reset ───────────────────────────────────────────────────────
+export const monthlyDocsResetFn = inngest.createFunction(
+  {
+    id: 'monthly-docs-reset',
+    triggers: [{ cron: '0 0 1 * *' }],
+  },
+  async () => {
+    await prisma.user.updateMany({ data: { docsUsed: 0 } })
+    return { reset: true }
+  }
+)
+
 const resend = new Resend(process.env.RESEND_API_KEY)
 
 export const processDocumentFn = inngest.createFunction(

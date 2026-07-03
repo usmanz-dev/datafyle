@@ -1,8 +1,8 @@
 import { serve } from 'inngest/next'
 import { inngest } from '@/inngest/client'
-import { processDocumentFn, processBatchFn } from '@/inngest/functions'
+import { processDocumentFn, processBatchFn, monthlyDocsResetFn } from '@/inngest/functions'
 
 export const { GET, POST, PUT } = serve({
   client: inngest,
-  functions: [processDocumentFn, processBatchFn],
+  functions: [processDocumentFn, processBatchFn, monthlyDocsResetFn],
 })
