@@ -6,7 +6,7 @@ const BASE = 'https://datafyle.com'
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const posts = await prisma.blogPost.findMany({
     where: { published: true },
-    select: { slug: true, updatedAt: true },
+    select: { slug: true, publishedAt: true },
     orderBy: { publishedAt: 'desc' },
   })
 
@@ -18,7 +18,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   const blogPages: MetadataRoute.Sitemap = posts.map((p) => ({
     url: `${BASE}/blog/${p.slug}`,
-    lastModified: p.updatedAt,
+    lastModified: p.publishedAt ?? new Date(),
     changeFrequency: 'monthly' as const,
     priority: 0.7,
   }))
