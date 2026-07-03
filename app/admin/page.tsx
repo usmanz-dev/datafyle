@@ -1,14 +1,9 @@
 import { prisma } from '@/lib/prisma'
 import { DollarSign, Users, FileText, CreditCard, XCircle, AlertTriangle } from 'lucide-react'
-import { RevenueChart } from './RevenueChart'
-import { PlanPieChart } from './PlanPieChart'
+import { AdminChartsClient } from './AdminChartsClient'
 
 const PLAN_PRICES: Record<string, number> = {
   starter: 49, professional: 149, business: 349, enterprise: 599,
-}
-
-const PLAN_DOCS: Record<string, number> = {
-  starter: 500, professional: 3000, business: 10000, enterprise: 20000,
 }
 
 export default async function AdminPage() {
@@ -152,19 +147,7 @@ export default async function AdminPage() {
       </div>
 
       {/* Charts row */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-        {/* Revenue line chart — takes 2/3 */}
-        <div className="lg:col-span-2 bg-white rounded-lg border border-[#E2E8F0] shadow-sm p-5">
-          <h2 className="text-sm font-semibold text-[#1E293B] mb-4">Monthly Recurring Revenue</h2>
-          <RevenueChart data={revenueChartData} />
-        </div>
-
-        {/* Plan breakdown pie chart — takes 1/3 */}
-        <div className="bg-white rounded-lg border border-[#E2E8F0] shadow-sm p-5">
-          <h2 className="text-sm font-semibold text-[#1E293B] mb-4">Users by Plan</h2>
-          <PlanPieChart data={planPieData} />
-        </div>
-      </div>
+      <AdminChartsClient revenueData={revenueChartData} planData={planPieData} />
     </div>
   )
 }

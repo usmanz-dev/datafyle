@@ -7,8 +7,36 @@ import './globals.css'
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
-  title: 'Datafyle — AI Document Processing',
-  description: 'Upload any document. AI extracts all data. Download Excel.',
+  title: {
+    default: 'Datafyle — AI Document Processing for Accountants',
+    template: '%s | Datafyle',
+  },
+  description:
+    'Upload invoices and documents. AI extracts all data in 10 seconds. Replace your $2,500/month bookkeeper with Datafyle at $49/month.',
+  keywords: [
+    'invoice processing',
+    'document automation',
+    'accounting AI',
+    'data entry automation',
+    'invoice extraction',
+    'bookkeeping automation',
+  ],
+  openGraph: {
+    title: 'Datafyle — Stop Wasting Hours on Manual Data Entry',
+    description: 'AI extracts data from any document in 10 seconds. Start free.',
+    url: 'https://datafyle.com',
+    siteName: 'Datafyle',
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Datafyle AI',
+    creator: '@datafyle',
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
 }
 
 export default function RootLayout({

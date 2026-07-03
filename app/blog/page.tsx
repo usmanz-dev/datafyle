@@ -3,7 +3,7 @@ import type { Metadata } from 'next'
 import { prisma } from '@/lib/prisma'
 
 export const metadata: Metadata = {
-  title: 'Datafyle Blog',
+  title: 'Blog — Accounting Automation Tips',
   description: 'Accounting automation tips, guides, and industry insights from Datafyle.',
 }
 
