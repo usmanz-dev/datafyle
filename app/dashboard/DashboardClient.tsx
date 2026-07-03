@@ -1,6 +1,8 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
+import { useSearchParams, useRouter as useNextRouter } from 'next/navigation'
+import { toast } from 'sonner'
 import {
   FileText, FileSpreadsheet, FileCode2, Image as ImageIcon, File,
   AlertTriangle, Trash2, Eye, Search, Loader2, Upload,
@@ -11,7 +13,7 @@ import { UploadZone } from '@/components/UploadZone'
 import { ReportButton } from '@/components/ReportButton'
 import { DocumentDetail, type DocRow } from '@/components/DocumentDetail'
 import { UpgradeModal } from '@/components/UpgradeModal'
-import { hasFeature } from '@/lib/plans'
+import { hasFeature, PLAN_NAMES } from '@/lib/plans'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -108,6 +110,26 @@ export function DashboardClient({ firstName, user, initialStats, initialDocument
   const [exporting, setExporting] = useState(false)
   const [sheetsExporting, setSheetsExporting] = useState(false)
   const [upgradeModal, setUpgradeModal] = useState<{ feature: string; requiredPlan: string } | null>(null)
+
+  const searchParams = useSearchParams()
+  const nextRouter   = useNextRouter()
+
+  // Show success toast after Paddle checkout redirect
+  useEffect(() => {
+    if (searchParams.get('success') !== '1') return
+    const plan = searchParams.get('plan') ?? ''
+    const planLabel = PLAN_NAMES[plan] ?? 'Paid'
+    toast.success(`Welcome to Datafyle ${planLabel}!`, {
+      description: 'Your subscription is now active. Start uploading documents.',
+      duration: 6000,
+    })
+    // Remove query params without page reload
+    const url = new URL(window.location.href)
+    url.searchParams.delete('success')
+    url.searchParams.delete('plan')
+    nextRouter.replace(url.pathname + (url.search || ''))
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   // greeting based on local time
   useEffect(() => {

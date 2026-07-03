@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import crypto from 'crypto'
 import { prisma } from '@/lib/prisma'
+import { sendWelcomePaidEmail, sendCancellationEmail } from '@/lib/emails/paddleEmails'
 
 const PLAN_DOCS: Record<string, number> = {
   starter: 500, professional: 3000, business: 10000, enterprise: 20000,
@@ -122,6 +123,11 @@ export async function POST(req: NextRequest) {
           renewsAt,
         },
       })
+
+      // Send welcome email (fire-and-forget — don't block webhook response)
+      sendWelcomePaidEmail(user.email, planName).catch((e) =>
+        console.error('Failed to send welcome email:', e)
+      )
     }
 
     // ── subscription.cancelled ───────────────────────────────────────────────
@@ -150,6 +156,10 @@ export async function POST(req: NextRequest) {
           where: { id: sub.id },
           data: { status: 'cancelled' },
         })
+
+        sendCancellationEmail(sub.user.email, previousPlan).catch((e) =>
+          console.error('Failed to send cancellation email:', e)
+        )
       }
     }
 
