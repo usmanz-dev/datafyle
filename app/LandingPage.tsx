@@ -434,7 +434,7 @@ export default function LandingPage() {
       </section>
 
       {/* ── HOW IT WORKS ────────────────────────────────────────────────────── */}
-      <section className="py-20 px-4 bg-white">
+      <section id="how-it-works" className="py-20 px-4 bg-white">
         <div className="max-w-4xl mx-auto">
           <motion.h2
             variants={fadeUp} initial="hidden" whileInView="visible"
@@ -780,7 +780,7 @@ export default function LandingPage() {
             <h4 className="text-white font-semibold mb-4 text-sm uppercase tracking-wider">Product</h4>
             <ul className="space-y-2.5">
               <li><Link href="/pricing" className="text-slate-400 hover:text-white text-sm transition-colors">Pricing</Link></li>
-              <li><Link href="/dashboard" className="text-slate-400 hover:text-white text-sm transition-colors">How It Works</Link></li>
+              <li><a href="/#how-it-works" className="text-slate-400 hover:text-white text-sm transition-colors">How It Works</a></li>
             </ul>
           </div>
 
