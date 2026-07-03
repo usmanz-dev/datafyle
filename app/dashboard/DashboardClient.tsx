@@ -483,15 +483,15 @@ export function DashboardClient({ firstName, user, initialStats, initialDocument
                         : <Square size={16} />}
                     </button>
                   </th>
-                  <th className="text-left px-4 py-3 font-medium text-[#1E293B] min-w-45">File</th>
-                  <th className="text-left px-4 py-3 font-medium text-[#1E293B]">Type</th>
-                  <th className="text-left px-4 py-3 font-medium text-[#1E293B]">Vendor</th>
-                  <th className="text-right px-4 py-3 font-medium text-[#1E293B]">Amount</th>
+                  <th className="text-left px-4 py-3 font-medium text-[#1E293B]">File</th>
+                  <th className="text-left px-4 py-3 font-medium text-[#1E293B] hidden md:table-cell">Type</th>
+                  <th className="text-left px-4 py-3 font-medium text-[#1E293B] hidden md:table-cell">Vendor</th>
+                  <th className="text-right px-4 py-3 font-medium text-[#1E293B] hidden md:table-cell">Amount</th>
                   <th className="text-left px-4 py-3 font-medium text-[#1E293B]">Status</th>
-                  <th className="px-4 py-3 w-8" title="Anomaly" />
-                  <th className="text-left px-4 py-3 font-medium text-[#1E293B]">Uploaded By</th>
-                  <th className="text-left px-4 py-3 font-medium text-[#1E293B]">Date</th>
-                  <th className="px-4 py-3 w-24" />
+                  <th className="px-4 py-3 w-8 hidden md:table-cell" title="Anomaly" />
+                  <th className="text-left px-4 py-3 font-medium text-[#1E293B] hidden md:table-cell">Uploaded By</th>
+                  <th className="text-left px-4 py-3 font-medium text-[#1E293B] hidden md:table-cell">Date</th>
+                  <th className="px-4 py-3 w-20" />
                 </tr>
               </thead>
               <tbody>
@@ -556,20 +556,20 @@ export function DashboardClient({ firstName, user, initialStats, initialDocument
                           <p className="text-xs text-slate-400 mt-0.5 pl-6">{formatBytes(doc.fileSize)}</p>
                         </td>
 
-                        {/* Type */}
-                        <td className="px-4 py-3">
+                        {/* Type — hidden on mobile */}
+                        <td className="px-4 py-3 hidden md:table-cell">
                           <span className={`inline-block text-xs font-medium px-2 py-1 rounded uppercase tracking-wide ${typeBadge(doc.fileType)}`}>
                             {doc.fileType}
                           </span>
                         </td>
 
-                        {/* Vendor */}
-                        <td className="px-4 py-3 text-[#1E293B] max-w-30 truncate" title={vendor !== '—' ? vendor : undefined}>
+                        {/* Vendor — hidden on mobile */}
+                        <td className="px-4 py-3 text-[#1E293B] max-w-30 truncate hidden md:table-cell" title={vendor !== '—' ? vendor : undefined}>
                           {vendor}
                         </td>
 
-                        {/* Amount */}
-                        <td className="px-4 py-3 text-right text-[#1E293B] font-medium tabular-nums">
+                        {/* Amount — hidden on mobile */}
+                        <td className="px-4 py-3 text-right text-[#1E293B] font-medium tabular-nums hidden md:table-cell">
                           {amount != null
                             ? `${currency ? currency + ' ' : ''}${amount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
                             : '—'}
@@ -580,8 +580,8 @@ export function DashboardClient({ firstName, user, initialStats, initialDocument
                           <StatusBadge status={doc.status} />
                         </td>
 
-                        {/* Anomaly */}
-                        <td className="px-4 py-3">
+                        {/* Anomaly — hidden on mobile */}
+                        <td className="px-4 py-3 hidden md:table-cell">
                           {anomaly?.isAnomaly && (
                             <span title={anomaly.severity ?? 'Anomaly detected'}>
                               <AlertTriangle
@@ -595,13 +595,13 @@ export function DashboardClient({ firstName, user, initialStats, initialDocument
                           )}
                         </td>
 
-                        {/* Uploaded by */}
-                        <td className="px-4 py-3 text-slate-500 text-sm max-w-25 truncate">
+                        {/* Uploaded by — hidden on mobile */}
+                        <td className="px-4 py-3 text-slate-500 text-sm max-w-25 truncate hidden md:table-cell">
                           {doc.uploadedByName ?? 'You'}
                         </td>
 
-                        {/* Date */}
-                        <td className="px-4 py-3 text-slate-500 text-sm whitespace-nowrap">
+                        {/* Date — hidden on mobile */}
+                        <td className="px-4 py-3 text-slate-500 text-sm whitespace-nowrap hidden md:table-cell">
                           {formatDate(doc.createdAt)}
                         </td>
 

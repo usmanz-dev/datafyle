@@ -87,23 +87,30 @@ export function Sidebar({ plan, email }: Props) {
         </div>
       </aside>
 
-      {/* ── Mobile bottom nav ─────────────────────────────── */}
-      <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-[#E2E8F0] z-30 flex safe-area-inset-bottom">
-        {NAV.filter((n) => !n.uploadAnchor).slice(0, 5).map(({ href, icon: Icon, label, exact }) => {
-          const isActive = exact ? pathname === href : pathname.startsWith(href)
-          return (
-            <Link
-              key={href + label}
-              href={href}
-              className={`flex-1 flex flex-col items-center py-2.5 gap-0.5 text-[10px] font-medium transition-colors ${
-                isActive ? 'text-[#2563EB]' : 'text-slate-400'
-              }`}
-            >
-              <Icon size={20} />
-              <span>{label.split(' ')[0]}</span>
-            </Link>
-          )
-        })}
+      {/* ── Mobile bottom nav (4 items, fixed at bottom) ─── */}
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-[#E2E8F0] z-30 shadow-[0_-1px_8px_rgba(0,0,0,0.06)]">
+        <div className="flex">
+          {[
+            { href: '/dashboard',         icon: LayoutDashboard, label: 'Home',    exact: true  },
+            { href: '/dashboard',         icon: Upload,          label: 'Upload',  exact: true  },
+            { href: '/dashboard/reports', icon: FileText,        label: 'Reports', exact: false },
+            { href: '/settings',          icon: Settings,        label: 'Settings', exact: false },
+          ].map(({ href, icon: Icon, label, exact }) => {
+            const isActive = exact ? pathname === href : pathname.startsWith(href)
+            return (
+              <Link
+                key={label}
+                href={href}
+                className={`flex-1 flex flex-col items-center pt-2.5 pb-3 gap-1 text-[10px] font-semibold transition-colors min-h-[56px] ${
+                  isActive ? 'text-[#2563EB]' : 'text-slate-400 hover:text-slate-600'
+                }`}
+              >
+                <Icon size={22} />
+                <span>{label}</span>
+              </Link>
+            )
+          })}
+        </div>
       </nav>
     </>
   )

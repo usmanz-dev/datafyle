@@ -303,7 +303,7 @@ export default function LandingPage() {
           >
             <Link
               href="/sign-up"
-              className="inline-flex items-center gap-2 px-8 py-4 bg-[#2563EB] text-white text-lg font-bold rounded-xl hover:bg-blue-700 transition-all shadow-lg hover:shadow-xl hover:-translate-y-0.5 min-h-[56px]"
+              className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-[#2563EB] text-white text-lg font-bold rounded-xl hover:bg-blue-700 transition-all shadow-lg hover:shadow-xl hover:-translate-y-0.5 min-h-[56px] w-full sm:w-auto"
             >
               Get Started Now — It&apos;s Free
               <ArrowRight size={20} />

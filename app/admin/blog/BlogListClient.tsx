@@ -54,14 +54,14 @@ export function BlogListClient({ posts }: { posts: Post[] }) {
           </Link>
         </div>
       ) : (
-        <div className="bg-white rounded-lg border border-[#E2E8F0] shadow-sm overflow-hidden">
-          <table className="w-full text-sm">
+        <div className="bg-white rounded-lg border border-[#E2E8F0] shadow-sm overflow-hidden overflow-x-auto">
+          <table className="w-full text-sm min-w-125">
             <thead>
               <tr className="bg-[#F8FAFC] border-b border-[#E2E8F0]">
                 <th className="text-left px-4 py-3 font-medium text-[#1E293B]">Title</th>
-                <th className="text-left px-4 py-3 font-medium text-[#1E293B]">Tags</th>
+                <th className="text-left px-4 py-3 font-medium text-[#1E293B] hidden md:table-cell">Tags</th>
                 <th className="text-left px-4 py-3 font-medium text-[#1E293B]">Status</th>
-                <th className="text-left px-4 py-3 font-medium text-[#1E293B]">Date</th>
+                <th className="text-left px-4 py-3 font-medium text-[#1E293B] hidden md:table-cell">Date</th>
                 <th className="px-4 py-3 w-28" />
               </tr>
             </thead>
@@ -75,7 +75,7 @@ export function BlogListClient({ posts }: { posts: Post[] }) {
                     <p className="font-medium text-[#1E293B] max-w-xs truncate">{post.title}</p>
                     <p className="text-xs text-slate-400 mt-0.5 font-mono">/{post.slug}</p>
                   </td>
-                  <td className="px-4 py-3">
+                  <td className="px-4 py-3 hidden md:table-cell">
                     <div className="flex flex-wrap gap-1">
                       {post.tags.slice(0, 3).map((t) => (
                         <span key={t} className="px-2 py-0.5 bg-[#EFF6FF] text-[#2563EB] text-xs rounded-full">
@@ -102,7 +102,7 @@ export function BlogListClient({ posts }: { posts: Post[] }) {
                       </span>
                     )}
                   </td>
-                  <td className="px-4 py-3 text-slate-500 whitespace-nowrap">
+                  <td className="px-4 py-3 text-slate-500 whitespace-nowrap hidden md:table-cell">
                     {new Date(post.publishedAt ?? post.createdAt).toLocaleDateString('en-US', {
                       month: 'short', day: 'numeric', year: 'numeric',
                     })}
