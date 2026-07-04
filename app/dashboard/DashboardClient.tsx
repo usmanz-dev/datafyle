@@ -1,14 +1,18 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useMemo } from 'react'
 import { useSearchParams, useRouter as useNextRouter } from 'next/navigation'
 import { toast } from 'sonner'
 import {
   FileText, FileSpreadsheet, FileCode2, Image as ImageIcon, File,
   AlertTriangle, Trash2, Eye, Search, Loader2, Upload,
   TrendingUp, FileCheck, Zap, BarChart3, ChevronLeft, ChevronRight,
-  CheckSquare, Square, Download, Users,
+  CheckSquare, Square, Download, Users, Activity, ShieldCheck,
 } from 'lucide-react'
+import {
+  BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer,
+  PieChart, Pie,
+} from 'recharts'
 import { UploadZone } from '@/components/UploadZone'
 import { ReportButton } from '@/components/ReportButton'
 import { DocumentDetail, type DocRow } from '@/components/DocumentDetail'
@@ -292,39 +296,78 @@ export function DashboardClient({ firstName, user, initialStats, initialDocument
       label: 'Total Processed',
       value: user.totalDocsProcessed.toLocaleString(),
       icon: FileCheck,
-      border: 'border-l-[#2563EB]',
+      color: '#2563EB',
+      bg: 'bg-[#EFF6FF]',
     },
     {
       label: 'This Month',
       value: initialStats.thisMonthCount.toLocaleString(),
       icon: TrendingUp,
-      border: 'border-l-[#2563EB]',
+      color: '#2563EB',
+      bg: 'bg-[#EFF6FF]',
     },
     {
       label: 'Fields Extracted',
       value: initialStats.fieldsExtracted.toLocaleString(),
       icon: Zap,
-      border: 'border-l-[#2563EB]',
+      color: '#22C55E',
+      bg: 'bg-green-50',
     },
     {
       label: 'Anomalies',
       value: initialStats.anomaliesCount.toLocaleString(),
-      icon: BarChart3,
-      border: initialStats.anomaliesCount > 0 ? 'border-l-[#EF4444]' : 'border-l-[#22C55E]',
+      icon: AlertTriangle,
+      color: initialStats.anomaliesCount > 0 ? '#EF4444' : '#22C55E',
+      bg: initialStats.anomaliesCount > 0 ? 'bg-red-50' : 'bg-green-50',
     },
   ]
 
+  // ── Chart data ─────────────────────────────────────────────────────────────
+  const weeklyData = useMemo(() => {
+    const days: { day: string; docs: number }[] = []
+    for (let i = 6; i >= 0; i--) {
+      const d = new Date()
+      d.setDate(d.getDate() - i)
+      const label = d.toLocaleDateString('en-US', { weekday: 'short' })
+      const dateStr = d.toISOString().slice(0, 10)
+      const count = initialDocuments.filter(
+        (doc) => doc.createdAt.slice(0, 10) === dateStr && doc.status === 'done'
+      ).length
+      days.push({ day: label, docs: count })
+    }
+    return days
+  }, [initialDocuments])
+
+  const typeData = useMemo(() => {
+    const counts: Record<string, number> = {}
+    initialDocuments.forEach((doc) => {
+      const t = doc.fileType.toUpperCase()
+      counts[t] = (counts[t] ?? 0) + 1
+    })
+    const colors = ['#2563EB', '#22C55E', '#F59E0B', '#EF4444', '#8B5CF6', '#06B6D4', '#EC4899']
+    return Object.entries(counts)
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 6)
+      .map(([name, value], i) => ({ name, value, color: colors[i] }))
+  }, [initialDocuments])
+
+  const successRate = useMemo(() => {
+    if (initialDocuments.length === 0) return 100
+    const done = initialDocuments.filter((d) => d.status === 'done').length
+    return Math.round((done / initialDocuments.length) * 100)
+  }, [initialDocuments])
+
   return (
-    <div className="min-h-screen bg-[#F8FAFC]">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 py-6">
+    <div className="min-h-screen bg-[#F0F4F8]">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6">
 
         {/* ── Header ─────────────────────────────────────────────────────────── */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
           <div>
-            <h1 className="text-xl font-bold text-[#1E293B]">
+            <h1 className="text-2xl font-bold text-[#1E293B]">
               {greeting}{firstName ? `, ${firstName}` : ''}!
             </h1>
-            <p className="text-sm text-slate-500 mt-0.5">Here's what's happening with your documents.</p>
+            <p className="text-sm text-slate-500 mt-0.5">Here&apos;s your document processing overview.</p>
           </div>
           <div className="flex items-center gap-3">
             <ReportButton
@@ -340,10 +383,10 @@ export function DashboardClient({ firstName, user, initialStats, initialDocument
                 }
                 setShowUpload((v) => !v)
               }}
-              className={`inline-flex items-center gap-2 px-5 py-2.5 rounded-lg font-medium text-sm transition-colors min-h-11 ${
+              className={`inline-flex items-center gap-2 px-5 py-2.5 rounded-xl font-semibold text-sm transition-all shadow-sm min-h-11 ${
                 atLimit
                   ? 'bg-slate-200 text-slate-400 cursor-not-allowed'
-                  : 'bg-[#2563EB] text-white hover:bg-blue-700'
+                  : 'bg-[#2563EB] text-white hover:bg-blue-700 hover:shadow-md'
               }`}
             >
               <Upload size={16} />
@@ -352,45 +395,126 @@ export function DashboardClient({ firstName, user, initialStats, initialDocument
           </div>
         </div>
 
-        {/* ── Usage bar ──────────────────────────────────────────────────────── */}
-        <div className="bg-white rounded-lg border border-[#E2E8F0] shadow-sm p-4 mb-5">
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-sm text-[#1E293B]">
-              Documents used:{' '}
-              <strong>{user.docsUsed.toLocaleString()}</strong> / {user.docsLimit.toLocaleString()} this month
-            </span>
-            <div className="flex items-center gap-3">
-              <span className="text-sm font-semibold" style={{ color: barColor }}>{usagePct}%</span>
+        {/* ── Stats cards ────────────────────────────────────────────────────── */}
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+          {stats.map(({ label, value, icon: Icon, color, bg }) => (
+            <div key={label} className="bg-white rounded-xl border border-[#E2E8F0] shadow-sm p-5 hover:shadow-md transition-shadow">
+              <div className={`w-10 h-10 rounded-xl ${bg} flex items-center justify-center mb-3`}>
+                <Icon size={18} style={{ color }} />
+              </div>
+              <p className="text-2xl font-bold text-[#1E293B]">{value}</p>
+              <p className="text-xs text-slate-500 font-medium mt-0.5">{label}</p>
+            </div>
+          ))}
+        </div>
+
+        {/* ── Charts row ─────────────────────────────────────────────────────── */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-6">
+
+          {/* Weekly activity bar chart */}
+          <div className="lg:col-span-2 bg-white rounded-xl border border-[#E2E8F0] shadow-sm p-5">
+            <div className="flex items-center gap-2 mb-4">
+              <Activity size={16} className="text-[#2563EB]" />
+              <h2 className="text-sm font-semibold text-[#1E293B]">Weekly Activity</h2>
+              <span className="ml-auto text-xs text-slate-400">Documents processed</span>
+            </div>
+            {weeklyData.some((d) => d.docs > 0) ? (
+              <ResponsiveContainer width="100%" height={180}>
+                <BarChart data={weeklyData} barSize={28}>
+                  <XAxis dataKey="day" axisLine={false} tickLine={false} tick={{ fontSize: 11, fill: '#94a3b8' }} />
+                  <YAxis hide allowDecimals={false} />
+                  <Tooltip
+                    cursor={{ fill: '#EFF6FF' }}
+                    contentStyle={{ borderRadius: 8, border: '1px solid #E2E8F0', fontSize: 12 }}
+                    formatter={(v) => [Number(v ?? 0), 'Documents']}
+                  />
+                  <Bar dataKey="docs" fill="#2563EB" radius={[6, 6, 0, 0]} />
+                </BarChart>
+              </ResponsiveContainer>
+            ) : (
+              <div className="h-44 flex flex-col items-center justify-center text-slate-400 gap-2">
+                <BarChart3 size={32} className="text-slate-200" />
+                <p className="text-sm">Upload documents to see activity</p>
+              </div>
+            )}
+          </div>
+
+          {/* Right column: success rate + doc types */}
+          <div className="flex flex-col gap-4">
+
+            {/* Success rate */}
+            <div className="bg-white rounded-xl border border-[#E2E8F0] shadow-sm p-5 flex-1">
+              <div className="flex items-center gap-2 mb-3">
+                <ShieldCheck size={16} className="text-[#22C55E]" />
+                <h2 className="text-sm font-semibold text-[#1E293B]">Success Rate</h2>
+              </div>
+              <div className="flex items-end gap-3">
+                <span className="text-4xl font-bold text-[#1E293B]">{successRate}%</span>
+                <span className="text-xs text-slate-400 mb-1">documents processed successfully</span>
+              </div>
+              <div className="mt-3 h-2 bg-slate-100 rounded-full overflow-hidden">
+                <div
+                  className="h-full rounded-full transition-all duration-700"
+                  style={{ width: `${successRate}%`, backgroundColor: successRate >= 90 ? '#22C55E' : successRate >= 70 ? '#F59E0B' : '#EF4444' }}
+                />
+              </div>
+            </div>
+
+            {/* Usage */}
+            <div className="bg-white rounded-xl border border-[#E2E8F0] shadow-sm p-5">
+              <div className="flex items-center justify-between mb-3">
+                <h2 className="text-sm font-semibold text-[#1E293B]">Monthly Usage</h2>
+                <span className="text-xs font-bold" style={{ color: barColor }}>{usagePct}%</span>
+              </div>
+              <div className="flex items-baseline gap-1 mb-2">
+                <span className="text-xl font-bold text-[#1E293B]">{user.docsUsed.toLocaleString()}</span>
+                <span className="text-xs text-slate-400">/ {user.docsLimit.toLocaleString()} docs</span>
+              </div>
+              <div className="h-2 bg-slate-100 rounded-full overflow-hidden">
+                <div
+                  className="h-full rounded-full transition-all duration-500"
+                  style={{ width: `${Math.min(usagePct, 100)}%`, backgroundColor: barColor }}
+                />
+              </div>
               {usagePct > 80 && (
-                <a href="/pricing" className="text-xs text-[#2563EB] font-medium hover:underline">
-                  Upgrade Plan
+                <a href="/pricing" className="mt-2 inline-block text-xs text-[#2563EB] font-medium hover:underline">
+                  Upgrade Plan →
                 </a>
               )}
             </div>
           </div>
-          <div className="h-2 bg-slate-100 rounded-full overflow-hidden">
-            <div
-              className="h-full rounded-full transition-all duration-500"
-              style={{ width: `${Math.min(usagePct, 100)}%`, backgroundColor: barColor }}
-            />
-          </div>
         </div>
 
-        {/* ── Stats ──────────────────────────────────────────────────────────── */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-          {stats.map(({ label, value, icon: Icon, border }) => (
-            <div
-              key={label}
-              className={`bg-white rounded-lg border border-[#E2E8F0] shadow-sm p-4 border-l-4 ${border}`}
-            >
-              <div className="flex items-center justify-between mb-2">
-                <p className="text-xs text-slate-500 font-medium uppercase tracking-wide">{label}</p>
-                <Icon size={16} className="text-slate-300" />
-              </div>
-              <p className="text-2xl font-bold text-[#1E293B]">{value}</p>
+        {/* ── Document type breakdown ─────────────────────────────────────────── */}
+        {typeData.length > 0 && (
+          <div className="bg-white rounded-xl border border-[#E2E8F0] shadow-sm p-5 mb-6">
+            <div className="flex items-center gap-2 mb-4">
+              <FileText size={16} className="text-[#2563EB]" />
+              <h2 className="text-sm font-semibold text-[#1E293B]">Document Types</h2>
             </div>
-          ))}
-        </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+              <ResponsiveContainer width="100%" height={160}>
+                <PieChart>
+                  <Pie
+                    data={typeData.map((d) => ({ ...d, fill: d.color }))}
+                    cx="50%" cy="50%" innerRadius={45} outerRadius={70}
+                    paddingAngle={3} dataKey="value"
+                  />
+                  <Tooltip contentStyle={{ borderRadius: 8, border: '1px solid #E2E8F0', fontSize: 12 }} />
+                </PieChart>
+              </ResponsiveContainer>
+              <div className="flex flex-col justify-center gap-2">
+                {typeData.map(({ name, value, color }) => (
+                  <div key={name} className="flex items-center gap-3">
+                    <div className="w-2.5 h-2.5 rounded-full shrink-0" style={{ backgroundColor: color }} />
+                    <span className="text-sm text-slate-600 flex-1">{name}</span>
+                    <span className="text-sm font-semibold text-[#1E293B]">{value}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* ── Upload zone (collapsible) ───────────────────────────────────────── */}
         {showUpload && (

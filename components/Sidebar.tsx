@@ -3,71 +3,99 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { UserButton } from '@clerk/nextjs'
-import { LayoutDashboard, Upload, Database, FileText, Users, Settings } from 'lucide-react'
+import {
+  LayoutDashboard, Upload, Database, FileText,
+  Users, Settings, ChevronLeft, ChevronRight, Lock,
+} from 'lucide-react'
 
 const NAV = [
-  { href: '/dashboard', icon: LayoutDashboard, label: 'Dashboard', exact: true },
-  { href: '/dashboard', icon: Upload, label: 'Upload Documents', exact: true, uploadAnchor: true },
-  { href: '/dashboard/vendors', icon: Database, label: 'Vendors', badge: 'Pro', lockedFor: ['free', 'starter'] },
-  { href: '/dashboard/reports', icon: FileText, label: 'Reports', badge: 'Starter', lockedFor: ['free'] },
-  { href: '/dashboard/team', icon: Users, label: 'Team', badge: 'Starter', lockedFor: ['free'] },
-  { href: '/settings', icon: Settings, label: 'Settings' },
+  { href: '/dashboard',         icon: LayoutDashboard, label: 'Dashboard',       exact: true,  uploadAnchor: false },
+  { href: '/dashboard#upload',  icon: Upload,          label: 'Upload Documents', exact: false, uploadAnchor: true  },
+  { href: '/dashboard/vendors', icon: Database,        label: 'Vendors',          exact: false, badge: 'PRO',     lockedFor: ['free', 'starter'] },
+  { href: '/dashboard/reports', icon: FileText,        label: 'Reports',          exact: false, badge: 'STARTER', lockedFor: ['free'] },
+  { href: '/dashboard/team',    icon: Users,           label: 'Team',             exact: false, badge: 'STARTER', lockedFor: ['free'] },
+  { href: '/settings',          icon: Settings,        label: 'Settings',         exact: false },
 ]
 
-const PLAN_BADGE: Record<string, { label: string; cls: string }> = {
-  free:         { label: 'FREE',       cls: 'bg-slate-100 text-slate-600' },
-  starter:      { label: 'STARTER',    cls: 'bg-blue-100 text-blue-700' },
-  professional: { label: 'PRO',        cls: 'bg-indigo-100 text-indigo-700' },
-  business:     { label: 'BUSINESS',   cls: 'bg-purple-100 text-purple-700' },
-  enterprise:   { label: 'ENTERPRISE', cls: 'bg-amber-100 text-amber-700' },
+const PLAN_COLORS = {
+  free:         'bg-white/10 text-white/70',
+  starter:      'bg-white/20 text-white',
+  professional: 'bg-amber-400/30 text-amber-200',
+  business:     'bg-purple-400/30 text-purple-200',
+  enterprise:   'bg-emerald-400/30 text-emerald-200',
+}
+const PLAN_LABELS = {
+  free: 'FREE', starter: 'STARTER', professional: 'PRO',
+  business: 'BUSINESS', enterprise: 'ENTERPRISE',
 }
 
 interface Props {
   plan: string
   email: string
+  collapsed: boolean
+  onToggle: () => void
 }
 
-export function Sidebar({ plan, email }: Props) {
+export function Sidebar({ plan, email, collapsed, onToggle }: Props) {
   const pathname = usePathname()
-  const pb = PLAN_BADGE[plan] ?? PLAN_BADGE.free
+  const planCls   = PLAN_COLORS[plan as keyof typeof PLAN_COLORS]   ?? PLAN_COLORS.free
+  const planLabel = PLAN_LABELS[plan as keyof typeof PLAN_LABELS]   ?? 'FREE'
 
   return (
     <>
-      {/* ── Desktop sidebar ───────────────────────────────── */}
-      <aside className="hidden md:flex flex-col fixed left-0 top-0 h-full w-60 bg-white border-r border-[#E2E8F0] z-30">
+      <aside
+        className={`hidden md:flex flex-col fixed left-0 top-0 h-full bg-[#2563EB] z-30 transition-all duration-300 ease-in-out overflow-hidden ${collapsed ? 'w-16' : 'w-60'}`}
+      >
         {/* Logo */}
-        <div className="flex items-center gap-3 px-5 h-16 border-b border-[#E2E8F0] shrink-0">
-          <div className="w-8 h-8 rounded-full bg-[#2563EB] flex items-center justify-center shrink-0">
-            <span className="text-white text-xs font-bold tracking-tight">DF</span>
-          </div>
-          <span className="font-bold text-[#1E293B] text-[15px]">Datafyle</span>
+        <div className="flex items-center h-16 shrink-0 relative border-b border-white/10">
+          {collapsed ? (
+            <div className="w-full flex items-center justify-center">
+              <div className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center">
+                <span className="text-white text-xs font-bold">DF</span>
+              </div>
+            </div>
+          ) : (
+            <div className="flex items-center gap-3 px-5 flex-1 min-w-0">
+              <div className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center shrink-0">
+                <span className="text-white text-xs font-bold">DF</span>
+              </div>
+              <span className="font-bold text-white text-[15px] whitespace-nowrap">Datafyle</span>
+            </div>
+          )}
+          <button
+            onClick={onToggle}
+            className="absolute -right-3 top-1/2 -translate-y-1/2 w-6 h-6 rounded-full bg-white shadow-md flex items-center justify-center hover:shadow-lg transition-all z-10"
+          >
+            {collapsed ? <ChevronRight size={12} className="text-[#2563EB]" /> : <ChevronLeft size={12} className="text-[#2563EB]" />}
+          </button>
         </div>
 
         {/* Nav */}
-        <nav className="flex-1 px-3 py-4 space-y-0.5 overflow-y-auto">
+        <nav className="flex-1 px-2 py-4 space-y-0.5 overflow-y-auto overflow-x-hidden">
           {NAV.map(({ href, icon: Icon, label, badge, lockedFor, exact, uploadAnchor }) => {
-            const isActive = exact
-              ? pathname === href
-              : pathname.startsWith(href)
+            const isActive = uploadAnchor ? false : exact ? pathname === href : pathname.startsWith(href)
             const locked = lockedFor?.includes(plan)
-
-            const linkHref = uploadAnchor ? '/dashboard#upload' : href
-
             return (
               <Link
                 key={label}
-                href={linkHref}
-                className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
-                  isActive && !uploadAnchor
-                    ? 'bg-[#EFF6FF] text-[#2563EB]'
-                    : 'text-slate-600 hover:bg-[#F8FAFC] hover:text-[#1E293B]'
-                }`}
+                href={href}
+                title={collapsed ? label : undefined}
+                className={`flex items-center gap-3 rounded-xl transition-all duration-150 group relative ${collapsed ? 'py-3 justify-center' : 'px-3 py-2.5'} ${isActive ? 'bg-white text-[#2563EB] shadow-sm' : 'text-white/80 hover:bg-white/10 hover:text-white'}`}
               >
                 <Icon size={18} className="shrink-0" />
-                <span className="flex-1 truncate">{label}</span>
-                {locked && badge && (
-                  <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-slate-100 text-slate-500 uppercase tracking-wide shrink-0">
-                    {badge}
+                {!collapsed && (
+                  <>
+                    <span className="flex-1 text-sm font-medium whitespace-nowrap">{label}</span>
+                    {locked && badge && (
+                      <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-md bg-white/15 text-white/70 uppercase tracking-wide shrink-0 flex items-center gap-1">
+                        <Lock size={8} />{badge}
+                      </span>
+                    )}
+                  </>
+                )}
+                {collapsed && (
+                  <span className="absolute left-full ml-3 px-2.5 py-1.5 bg-[#1E293B] text-white text-xs rounded-lg whitespace-nowrap opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity shadow-lg z-50">
+                    {label}{locked && badge ? ` (${badge})` : ''}
                   </span>
                 )}
               </Link>
@@ -76,35 +104,33 @@ export function Sidebar({ plan, email }: Props) {
         </nav>
 
         {/* User */}
-        <div className="px-4 py-4 border-t border-[#E2E8F0] flex items-center gap-3 shrink-0">
-          <UserButton />
-          <div className="flex-1 min-w-0">
-            <p className="text-xs text-[#1E293B] font-medium truncate">{email}</p>
-            <span className={`inline-block text-[10px] font-bold px-1.5 py-0.5 rounded mt-0.5 uppercase tracking-wide ${pb.cls}`}>
-              {pb.label}
-            </span>
-          </div>
+        <div className={`border-t border-white/10 shrink-0 ${collapsed ? 'px-2 py-3' : 'px-4 py-4'}`}>
+          {collapsed ? (
+            <div className="flex justify-center"><UserButton /></div>
+          ) : (
+            <div className="flex items-center gap-3">
+              <UserButton />
+              <div className="flex-1 min-w-0">
+                <p className="text-xs text-white/80 font-medium truncate">{email}</p>
+                <span className={`inline-block text-[10px] font-bold px-1.5 py-0.5 rounded mt-0.5 uppercase tracking-wide ${planCls}`}>{planLabel}</span>
+              </div>
+            </div>
+          )}
         </div>
       </aside>
 
-      {/* ── Mobile bottom nav (4 items, fixed at bottom) ─── */}
-      <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-[#E2E8F0] z-30 shadow-[0_-1px_8px_rgba(0,0,0,0.06)]">
+      {/* Mobile bottom nav */}
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-[#2563EB] z-30 shadow-[0_-2px_12px_rgba(37,99,235,0.3)]">
         <div className="flex">
           {[
             { href: '/dashboard',         icon: LayoutDashboard, label: 'Home',    exact: true  },
-            { href: '/dashboard',         icon: Upload,          label: 'Upload',  exact: true  },
+            { href: '/dashboard#upload',  icon: Upload,          label: 'Upload',  exact: false },
             { href: '/dashboard/reports', icon: FileText,        label: 'Reports', exact: false },
-            { href: '/settings',          icon: Settings,        label: 'Settings', exact: false },
+            { href: '/settings',          icon: Settings,        label: 'Settings',exact: false },
           ].map(({ href, icon: Icon, label, exact }) => {
-            const isActive = exact ? pathname === href : pathname.startsWith(href)
+            const isActive = exact ? pathname === href : pathname.startsWith(href.split('#')[0])
             return (
-              <Link
-                key={label}
-                href={href}
-                className={`flex-1 flex flex-col items-center pt-2.5 pb-3 gap-1 text-[10px] font-semibold transition-colors min-h-[56px] ${
-                  isActive ? 'text-[#2563EB]' : 'text-slate-400 hover:text-slate-600'
-                }`}
-              >
+              <Link key={label} href={href} className={`flex-1 flex flex-col items-center pt-2.5 pb-3 gap-1 text-[10px] font-semibold transition-colors min-h-[56px] ${isActive ? 'text-white' : 'text-white/50 hover:text-white/80'}`}>
                 <Icon size={22} />
                 <span>{label}</span>
               </Link>
