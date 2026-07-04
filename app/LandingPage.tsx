@@ -6,8 +6,8 @@ import { motion, useInView, AnimatePresence } from 'framer-motion'
 import {
   Menu, X, Upload, Brain, Download, Shield,
   FileText, FileSpreadsheet, Image as LucideImage, Code, AlignLeft,
-  Check, ChevronDown, Star, ArrowRight, Users, TrendingUp,
-  AlertCircle, Clock, DollarSign, Zap, FolderOpen,
+  Check, ChevronDown, Star, ArrowRight, TrendingUp,
+  AlertCircle, Clock, DollarSign, FolderOpen,
 } from 'lucide-react'
 
 // ─── Counter hook ─────────────────────────────────────────────────────────────
@@ -188,14 +188,14 @@ function Navbar() {
             <div className="w-8 h-8 rounded-full bg-[#2563EB] flex items-center justify-center shrink-0">
               <span className="text-white text-xs font-bold tracking-tight">DF</span>
             </div>
-            <span className="text-[#1E293B] font-bold text-lg">Datafyle</span>
+            <span className={`font-bold text-lg transition-colors duration-300 ${scrolled || menuOpen ? 'text-[#1E293B]' : 'text-white'}`}>Datafyle</span>
           </Link>
 
           <div className="hidden md:flex items-center gap-6">
-            <Link href="/pricing" className="text-sm font-medium text-[#1E293B] hover:text-[#2563EB] transition-colors">
+            <Link href="/pricing" className={`text-sm font-medium transition-colors duration-300 ${scrolled || menuOpen ? 'text-[#1E293B] hover:text-[#2563EB]' : 'text-white/80 hover:text-white'}`}>
               Pricing
             </Link>
-            <Link href="/sign-in" className="text-sm font-medium text-[#1E293B] hover:text-[#2563EB] transition-colors">
+            <Link href="/sign-in" className={`text-sm font-medium transition-colors duration-300 ${scrolled || menuOpen ? 'text-[#1E293B] hover:text-[#2563EB]' : 'text-white/80 hover:text-white'}`}>
               Login
             </Link>
             <Link
@@ -207,7 +207,7 @@ function Navbar() {
           </div>
 
           <button
-            className="md:hidden p-2 text-[#1E293B] hover:text-[#2563EB] transition-colors"
+            className={`md:hidden p-2 transition-colors duration-300 ${scrolled || menuOpen ? 'text-[#1E293B] hover:text-[#2563EB]' : 'text-white hover:text-white/70'}`}
             onClick={() => setMenuOpen((o) => !o)}
             aria-label="Toggle menu"
           >
@@ -253,6 +253,66 @@ export default function LandingPage() {
   const [docs, setDocs] = useState(500)
   const [openFaq, setOpenFaq] = useState<number | null>(null)
 
+  // ── Hero dark-tech effects ──────────────────────────────────────────────────
+  const blobRef     = useRef<HTMLDivElement>(null)
+  const canvasRef   = useRef<HTMLCanvasElement>(null)
+  const mouseRef    = useRef({ x: -9999, y: -9999 })
+  const animRef     = useRef<number | undefined>(undefined)
+  const rectRef     = useRef<DOMRect | null>(null)
+
+  useEffect(() => {
+    const canvas = canvasRef.current
+    if (!canvas) return
+    const ctx = canvas.getContext('2d')
+    if (!ctx) return
+
+    const resize = () => {
+      canvas.width  = canvas.offsetWidth
+      canvas.height = canvas.offsetHeight
+      rectRef.current = canvas.getBoundingClientRect()
+    }
+    resize()
+
+    const onMove = (e: MouseEvent) => {
+      mouseRef.current = { x: e.clientX, y: e.clientY }
+      if (blobRef.current) {
+        blobRef.current.style.transform = `translate(${e.clientX - 240}px, ${e.clientY - 240}px)`
+      }
+    }
+
+    const draw = () => {
+      const w = canvas.offsetWidth
+      const h = canvas.offsetHeight
+      ctx.clearRect(0, 0, w, h)
+      const rect = rectRef.current
+      const mx = rect ? mouseRef.current.x - rect.left : -9999
+      const my = rect ? mouseRef.current.y - rect.top  : -9999
+      const spacing = 28
+      for (let cx = spacing / 2; cx < w; cx += spacing) {
+        for (let cy = spacing / 2; cy < h; cy += spacing) {
+          const dist = Math.hypot(cx - mx, cy - my)
+          const lit  = Math.max(0, 1 - dist / 100)
+          ctx.beginPath()
+          ctx.arc(cx, cy, 1 + lit * 2, 0, Math.PI * 2)
+          ctx.fillStyle = lit > 0.05
+            ? `rgba(59,130,246,${0.12 + lit * 0.6})`
+            : `rgba(255,255,255,0.07)`
+          ctx.fill()
+        }
+      }
+      animRef.current = requestAnimationFrame(draw)
+    }
+    draw()
+
+    window.addEventListener('mousemove', onMove, { passive: true })
+    window.addEventListener('resize', resize, { passive: true })
+    return () => {
+      window.removeEventListener('mousemove', onMove)
+      window.removeEventListener('resize', resize)
+      if (animRef.current !== undefined) cancelAnimationFrame(animRef.current)
+    }
+  }, [])
+
   let calcPlan = 'Starter'; let calcPrice = 49
   if (docs > 10000)     { calcPlan = 'Enterprise';    calcPrice = 599 }
   else if (docs > 3000) { calcPlan = 'Business';      calcPrice = 349 }
@@ -269,50 +329,112 @@ export default function LandingPage() {
       <Navbar />
 
       {/* ── HERO ────────────────────────────────────────────────────────────── */}
-      <section className="pt-36 pb-28 px-4 text-center bg-white">
-        <motion.div
-          variants={fadeUp}
-          initial="hidden"
-          animate="visible"
-          transition={{ duration: 0.6, ease: 'easeOut' }}
-          className="max-w-4xl mx-auto"
-        >
-          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-[#1E293B] leading-tight mb-3">
-            Your bookkeeper costs $2,500/month.
-          </h1>
-          <p className="text-4xl sm:text-5xl lg:text-6xl font-bold text-[#2563EB] leading-tight mb-6">
-            Datafyle costs $49.
-          </p>
+      <section className="relative min-h-[92vh] flex items-center justify-center px-4 text-center bg-black overflow-hidden">
+
+        {/* Top-edge aura canopy */}
+        <div
+          className="absolute top-0 left-0 right-0 h-[480px] pointer-events-none"
+          style={{ background: 'radial-gradient(ellipse 85% 55% at 50% -5%, rgba(37,99,235,0.42) 0%, rgba(37,99,235,0.08) 55%, transparent 75%)' }}
+        />
+
+        {/* Mouse-tracking blob */}
+        <div
+          ref={blobRef}
+          className="fixed top-0 left-0 pointer-events-none z-0"
+          style={{
+            width: 480, height: 480, borderRadius: '50%',
+            background: 'radial-gradient(circle, rgba(37,99,235,0.18) 0%, transparent 70%)',
+            filter: 'blur(55px)',
+            transform: 'translate(-240px,-240px)',
+            willChange: 'transform',
+          }}
+        />
+
+        {/* Interactive dot-grid canvas */}
+        <canvas
+          ref={canvasRef}
+          className="absolute inset-0 w-full h-full pointer-events-none z-0"
+        />
+
+        {/* Content */}
+        <div className="relative z-10 max-w-4xl mx-auto w-full pt-24 pb-20">
+
+          {/* Live badge */}
+          <motion.div
+            initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1, duration: 0.5 }}
+            className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-white/10 bg-white/5 text-xs text-slate-400 mb-8"
+          >
+            <span className="w-1.5 h-1.5 rounded-full bg-[#22C55E] animate-pulse shrink-0" />
+            Trusted by 1,200+ accounting firms worldwide
+          </motion.div>
+
+          {/* Main headline */}
+          <motion.h1
+            initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2, duration: 0.65 }}
+            className="text-4xl sm:text-5xl lg:text-6xl font-bold leading-tight mb-6"
+          >
+            <span className="text-white">Your bookkeeper costs </span>
+            <span style={{
+              background: 'linear-gradient(135deg, #93c5fd 0%, #3b82f6 40%, #2563EB 100%)',
+              WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text',
+            }}>$2,500/month.</span>
+            <br className="hidden sm:block" />
+            <span className="text-white"> Datafyle costs </span>
+            <span style={{
+              background: 'linear-gradient(135deg, #93c5fd 0%, #3b82f6 40%, #2563EB 100%)',
+              WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text',
+            }}>$49.</span>
+          </motion.h1>
+
+          {/* Sub-headline */}
           <motion.p
             initial={{ opacity: 0 }} animate={{ opacity: 1 }}
-            transition={{ delay: 0.3, duration: 0.6 }}
-            className="text-lg sm:text-xl text-slate-600 mb-2 max-w-2xl mx-auto"
+            transition={{ delay: 0.38, duration: 0.6 }}
+            className="text-base sm:text-lg text-slate-400 mb-10 max-w-2xl mx-auto leading-relaxed"
           >
-            Upload any invoice or document. AI extracts all data in 10 seconds.
+            Instant Data Extraction From Your Business Documents. Automatically parse important data
+            from messy PDFs, Word, CSV, XLS, TXT, and images. Extract everything down to granular
+            line-items in 10 seconds and seamlessly sync to Excel, Google Sheets, QuickBooks, or Xero.
           </motion.p>
-          <motion.p
-            initial={{ opacity: 0 }} animate={{ opacity: 1 }}
-            transition={{ delay: 0.4, duration: 0.6 }}
-            className="text-base text-slate-400 mb-10"
-          >
-            No manual typing. No errors. No overpaid staff.
-          </motion.p>
+
+          {/* CTA buttons */}
           <motion.div
             initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.5, duration: 0.5 }}
+            transition={{ delay: 0.52, duration: 0.5 }}
+            className="flex flex-col sm:flex-row items-center justify-center gap-4"
           >
             <Link
               href="/sign-up"
-              className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-[#2563EB] text-white text-lg font-bold rounded-xl hover:bg-blue-700 transition-all shadow-lg hover:shadow-xl hover:-translate-y-0.5 min-h-[56px] w-full sm:w-auto"
+              className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-[#2563EB] text-white text-base font-bold rounded-xl min-h-[56px] w-full sm:w-auto transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_0_36px_rgba(37,99,235,0.55)]"
             >
-              Get Started Now — It&apos;s Free
-              <ArrowRight size={20} />
+              Get Started Free
+              <ArrowRight size={18} />
             </Link>
-            <p className="mt-4 text-sm text-slate-400">
-              No credit card required • Free 10 documents • 3 minute setup
-            </p>
+            <a
+              href="/#how-it-works"
+              className="inline-flex items-center justify-center gap-2 px-8 py-4 text-slate-300 hover:text-white text-base font-medium rounded-xl border border-white/10 hover:border-white/25 min-h-[56px] w-full sm:w-auto transition-all duration-300 hover:bg-white/5"
+            >
+              Watch Demo
+            </a>
           </motion.div>
-        </motion.div>
+
+          {/* Micro-trust */}
+          <motion.p
+            initial={{ opacity: 0 }} animate={{ opacity: 1 }}
+            transition={{ delay: 0.68, duration: 0.5 }}
+            className="mt-5 text-sm text-slate-500"
+          >
+            No credit card required &bull; Free 10 documents
+          </motion.p>
+        </div>
+
+        {/* Bottom fade into trust bar */}
+        <div
+          className="absolute bottom-0 left-0 right-0 h-28 pointer-events-none"
+          style={{ background: 'linear-gradient(to bottom, transparent, #F8FAFC)' }}
+        />
       </section>
 
       {/* ── TRUST BAR ───────────────────────────────────────────────────────── */}
