@@ -16,12 +16,11 @@ export default async function ReportsPage() {
     where: { userId: user.id, status: 'done' },
   })
 
-  const anomalyDocs = await prisma.document.count({
-    where: {
-      userId: user.id,
-      anomalyData: { not: null },
-    },
-  })
+  const anomalyResult = await prisma.$queryRaw<[{ count: bigint }]>`
+    SELECT COUNT(*) as count FROM "Document"
+    WHERE "userId" = ${user.id} AND "anomalyData" IS NOT NULL
+  `
+  const anomalyDocs = Number(anomalyResult[0]?.count ?? 0)
 
   return (
     <ReportsClient
