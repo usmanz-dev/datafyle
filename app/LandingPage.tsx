@@ -333,8 +333,8 @@ export default function LandingPage() {
 
         {/* Top-edge aura canopy */}
         <div
-          className="absolute top-0 left-0 right-0 h-[480px] pointer-events-none"
-          style={{ background: 'radial-gradient(ellipse 85% 55% at 50% -5%, rgba(37,99,235,0.42) 0%, rgba(37,99,235,0.08) 55%, transparent 75%)' }}
+          className="absolute top-0 left-0 right-0 h-175 pointer-events-none"
+          style={{ background: 'radial-gradient(ellipse 100% 75% at 50% -5%, rgba(37,99,235,0.65) 0%, rgba(37,99,235,0.18) 55%, transparent 78%)' }}
         />
 
         {/* Mouse-tracking blob */}
@@ -430,11 +430,6 @@ export default function LandingPage() {
           </motion.p>
         </div>
 
-        {/* Bottom fade into trust bar */}
-        <div
-          className="absolute bottom-0 left-0 right-0 h-28 pointer-events-none"
-          style={{ background: 'linear-gradient(to bottom, transparent, #F8FAFC)' }}
-        />
       </section>
 
       {/* ── TRUST BAR ───────────────────────────────────────────────────────── */}
