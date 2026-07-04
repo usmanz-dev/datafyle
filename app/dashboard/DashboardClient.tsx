@@ -230,16 +230,26 @@ export function DashboardClient({ firstName, user, initialStats, initialDocument
     URL.revokeObjectURL(url)
   }
 
+  function buildFilename(ids: string[]) {
+    const date = new Date().toISOString().slice(0, 10)
+    if (ids.length === 1) {
+      const doc = docs.find((d) => d.id === ids[0])
+      const base = doc ? doc.fileName.replace(/\.[^.]+$/, '') : 'document'
+      return `${base}-extracted.xlsx`
+    }
+    return `datafyle-export-${date}.xlsx`
+  }
+
   async function exportSelected() {
     setExporting(true)
-    try { await downloadExcel([...selected]) }
+    try { await downloadExcel([...selected], buildFilename([...selected])) }
     catch { alert('Export failed. Please try again.') }
     finally { setExporting(false) }
   }
 
   async function exportAll() {
     setExporting(true)
-    try { await downloadExcel(docs.map((d) => d.id)) }
+    try { await downloadExcel(docs.map((d) => d.id), buildFilename(docs.map((d) => d.id))) }
     catch { alert('Export failed. Please try again.') }
     finally { setExporting(false) }
   }

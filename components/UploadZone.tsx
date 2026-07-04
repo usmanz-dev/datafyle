@@ -2,7 +2,7 @@
 
 import { useState, useCallback } from 'react'
 import { useDropzone } from 'react-dropzone'
-import { CloudUpload, X, CheckCircle2, AlertCircle, Loader2 } from 'lucide-react'
+import { CloudUpload, X, CheckCircle2, AlertCircle, Loader2, Brain } from 'lucide-react'
 
 const ACCEPT = {
   'application/pdf': ['.pdf'],
@@ -18,10 +18,12 @@ const ACCEPT = {
   'image/png': ['.png'],
 }
 
+type FileStatus = 'pending' | 'uploading' | 'processing' | 'done' | 'error'
+
 interface FileItem {
   id: string
   file: File
-  status: 'pending' | 'uploading' | 'done' | 'error'
+  status: FileStatus
   documentId?: string
   error?: string
 }
@@ -47,12 +49,14 @@ export function UploadZone({ onUploadComplete }: Props) {
         status: 'pending',
       }))
       setItems((prev) => [...prev, ...newItems])
-
       setBusy(true)
+
       const successIds: string[] = []
 
       for (const item of newItems) {
+        // Step 1: Upload file
         update(item.id, { status: 'uploading' })
+        let documentId: string | null = null
         try {
           const fd = new FormData()
           fd.append('file', item.file)
@@ -63,24 +67,35 @@ export function UploadZone({ onUploadComplete }: Props) {
               ? 'Monthly limit reached — upgrade your plan'
               : data.error ?? 'Upload failed'
             update(item.id, { status: 'error', error: msg })
-          } else {
-            update(item.id, { status: 'done', documentId: data.documentId })
-            successIds.push(data.documentId)
+            continue
           }
+          documentId = data.documentId
         } catch {
-          update(item.id, { status: 'error', error: 'Network error' })
+          update(item.id, { status: 'error', error: 'Network error — check connection' })
+          continue
+        }
+
+        // Step 2: AI extraction (direct, no Inngest)
+        update(item.id, { status: 'processing', documentId: documentId! })
+        try {
+          const res = await fetch('/api/process', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ documentId }),
+          })
+          if (!res.ok) {
+            const data = await res.json()
+            update(item.id, { status: 'error', error: data.error ?? 'AI processing failed' })
+            continue
+          }
+          update(item.id, { status: 'done' })
+          successIds.push(documentId!)
+        } catch {
+          update(item.id, { status: 'error', error: 'Processing failed — try again' })
         }
       }
 
-      if (successIds.length > 0) {
-        await fetch('/api/batch-process', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ documentIds: successIds }),
-        })
-        onUploadComplete(successIds)
-      }
-
+      if (successIds.length > 0) onUploadComplete(successIds)
       setBusy(false)
     },
     [busy, onUploadComplete]
@@ -92,6 +107,14 @@ export function UploadZone({ onUploadComplete }: Props) {
     maxSize: 26_214_400,
     disabled: busy,
   })
+
+  const statusLabel: Record<FileStatus, string> = {
+    pending:    'Waiting...',
+    uploading:  'Uploading...',
+    processing: 'AI extracting data...',
+    done:       'Done',
+    error:      'Failed',
+  }
 
   return (
     <div className="space-y-3" id="upload">
@@ -120,16 +143,31 @@ export function UploadZone({ onUploadComplete }: Props) {
           {items.map((item) => (
             <div
               key={item.id}
-              className="flex items-center gap-3 bg-white border border-[#E2E8F0] rounded-lg px-4 py-3"
+              className={`flex items-center gap-3 bg-white border rounded-lg px-4 py-3 transition-colors ${
+                item.status === 'error' ? 'border-red-200 bg-red-50' :
+                item.status === 'done'  ? 'border-green-200 bg-green-50' :
+                'border-[#E2E8F0]'
+              }`}
             >
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-medium text-[#1E293B] truncate">{item.file.name}</p>
                 <p className="text-xs text-slate-400 mt-0.5">
                   {(item.file.size / 1024).toFixed(0)} KB
+                  <span className="mx-1.5">·</span>
+                  <span className={
+                    item.status === 'done'       ? 'text-green-600 font-medium' :
+                    item.status === 'error'      ? 'text-red-500' :
+                    item.status === 'processing' ? 'text-[#2563EB] font-medium' :
+                    'text-slate-400'
+                  }>
+                    {statusLabel[item.status]}
+                  </span>
                 </p>
-                {item.status === 'uploading' && (
+                {(item.status === 'uploading' || item.status === 'processing') && (
                   <div className="mt-1.5 h-1 bg-slate-100 rounded-full overflow-hidden">
-                    <div className="h-full bg-[#2563EB] rounded-full w-2/3 animate-pulse" />
+                    <div className={`h-full rounded-full animate-pulse ${
+                      item.status === 'processing' ? 'w-4/5 bg-[#2563EB]' : 'w-2/3 bg-slate-300'
+                    }`} />
                   </div>
                 )}
                 {item.error && (
@@ -138,7 +176,10 @@ export function UploadZone({ onUploadComplete }: Props) {
               </div>
               <div className="flex items-center gap-2 shrink-0">
                 {item.status === 'uploading' && (
-                  <Loader2 size={16} className="text-[#2563EB] animate-spin" />
+                  <Loader2 size={16} className="text-slate-400 animate-spin" />
+                )}
+                {item.status === 'processing' && (
+                  <Brain size={16} className="text-[#2563EB] animate-pulse" />
                 )}
                 {item.status === 'done' && (
                   <CheckCircle2 size={16} className="text-green-500" />
@@ -146,10 +187,10 @@ export function UploadZone({ onUploadComplete }: Props) {
                 {item.status === 'error' && (
                   <AlertCircle size={16} className="text-red-500" />
                 )}
-                {item.status !== 'uploading' && (
+                {(item.status === 'done' || item.status === 'error') && (
                   <button
                     onClick={() => setItems((p) => p.filter((f) => f.id !== item.id))}
-                    className="p-1 rounded hover:bg-[#F8FAFC] text-slate-400 hover:text-slate-600 transition-colors"
+                    className="p-1 rounded hover:bg-white text-slate-400 hover:text-slate-600 transition-colors"
                   >
                     <X size={14} />
                   </button>
