@@ -394,9 +394,9 @@ export default function LandingPage() {
             transition={{ delay: 0.38, duration: 0.6 }}
             className="text-base sm:text-lg text-slate-400 mb-10 max-w-2xl mx-auto leading-relaxed"
           >
-            Instant Data Extraction From Your Business Documents. Automatically parse important data
-            from messy PDFs, Word, CSV, XLS, TXT, and images. Extract everything down to granular
-            line-items in 10 seconds and seamlessly sync to Excel, Google Sheets, QuickBooks, or Xero.
+            Instant Data Extraction for Accounting &amp; Bookkeeping Firms. Automatically pull key data
+            from messy PDFs, Word, CSV, XLS, TXT, and images — including every line-item — in under
+            10 seconds. Export directly to Excel or Google Sheets.
           </motion.p>
 
           {/* CTA buttons */}
