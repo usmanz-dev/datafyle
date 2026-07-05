@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { Search, Download } from 'lucide-react'
+import { Search, Download, Users, CreditCard, XCircle } from 'lucide-react'
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs'
 
 interface UserRow {
@@ -35,11 +35,47 @@ function fmt(iso: string | null) {
   return new Date(iso).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
 }
 
+function getInitials(name: string | null, email: string) {
+  const src = name ?? email
+  return src.slice(0, 2).toUpperCase()
+}
+
+function StatusChip({ plan, subscriptionStatus, cancelledAt }: {
+  plan: string
+  subscriptionStatus: string | null
+  cancelledAt: string | null
+}) {
+  if (cancelledAt) {
+    return (
+      <span className="inline-flex items-center gap-1.5 text-xs font-medium px-2.5 py-1 rounded-full bg-red-50 text-red-600">
+        <span className="w-1.5 h-1.5 rounded-full bg-red-400" />
+        Cancelled
+      </span>
+    )
+  }
+  if (plan !== 'free' && subscriptionStatus === 'active') {
+    return (
+      <span className="inline-flex items-center gap-1.5 text-xs font-medium px-2.5 py-1 rounded-full bg-green-50 text-green-700">
+        <span className="w-1.5 h-1.5 rounded-full bg-green-500" />
+        Active
+      </span>
+    )
+  }
+  return (
+    <span className="inline-flex items-center gap-1.5 text-xs font-medium px-2.5 py-1 rounded-full bg-slate-100 text-slate-500">
+      <span className="w-1.5 h-1.5 rounded-full bg-slate-400" />
+      Free
+    </span>
+  )
+}
+
 function UserTable({ rows, filter }: { rows: UserRow[]; filter: string }) {
   const [search, setSearch] = useState('')
 
   const filtered = rows.filter((u) =>
-    !search || u.email.toLowerCase().includes(search.toLowerCase())
+    !search ||
+    u.email.toLowerCase().includes(search.toLowerCase()) ||
+    (u.name?.toLowerCase().includes(search.toLowerCase()) ?? false)
   )
 
   function exportCSV() {
@@ -50,20 +86,20 @@ function UserTable({ rows, filter }: { rows: UserRow[]; filter: string }) {
     <div>
       {/* Toolbar */}
       <div className="flex items-center gap-3 mb-4">
-        <div className="relative flex-1 max-w-xs">
+        <div className="relative flex-1 max-w-sm">
           <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
           <input
             type="text"
-            placeholder="Search by email…"
+            placeholder="Search by email or name…"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full pl-9 pr-4 py-2 text-sm border border-[#E2E8F0] rounded-lg bg-white text-[#1E293B] placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 focus:border-[#2563EB] min-h-9"
+            className="w-full pl-9 pr-4 py-2.5 text-sm border border-slate-200 rounded-xl bg-white text-[#1E293B] placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 focus:border-[#2563EB] min-h-10"
           />
         </div>
-        <span className="text-xs text-slate-400 ml-auto">{filtered.length} users</span>
+        <span className="text-xs text-slate-400 ml-auto tabular-nums">{filtered.length} users</span>
         <button
           onClick={exportCSV}
-          className="inline-flex items-center gap-1.5 px-3 py-2 text-sm font-medium bg-white border border-[#E2E8F0] text-[#1E293B] rounded-lg hover:bg-[#F8FAFC] transition-colors shadow-sm min-h-9"
+          className="inline-flex items-center gap-1.5 px-4 py-2.5 text-sm font-medium bg-white border border-slate-200 text-[#1E293B] rounded-xl hover:bg-slate-50 transition-colors shadow-sm min-h-10"
         >
           <Download size={14} className="text-[#2563EB]" />
           Export CSV
@@ -71,53 +107,67 @@ function UserTable({ rows, filter }: { rows: UserRow[]; filter: string }) {
       </div>
 
       {/* Table */}
-      <div className="bg-white rounded-lg border border-[#E2E8F0] shadow-sm overflow-hidden">
+      <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
-              <tr className="bg-[#F8FAFC] border-b border-[#E2E8F0]">
-                <th className="text-left px-4 py-3 font-medium text-[#1E293B]">Email</th>
-                <th className="text-left px-4 py-3 font-medium text-[#1E293B]">Name</th>
-                <th className="text-left px-4 py-3 font-medium text-[#1E293B]">Plan</th>
-                <th className="text-right px-4 py-3 font-medium text-[#1E293B]">Docs</th>
-                <th className="text-left px-4 py-3 font-medium text-[#1E293B]">Signed Up</th>
-                <th className="text-left px-4 py-3 font-medium text-[#1E293B]">Paid Date</th>
-                <th className="text-left px-4 py-3 font-medium text-[#1E293B]">Cancelled</th>
-                <th className="text-left px-4 py-3 font-medium text-[#1E293B]">Status</th>
+              <tr className="bg-slate-50/80 border-b border-slate-100">
+                <th className="text-left px-5 py-3.5 text-xs font-semibold text-slate-500">User</th>
+                <th className="text-left px-5 py-3.5 text-xs font-semibold text-slate-500">Plan</th>
+                <th className="text-right px-5 py-3.5 text-xs font-semibold text-slate-500">Docs Used</th>
+                <th className="text-right px-5 py-3.5 text-xs font-semibold text-slate-500">Total Docs</th>
+                <th className="text-left px-5 py-3.5 text-xs font-semibold text-slate-500 hidden lg:table-cell">Joined</th>
+                <th className="text-left px-5 py-3.5 text-xs font-semibold text-slate-500 hidden lg:table-cell">Paid On</th>
+                <th className="text-left px-5 py-3.5 text-xs font-semibold text-slate-500">Status</th>
               </tr>
             </thead>
-            <tbody>
+            <tbody className="divide-y divide-slate-50">
               {filtered.length === 0 ? (
                 <tr>
-                  <td colSpan={8} className="px-4 py-10 text-center text-sm text-slate-400">
+                  <td colSpan={7} className="px-5 py-12 text-center text-sm text-slate-400">
                     {search ? 'No users match your search' : 'No users in this category'}
                   </td>
                 </tr>
               ) : (
                 filtered.map((u) => (
-                  <tr key={u.id} className="border-b border-[#E2E8F0] last:border-0 hover:bg-[#F8FAFC] transition-colors">
-                    <td className="px-4 py-3 text-[#1E293B] font-medium max-w-48 truncate" title={u.email}>
-                      {u.email}
+                  <tr key={u.id} className="hover:bg-slate-50/50 transition-colors group">
+                    <td className="px-5 py-3.5">
+                      <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 rounded-full bg-linear-to-br from-[#2563EB] to-[#4F46E5] flex items-center justify-center text-white text-xs font-bold shrink-0">
+                          {getInitials(u.name, u.email)}
+                        </div>
+                        <div className="min-w-0">
+                          <p className="font-medium text-[#1E293B] truncate max-w-52" title={u.email}>
+                            {u.email}
+                          </p>
+                          {u.name && (
+                            <p className="text-xs text-slate-400 truncate">{u.name}</p>
+                          )}
+                        </div>
+                      </div>
                     </td>
-                    <td className="px-4 py-3 text-slate-500 max-w-32 truncate">
-                      {u.name ?? '—'}
-                    </td>
-                    <td className="px-4 py-3">
+                    <td className="px-5 py-3.5">
                       <span className={`inline-block text-xs font-semibold px-2 py-1 rounded uppercase tracking-wide ${PLAN_BADGE[u.plan] ?? 'bg-slate-100 text-slate-500'}`}>
                         {u.plan}
                       </span>
                     </td>
-                    <td className="px-4 py-3 text-right text-slate-600 tabular-nums">
+                    <td className="px-5 py-3.5 text-right tabular-nums text-slate-600 font-medium">
                       {u.docsUsed.toLocaleString()}
                     </td>
-                    <td className="px-4 py-3 text-slate-500 whitespace-nowrap">{fmt(u.createdAt)}</td>
-                    <td className="px-4 py-3 text-slate-500 whitespace-nowrap">{fmt(u.paidAt)}</td>
-                    <td className="px-4 py-3 text-slate-500 whitespace-nowrap">
-                      {u.cancelledAt ? (
-                        <span className="text-red-500">{fmt(u.cancelledAt)}</span>
-                      ) : '—'}
+                    <td className="px-5 py-3.5 text-right tabular-nums text-slate-400">
+                      {u.totalDocsProcessed.toLocaleString()}
                     </td>
-                    <td className="px-4 py-3">
+                    <td className="px-5 py-3.5 text-slate-500 whitespace-nowrap text-xs hidden lg:table-cell">
+                      {fmt(u.createdAt)}
+                    </td>
+                    <td className="px-5 py-3.5 whitespace-nowrap text-xs hidden lg:table-cell">
+                      {u.paidAt ? (
+                        <span className="text-slate-500">{fmt(u.paidAt)}</span>
+                      ) : (
+                        <span className="text-slate-300">—</span>
+                      )}
+                    </td>
+                    <td className="px-5 py-3.5">
                       <StatusChip
                         plan={u.plan}
                         subscriptionStatus={u.subscriptionStatus}
@@ -140,60 +190,33 @@ export function UsersClient({ users }: Props) {
   const cancelled = users.filter((u) => u.cancelledAt !== null)
   const free      = users.filter((u) => u.plan === 'free')
 
+  const tabs = [
+    { value: 'all',       label: 'All Users',  count: users.length,     icon: Users,     rows: users,      filter: 'all'       },
+    { value: 'paid',      label: 'Paid',        count: paid.length,      icon: CreditCard, rows: paid,      filter: 'paid'      },
+    { value: 'cancelled', label: 'Cancelled',   count: cancelled.length, icon: XCircle,   rows: cancelled,  filter: 'cancelled' },
+    { value: 'free',      label: 'Free',        count: free.length,      icon: Users,     rows: free,       filter: 'free'      },
+  ]
+
   return (
     <Tabs defaultValue="all">
-      <TabsList className="mb-5">
-        <TabsTrigger value="all">All ({users.length})</TabsTrigger>
-        <TabsTrigger value="paid">Paid ({paid.length})</TabsTrigger>
-        <TabsTrigger value="cancelled">Cancelled ({cancelled.length})</TabsTrigger>
-        <TabsTrigger value="free">Free ({free.length})</TabsTrigger>
+      <TabsList className="mb-5 bg-white border border-slate-100 shadow-sm rounded-xl p-1 h-auto gap-1">
+        {tabs.map(({ value, label, count }) => (
+          <TabsTrigger
+            key={value}
+            value={value}
+            className="rounded-lg px-4 py-2 text-sm font-medium data-[state=active]:bg-[#2563EB] data-[state=active]:text-white data-[state=active]:shadow-sm"
+          >
+            {label}
+            <span className="ml-2 tabular-nums text-[11px] opacity-70">{count}</span>
+          </TabsTrigger>
+        ))}
       </TabsList>
 
-      <TabsContent value="all">
-        <UserTable rows={users} filter="all" />
-      </TabsContent>
-      <TabsContent value="paid">
-        <UserTable rows={paid} filter="paid" />
-      </TabsContent>
-      <TabsContent value="cancelled">
-        <UserTable rows={cancelled} filter="cancelled" />
-      </TabsContent>
-      <TabsContent value="free">
-        <UserTable rows={free} filter="free" />
-      </TabsContent>
+      {tabs.map(({ value, rows, filter }) => (
+        <TabsContent key={value} value={value}>
+          <UserTable rows={rows} filter={filter} />
+        </TabsContent>
+      ))}
     </Tabs>
-  )
-}
-
-function StatusChip({
-  plan,
-  subscriptionStatus,
-  cancelledAt,
-}: {
-  plan: string
-  subscriptionStatus: string | null
-  cancelledAt: string | null
-}) {
-  if (cancelledAt) {
-    return (
-      <span className="inline-flex items-center gap-1.5 text-xs font-medium px-2 py-1 rounded-full bg-red-50 text-red-600">
-        <span className="w-1.5 h-1.5 rounded-full bg-red-400" />
-        Cancelled
-      </span>
-    )
-  }
-  if (plan !== 'free' && subscriptionStatus === 'active') {
-    return (
-      <span className="inline-flex items-center gap-1.5 text-xs font-medium px-2 py-1 rounded-full bg-green-100 text-green-700">
-        <span className="w-1.5 h-1.5 rounded-full bg-green-500" />
-        Active
-      </span>
-    )
-  }
-  return (
-    <span className="inline-flex items-center gap-1.5 text-xs font-medium px-2 py-1 rounded-full bg-slate-100 text-slate-500">
-      <span className="w-1.5 h-1.5 rounded-full bg-slate-400" />
-      Free
-    </span>
   )
 }
