@@ -191,7 +191,7 @@ function Navbar() {
               alt="Datafyle"
               width={160}
               height={40}
-              className="h-9 w-auto object-contain"
+              className={`h-9 w-auto object-contain transition-all duration-300 ${!scrolled && !menuOpen ? 'brightness-0 invert' : ''}`}
               priority
             />
           </Link>
@@ -893,7 +893,7 @@ export default function LandingPage() {
                 alt="Datafyle"
                 width={160}
                 height={40}
-                className="h-9 w-auto object-contain"
+                className="h-9 w-auto object-contain brightness-0 invert"
               />
             </div>
             <p className="text-slate-400 text-sm leading-relaxed">
