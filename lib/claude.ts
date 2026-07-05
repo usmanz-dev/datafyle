@@ -55,7 +55,7 @@ No explanation. No markdown. Just pure JSON parseable by JSON.parse().`
       const raw = simple.content[0].type === 'text' ? simple.content[0].text : '{}'
       return JSON.parse(raw)
     } catch {
-      return { error: true, summary: 'Could not extract data', overallConfidence: 0 }
+      throw new Error('Claude API unavailable — check API key and billing at console.anthropic.com')
     }
   }
 }
