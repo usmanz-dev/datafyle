@@ -185,15 +185,20 @@ function Navbar() {
         }`}
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
-          <Link href="/" className="flex items-center">
-            <Image
-              src="/images/datafyle-ai-invoice-data-extraction.png"
-              alt="Datafyle"
-              width={160}
-              height={40}
-              className={`h-9 w-auto object-contain transition-all duration-300 ${!scrolled && !menuOpen ? 'brightness-0 invert' : ''}`}
-              priority
-            />
+          <Link href="/" className="flex items-center gap-2.5">
+            <div className={`w-8 h-8 rounded-xl flex items-center justify-center shrink-0 ${!scrolled && !menuOpen ? 'bg-white/15' : 'bg-[#2563EB]'}`}>
+              <Image
+                src="/images/datafyle.png"
+                alt=""
+                width={22}
+                height={22}
+                className="w-5 h-5 object-contain brightness-0 invert"
+                priority
+              />
+            </div>
+            <span className={`font-bold text-[18px] tracking-tight transition-colors ${!scrolled && !menuOpen ? 'text-white' : 'text-[#1E293B]'}`}>
+              Data<span className={!scrolled && !menuOpen ? 'text-blue-300' : 'text-[#2563EB]'}>fyle</span>
+            </span>
           </Link>
 
           <div className="hidden md:flex items-center gap-6">
@@ -887,14 +892,19 @@ export default function LandingPage() {
       <footer className="bg-[#0F172A] border-t border-white/10 py-14 px-4">
         <div className="max-w-5xl mx-auto grid md:grid-cols-3 gap-10 mb-10">
           <div>
-            <div className="mb-3">
-              <Image
-                src="/images/datafyle-footer-logo.png"
-                alt="Datafyle"
-                width={160}
-                height={40}
-                className="h-9 w-auto object-contain brightness-0 invert"
-              />
+            <div className="flex items-center gap-2.5 mb-3">
+              <div className="w-8 h-8 rounded-xl bg-white/10 flex items-center justify-center shrink-0">
+                <Image
+                  src="/images/datafyle.png"
+                  alt=""
+                  width={22}
+                  height={22}
+                  className="w-5 h-5 object-contain brightness-0 invert"
+                />
+              </div>
+              <span className="font-bold text-[18px] text-white tracking-tight">
+                Data<span className="text-blue-400">fyle</span>
+              </span>
             </div>
             <p className="text-slate-400 text-sm leading-relaxed">
               AI Document Processing for Accounting Firms

@@ -20,19 +20,20 @@ export function AdminSidebar() {
   return (
     <aside className="fixed left-0 top-0 h-full w-60 bg-[#0F172A] flex flex-col z-30 border-r border-white/5">
       {/* Logo */}
-      <div className="h-16 px-5 flex items-center gap-3 border-b border-white/10 shrink-0">
-        <div className="relative">
+      <div className="h-16 px-4 flex items-center gap-3 border-b border-white/10 shrink-0">
+        <div className="w-9 h-9 bg-[#2563EB] rounded-xl flex items-center justify-center shrink-0">
           <Image
             src="/images/datafyle.png"
-            alt="Datafyle"
-            width={34}
-            height={34}
-            className="w-8 h-8 object-contain rounded-lg"
+            alt=""
+            width={22}
+            height={22}
+            className="w-5 h-5 object-contain brightness-0 invert"
           />
-          <span className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-[#2563EB] rounded-full border-2 border-[#0F172A]" />
         </div>
         <div className="flex-1 min-w-0">
-          <p className="text-white font-bold text-[14px] leading-none">Datafyle</p>
+          <p className="font-bold text-[16px] text-white tracking-tight leading-none">
+            Data<span className="text-blue-400">fyle</span>
+          </p>
           <p className="text-[10px] font-semibold text-[#3B82F6] uppercase tracking-widest mt-0.5">Admin Panel</p>
         </div>
       </div>
