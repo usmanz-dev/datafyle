@@ -8,7 +8,7 @@ const nextConfig: NextConfig = {
     NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL: '/dashboard',
   },
   serverExternalPackages: [
-    "pdf-parse",
+    "pdfjs-dist",
     "@react-pdf/renderer",
     "mammoth",
     "xlsx",

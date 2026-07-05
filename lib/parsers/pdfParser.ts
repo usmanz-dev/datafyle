@@ -1,12 +1,39 @@
 export async function parsePDF(buffer: Buffer) {
   try {
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
-    const pdf = require('pdf-parse') as (buffer: Buffer) => Promise<{ text: string; numpages: number }>
-    const data = await pdf(buffer)
-    if (data.text.trim().length < 50) {
+    // pdfjs-dist has no native/canvas dependency unlike pdf-parse v2
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const pdfjsLib: any = await import('pdfjs-dist/legacy/build/pdf.mjs')
+
+    // Empty string tells pdfjs to run on the main thread (fake worker)
+    // — required in Vercel serverless where Worker threads aren't available
+    pdfjsLib.GlobalWorkerOptions.workerSrc = ''
+
+    const uint8Array = new Uint8Array(buffer)
+    const loadingTask = pdfjsLib.getDocument({
+      data: uint8Array,
+      useWorkerFetch: false,
+      isEvalSupported: false,
+      useSystemFonts: true,
+      disableRange: true,
+      disableStream: true,
+    })
+
+    const pdfDoc = await loadingTask.promise
+    const pages: string[] = []
+
+    for (let i = 1; i <= pdfDoc.numPages; i++) {
+      const page = await pdfDoc.getPage(i)
+      const textContent = await page.getTextContent()
+      const items = textContent.items as Array<{ str?: string }>
+      const pageText = items.map((item) => item.str ?? '').filter(Boolean).join(' ')
+      pages.push(pageText)
+    }
+
+    const text = pages.join('\n').trim()
+    if (text.length < 50) {
       return await callGoogleVision(buffer)
     }
-    return { text: data.text, pageCount: data.numpages, method: 'pdf-parse' }
+    return { text, pageCount: pdfDoc.numPages, method: 'pdfjs-dist' }
   } catch {
     return await callGoogleVision(buffer)
   }
