@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef, Fragment } from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
 import { motion, useInView, AnimatePresence } from 'framer-motion'
 import {
   Menu, X, Upload, Brain, Download, Shield,
@@ -184,11 +185,15 @@ function Navbar() {
         }`}
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-full bg-[#2563EB] flex items-center justify-center shrink-0">
-              <span className="text-white text-xs font-bold tracking-tight">DF</span>
-            </div>
-            <span className={`font-bold text-lg transition-colors duration-300 ${scrolled || menuOpen ? 'text-[#1E293B]' : 'text-white'}`}>Datafyle</span>
+          <Link href="/" className="flex items-center">
+            <Image
+              src="/images/datafyle-ai-invoice-data-extraction.png"
+              alt="Datafyle"
+              width={160}
+              height={40}
+              className="h-9 w-auto object-contain"
+              priority
+            />
           </Link>
 
           <div className="hidden md:flex items-center gap-6">
@@ -882,11 +887,14 @@ export default function LandingPage() {
       <footer className="bg-[#0F172A] border-t border-white/10 py-14 px-4">
         <div className="max-w-5xl mx-auto grid md:grid-cols-3 gap-10 mb-10">
           <div>
-            <div className="flex items-center gap-2.5 mb-3">
-              <div className="w-8 h-8 rounded-full bg-[#2563EB] flex items-center justify-center shrink-0">
-                <span className="text-white text-xs font-bold">DF</span>
-              </div>
-              <span className="text-white font-bold text-lg">Datafyle</span>
+            <div className="mb-3">
+              <Image
+                src="/images/datafyle-footer-logo.png"
+                alt="Datafyle"
+                width={160}
+                height={40}
+                className="h-9 w-auto object-contain"
+              />
             </div>
             <p className="text-slate-400 text-sm leading-relaxed">
               AI Document Processing for Accounting Firms

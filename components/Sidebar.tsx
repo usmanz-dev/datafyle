@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import Image from 'next/image'
 import { usePathname } from 'next/navigation'
 import { UserButton } from '@clerk/nextjs'
 import {
@@ -51,16 +52,23 @@ export function Sidebar({ plan, email, collapsed, onToggle }: Props) {
         <div className="flex items-center h-16 shrink-0 relative border-b border-white/10">
           {collapsed ? (
             <div className="w-full flex items-center justify-center">
-              <div className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center">
-                <span className="text-white text-xs font-bold">DF</span>
-              </div>
+              <Image
+                src="/images/datafyle.png"
+                alt="Datafyle"
+                width={32}
+                height={32}
+                className="w-8 h-8 object-contain rounded-lg"
+              />
             </div>
           ) : (
-            <div className="flex items-center gap-3 px-5 flex-1 min-w-0">
-              <div className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center shrink-0">
-                <span className="text-white text-xs font-bold">DF</span>
-              </div>
-              <span className="font-bold text-white text-[15px] whitespace-nowrap">Datafyle</span>
+            <div className="flex items-center px-4 flex-1 min-w-0">
+              <Image
+                src="/images/datafyle-ai-invoice-data-extraction.png"
+                alt="Datafyle"
+                width={140}
+                height={36}
+                className="h-8 w-auto object-contain"
+              />
             </div>
           )}
           {/* Toggle button — positioned outside sidebar edge; visible because aside has no overflow-hidden */}

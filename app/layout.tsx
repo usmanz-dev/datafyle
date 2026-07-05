@@ -37,6 +37,10 @@ export const metadata: Metadata = {
     index: true,
     follow: true,
   },
+  icons: {
+    icon: '/images/datafyle-favicon.ico',
+    shortcut: '/images/datafyle-favicon.ico',
+  },
 }
 
 export default function RootLayout({
