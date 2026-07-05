@@ -43,8 +43,9 @@ export function Sidebar({ plan, email, collapsed, onToggle }: Props) {
 
   return (
     <>
+      {/* Desktop sidebar — no overflow-hidden so the toggle button is never clipped */}
       <aside
-        className={`hidden md:flex flex-col fixed left-0 top-0 h-full bg-[#2563EB] z-30 transition-all duration-300 ease-in-out overflow-hidden ${collapsed ? 'w-16' : 'w-60'}`}
+        className={`hidden md:flex flex-col fixed left-0 top-0 h-full bg-[#2563EB] z-30 transition-all duration-300 ease-in-out ${collapsed ? 'w-16' : 'w-60'}`}
       >
         {/* Logo */}
         <div className="flex items-center h-16 shrink-0 relative border-b border-white/10">
@@ -62,11 +63,15 @@ export function Sidebar({ plan, email, collapsed, onToggle }: Props) {
               <span className="font-bold text-white text-[15px] whitespace-nowrap">Datafyle</span>
             </div>
           )}
+          {/* Toggle button — positioned outside sidebar edge; visible because aside has no overflow-hidden */}
           <button
             onClick={onToggle}
-            className="absolute -right-3 top-1/2 -translate-y-1/2 w-6 h-6 rounded-full bg-white shadow-md flex items-center justify-center hover:shadow-lg transition-all z-10"
+            aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+            className="absolute -right-3.5 top-1/2 -translate-y-1/2 w-7 h-7 rounded-full bg-white border-2 border-[#2563EB] shadow-lg flex items-center justify-center hover:scale-110 transition-all z-10"
           >
-            {collapsed ? <ChevronRight size={12} className="text-[#2563EB]" /> : <ChevronLeft size={12} className="text-[#2563EB]" />}
+            {collapsed
+              ? <ChevronRight size={13} className="text-[#2563EB]" />
+              : <ChevronLeft  size={13} className="text-[#2563EB]" />}
           </button>
         </div>
 
@@ -80,7 +85,12 @@ export function Sidebar({ plan, email, collapsed, onToggle }: Props) {
                 key={label}
                 href={href}
                 title={collapsed ? label : undefined}
-                className={`flex items-center gap-3 rounded-xl transition-all duration-150 group relative ${collapsed ? 'py-3 justify-center' : 'px-3 py-2.5'} ${isActive ? 'bg-white text-[#2563EB] shadow-sm' : 'text-white/80 hover:bg-white/10 hover:text-white'}`}
+                className={`flex items-center gap-3 rounded-xl transition-all duration-150 group relative ${
+                  collapsed ? 'py-3 justify-center' : 'px-3 py-2.5'
+                } ${isActive
+                  ? 'bg-white text-[#2563EB] shadow-sm'
+                  : 'text-white/80 hover:bg-white/10 hover:text-white'
+                }`}
               >
                 <Icon size={18} className="shrink-0" />
                 {!collapsed && (
@@ -93,6 +103,7 @@ export function Sidebar({ plan, email, collapsed, onToggle }: Props) {
                     )}
                   </>
                 )}
+                {/* Tooltip when collapsed */}
                 {collapsed && (
                   <span className="absolute left-full ml-3 px-2.5 py-1.5 bg-[#1E293B] text-white text-xs rounded-lg whitespace-nowrap opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity shadow-lg z-50">
                     {label}{locked && badge ? ` (${badge})` : ''}
@@ -103,7 +114,7 @@ export function Sidebar({ plan, email, collapsed, onToggle }: Props) {
           })}
         </nav>
 
-        {/* User */}
+        {/* User footer */}
         <div className={`border-t border-white/10 shrink-0 ${collapsed ? 'px-2 py-3' : 'px-4 py-4'}`}>
           {collapsed ? (
             <div className="flex justify-center"><UserButton /></div>
@@ -130,7 +141,13 @@ export function Sidebar({ plan, email, collapsed, onToggle }: Props) {
           ].map(({ href, icon: Icon, label, exact }) => {
             const isActive = exact ? pathname === href : pathname.startsWith(href.split('#')[0])
             return (
-              <Link key={label} href={href} className={`flex-1 flex flex-col items-center pt-2.5 pb-3 gap-1 text-[10px] font-semibold transition-colors min-h-[56px] ${isActive ? 'text-white' : 'text-white/50 hover:text-white/80'}`}>
+              <Link
+                key={label}
+                href={href}
+                className={`flex-1 flex flex-col items-center pt-2.5 pb-3 gap-1 text-[10px] font-semibold transition-colors min-h-14 ${
+                  isActive ? 'text-white' : 'text-white/50 hover:text-white/80'
+                }`}
+              >
                 <Icon size={22} />
                 <span>{label}</span>
               </Link>

@@ -2,7 +2,10 @@
 
 import { useState, useCallback } from 'react'
 import { useDropzone } from 'react-dropzone'
-import { CloudUpload, X, CheckCircle2, AlertCircle, Loader2, Brain } from 'lucide-react'
+import {
+  CloudUpload, X, CheckCircle2, AlertCircle, Loader2,
+  Brain, Download, FileSpreadsheet,
+} from 'lucide-react'
 
 const ACCEPT = {
   'application/pdf': ['.pdf'],
@@ -30,19 +33,48 @@ interface FileItem {
 
 interface Props {
   onUploadComplete: (documentIds: string[]) => void
+  atLimit?: boolean
+  onUpgradePlan?: () => void
 }
 
-export function UploadZone({ onUploadComplete }: Props) {
+export function UploadZone({ onUploadComplete, atLimit, onUpgradePlan }: Props) {
   const [items, setItems] = useState<FileItem[]>([])
   const [busy, setBusy] = useState(false)
+  const [downloading, setDownloading] = useState<Set<string>>(new Set())
 
   function update(id: string, patch: Partial<FileItem>) {
     setItems((prev) => prev.map((f) => (f.id === id ? { ...f, ...patch } : f)))
   }
 
+  async function downloadFile(item: FileItem) {
+    if (!item.documentId) return
+    setDownloading((prev) => new Set([...prev, item.id]))
+    try {
+      const res = await fetch('/api/export/excel', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ documentIds: [item.documentId] }),
+      })
+      if (!res.ok) return
+      const blob = await res.blob()
+      const url = URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = item.file.name.replace(/\.[^.]+$/, '') + '-extracted.xlsx'
+      a.click()
+      URL.revokeObjectURL(url)
+    } finally {
+      setDownloading((prev) => {
+        const n = new Set(prev)
+        n.delete(item.id)
+        return n
+      })
+    }
+  }
+
   const onDrop = useCallback(
     async (accepted: File[]) => {
-      if (busy) return
+      if (busy || atLimit) return
       const newItems: FileItem[] = accepted.map((file) => ({
         id: crypto.randomUUID(),
         file,
@@ -75,7 +107,7 @@ export function UploadZone({ onUploadComplete }: Props) {
           continue
         }
 
-        // Step 2: AI extraction (direct, no Inngest)
+        // Step 2: AI extraction
         update(item.id, { status: 'processing', documentId: documentId! })
         try {
           const res = await fetch('/api/process', {
@@ -88,7 +120,7 @@ export function UploadZone({ onUploadComplete }: Props) {
             update(item.id, { status: 'error', error: data.error ?? 'AI processing failed' })
             continue
           }
-          update(item.id, { status: 'done' })
+          update(item.id, { status: 'done', documentId: documentId! })
           successIds.push(documentId!)
         } catch {
           update(item.id, { status: 'error', error: 'Processing failed — try again' })
@@ -98,99 +130,142 @@ export function UploadZone({ onUploadComplete }: Props) {
       if (successIds.length > 0) onUploadComplete(successIds)
       setBusy(false)
     },
-    [busy, onUploadComplete]
+    [busy, atLimit, onUploadComplete]
   )
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
     accept: ACCEPT,
     maxSize: 26_214_400,
-    disabled: busy,
+    disabled: busy || atLimit,
   })
 
-  const statusLabel: Record<FileStatus, string> = {
-    pending:    'Waiting...',
-    uploading:  'Uploading...',
-    processing: 'AI extracting data...',
-    done:       'Done',
-    error:      'Failed',
+  if (atLimit) {
+    return (
+      <div className="flex flex-col items-center justify-center gap-3 py-10 px-6 border-2 border-dashed border-[#E2E8F0] rounded-xl bg-[#F8FAFC] text-center">
+        <AlertCircle size={36} className="text-[#F59E0B]" />
+        <div>
+          <p className="font-semibold text-[#1E293B] text-sm">Monthly limit reached</p>
+          <p className="text-xs text-slate-400 mt-1">Upgrade your plan to keep processing documents.</p>
+        </div>
+        {onUpgradePlan && (
+          <button
+            onClick={onUpgradePlan}
+            className="mt-1 px-4 py-2 bg-[#2563EB] text-white text-sm font-semibold rounded-lg hover:bg-blue-700 transition-colors"
+          >
+            Upgrade Plan
+          </button>
+        )}
+      </div>
+    )
   }
 
   return (
     <div className="space-y-3" id="upload">
+      {/* Drop zone */}
       <div
         {...getRootProps()}
-        className={`border-2 border-dashed rounded-xl p-10 text-center cursor-pointer transition-all select-none ${
+        className={`border-2 border-dashed rounded-xl p-8 text-center cursor-pointer transition-all select-none ${
           isDragActive
-            ? 'border-[#2563EB] bg-[#EFF6FF]'
+            ? 'border-[#2563EB] bg-[#EFF6FF] scale-[1.01]'
             : 'border-[#E2E8F0] bg-[#F8FAFC] hover:border-[#2563EB]/60 hover:bg-white'
         } ${busy ? 'cursor-not-allowed opacity-60' : ''}`}
       >
         <input {...getInputProps()} />
-        <CloudUpload
-          size={44}
-          className={`mx-auto mb-3 transition-colors ${isDragActive ? 'text-[#2563EB]' : 'text-slate-300'}`}
-        />
+        <div className={`w-12 h-12 rounded-xl mx-auto mb-3 flex items-center justify-center transition-colors ${
+          isDragActive ? 'bg-[#2563EB]' : 'bg-white border border-[#E2E8F0]'
+        }`}>
+          <CloudUpload size={22} className={isDragActive ? 'text-white' : 'text-[#2563EB]'} />
+        </div>
         <p className="font-semibold text-[#1E293B] text-sm">
-          {isDragActive ? 'Release to upload' : 'Drop files here or click to upload'}
+          {isDragActive ? 'Release to upload' : 'Drop files here or click to browse'}
         </p>
         <p className="text-xs text-slate-400 mt-1.5">PDF · Word · Excel · CSV · XML · TXT · Images</p>
-        <p className="text-xs text-slate-400">Maximum 25MB per file</p>
+        <p className="text-xs text-slate-400">Max 25 MB per file</p>
       </div>
 
+      {/* File list */}
       {items.length > 0 && (
         <div className="space-y-2">
           {items.map((item) => (
             <div
               key={item.id}
-              className={`flex items-center gap-3 bg-white border rounded-lg px-4 py-3 transition-colors ${
-                item.status === 'error' ? 'border-red-200 bg-red-50' :
-                item.status === 'done'  ? 'border-green-200 bg-green-50' :
-                'border-[#E2E8F0]'
+              className={`rounded-xl border px-4 py-3 transition-all ${
+                item.status === 'error'      ? 'border-red-200 bg-red-50' :
+                item.status === 'done'       ? 'border-green-200 bg-green-50' :
+                item.status === 'processing' ? 'border-blue-200 bg-[#EFF6FF]' :
+                'border-[#E2E8F0] bg-white'
               }`}
             >
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-[#1E293B] truncate">{item.file.name}</p>
-                <p className="text-xs text-slate-400 mt-0.5">
-                  {(item.file.size / 1024).toFixed(0)} KB
-                  <span className="mx-1.5">·</span>
-                  <span className={
-                    item.status === 'done'       ? 'text-green-600 font-medium' :
-                    item.status === 'error'      ? 'text-red-500' :
-                    item.status === 'processing' ? 'text-[#2563EB] font-medium' :
-                    'text-slate-400'
-                  }>
-                    {statusLabel[item.status]}
-                  </span>
-                </p>
-                {(item.status === 'uploading' || item.status === 'processing') && (
-                  <div className="mt-1.5 h-1 bg-slate-100 rounded-full overflow-hidden">
-                    <div className={`h-full rounded-full animate-pulse ${
-                      item.status === 'processing' ? 'w-4/5 bg-[#2563EB]' : 'w-2/3 bg-slate-300'
-                    }`} />
+              <div className="flex items-start gap-3">
+                {/* Status icon */}
+                <div className={`mt-0.5 w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${
+                  item.status === 'done'       ? 'bg-green-100' :
+                  item.status === 'error'      ? 'bg-red-100' :
+                  item.status === 'processing' ? 'bg-[#2563EB]/10' :
+                  'bg-slate-100'
+                }`}>
+                  {item.status === 'uploading'  && <Loader2 size={15} className="text-slate-400 animate-spin" />}
+                  {item.status === 'processing' && <Brain size={15} className="text-[#2563EB] animate-pulse" />}
+                  {item.status === 'done'       && <CheckCircle2 size={15} className="text-green-500" />}
+                  {item.status === 'error'      && <AlertCircle size={15} className="text-red-500" />}
+                  {item.status === 'pending'    && <Loader2 size={15} className="text-slate-300 animate-spin" />}
+                </div>
+
+                {/* File info */}
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-medium text-[#1E293B] truncate">{item.file.name}</p>
+                  <div className="flex items-center gap-2 mt-0.5 flex-wrap">
+                    <span className="text-xs text-slate-400">
+                      {(item.file.size / 1024).toFixed(0)} KB
+                    </span>
+                    <span className="text-slate-200">·</span>
+                    <span className={`text-xs font-medium ${
+                      item.status === 'done'       ? 'text-green-600' :
+                      item.status === 'error'      ? 'text-red-500' :
+                      item.status === 'processing' ? 'text-[#2563EB]' :
+                      'text-slate-400'
+                    }`}>
+                      {item.status === 'uploading'  ? 'Uploading...' :
+                       item.status === 'processing' ? 'AI extracting data...' :
+                       item.status === 'done'       ? 'Extraction complete' :
+                       item.status === 'error'      ? (item.error ?? 'Failed') :
+                       'Waiting...'}
+                    </span>
                   </div>
-                )}
-                {item.error && (
-                  <p className="text-xs text-red-500 mt-1">{item.error}</p>
-                )}
-              </div>
-              <div className="flex items-center gap-2 shrink-0">
-                {item.status === 'uploading' && (
-                  <Loader2 size={16} className="text-slate-400 animate-spin" />
-                )}
-                {item.status === 'processing' && (
-                  <Brain size={16} className="text-[#2563EB] animate-pulse" />
-                )}
-                {item.status === 'done' && (
-                  <CheckCircle2 size={16} className="text-green-500" />
-                )}
-                {item.status === 'error' && (
-                  <AlertCircle size={16} className="text-red-500" />
-                )}
+
+                  {/* Progress bar */}
+                  {(item.status === 'uploading' || item.status === 'processing') && (
+                    <div className="mt-2 h-1 bg-slate-100 rounded-full overflow-hidden">
+                      <div className={`h-full rounded-full animate-pulse ${
+                        item.status === 'processing' ? 'w-4/5 bg-[#2563EB]' : 'w-1/2 bg-slate-300'
+                      }`} />
+                    </div>
+                  )}
+
+                  {/* Download button — appears when done */}
+                  {item.status === 'done' && item.documentId && (
+                    <button
+                      onClick={() => downloadFile(item)}
+                      disabled={downloading.has(item.id)}
+                      className="mt-2.5 inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold bg-[#2563EB] text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-60 shadow-sm"
+                    >
+                      {downloading.has(item.id)
+                        ? <Loader2 size={12} className="animate-spin" />
+                        : <Download size={12} />}
+                      {downloading.has(item.id) ? 'Preparing...' : 'Download Excel'}
+                      {!downloading.has(item.id) && (
+                        <FileSpreadsheet size={12} className="text-green-300" />
+                      )}
+                    </button>
+                  )}
+                </div>
+
+                {/* Remove button */}
                 {(item.status === 'done' || item.status === 'error') && (
                   <button
                     onClick={() => setItems((p) => p.filter((f) => f.id !== item.id))}
-                    className="p-1 rounded hover:bg-white text-slate-400 hover:text-slate-600 transition-colors"
+                    className="p-1.5 rounded-lg hover:bg-white/60 text-slate-400 hover:text-slate-600 transition-colors shrink-0"
                   >
                     <X size={14} />
                   </button>
