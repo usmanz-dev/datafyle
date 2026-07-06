@@ -295,9 +295,9 @@ export default function LandingPage() {
   const rectRef      = useRef<DOMRect | null>(null)
   const resultsRef   = useRef<HTMLDivElement>(null)
   const resultsInView = useInView(resultsRef, { once: true, margin: '-80px' })
-  const cnt2880 = Math.round(useCounter(2880, resultsInView, 2200))
-  const cnt98   = Math.round(useCounter(98,   resultsInView, 1600))
-  const cnt97   = Math.round(useCounter(97,   resultsInView, 1600))
+  const cnt98t = Math.round(useCounter(98, resultsInView, 1600))
+  const cnt98  = Math.round(useCounter(98, resultsInView, 1600))
+  const cnt97  = Math.round(useCounter(97, resultsInView, 1600))
 
   useEffect(() => {
     const canvas = canvasRef.current
@@ -621,105 +621,84 @@ export default function LandingPage() {
 
             {/* Time */}
             <motion.div initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.5, delay: 0 }}
-              className="bg-white rounded-2xl border border-[#E2E8F0] shadow-sm overflow-hidden hover:shadow-lg hover:-translate-y-1 transition-all duration-300">
+              className="bg-white rounded-2xl border border-[#E2E8F0] shadow-sm overflow-hidden hover:shadow-md hover:-translate-y-0.5 transition-all duration-300">
               <div className="h-1 bg-linear-to-r from-[#2563EB] to-[#4F46E5]" />
               <div className="p-7">
-                <div className="flex items-center gap-3 mb-6">
-                  <div className="w-11 h-11 rounded-xl bg-[#EFF6FF] flex items-center justify-center shrink-0">
-                    <Clock size={20} className="text-[#2563EB]" />
+                <div className="flex items-center gap-2.5 mb-7">
+                  <div className="w-10 h-10 rounded-xl bg-[#EFF6FF] flex items-center justify-center shrink-0">
+                    <Clock size={18} className="text-[#2563EB]" />
                   </div>
                   <div>
-                    <p className="text-xs font-bold text-[#1E293B] uppercase tracking-wider">Time per invoice</p>
-                    <p className="text-xs text-slate-400">Manual data entry vs. AI</p>
+                    <p className="text-sm font-bold text-[#1E293B]">Time per invoice</p>
+                    <p className="text-xs text-slate-400 mt-0.5">Manual entry vs. Datafyle AI</p>
                   </div>
                 </div>
-                <div className="flex items-stretch gap-2 mb-7">
-                  <div className="flex-1 bg-red-50 border border-red-100 rounded-xl px-3 py-3 text-center">
-                    <p className="text-xs font-bold text-red-400 uppercase tracking-widest mb-1">Before</p>
-                    <p className="text-lg font-black text-red-500 line-through leading-none">8 min</p>
-                  </div>
-                  <div className="flex items-center text-slate-300 text-lg font-bold px-0.5">→</div>
-                  <div className="flex-1 bg-green-50 border border-green-100 rounded-xl px-3 py-3 text-center">
-                    <p className="text-xs font-bold text-green-500 uppercase tracking-widest mb-1">After</p>
-                    <p className="text-lg font-black text-green-600 leading-none">10 sec</p>
-                  </div>
+                <div className="flex items-baseline gap-0.5 mb-1.5">
+                  <span className="text-4xl font-black text-[#2563EB] tabular-nums leading-none">{cnt98t}</span>
+                  <span className="text-xl font-black text-[#2563EB]">%</span>
                 </div>
-                <div className="pt-5 border-t border-[#F1F5F9] text-center">
-                  <div className="flex items-baseline justify-center gap-0.5">
-                    <span className="text-5xl font-black text-[#2563EB] tabular-nums">{cnt2880.toLocaleString()}</span>
-                    <span className="text-2xl font-black text-[#2563EB]">×</span>
-                  </div>
-                  <p className="text-sm text-slate-500 font-medium mt-1">faster than manual entry</p>
+                <p className="text-sm font-semibold text-[#1E293B] mb-0.5">time saved per document</p>
+                <p className="text-xs text-slate-400 mb-6">AI processes every invoice in under 10 seconds</p>
+                <div className="pt-5 border-t border-[#F1F5F9] flex items-center gap-2">
+                  <span className="text-sm text-slate-400 line-through">8 min / doc</span>
+                  <span className="text-slate-300">→</span>
+                  <span className="text-sm font-bold text-[#22C55E]">10 sec / doc</span>
                 </div>
               </div>
             </motion.div>
 
             {/* Cost */}
             <motion.div initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.5, delay: 0.1 }}
-              className="bg-white rounded-2xl border border-[#E2E8F0] shadow-sm overflow-hidden hover:shadow-lg hover:-translate-y-1 transition-all duration-300">
+              className="bg-white rounded-2xl border border-[#E2E8F0] shadow-sm overflow-hidden hover:shadow-md hover:-translate-y-0.5 transition-all duration-300">
               <div className="h-1 bg-linear-to-r from-[#2563EB] to-[#4F46E5]" />
               <div className="p-7">
-                <div className="flex items-center gap-3 mb-6">
-                  <div className="w-11 h-11 rounded-xl bg-[#EFF6FF] flex items-center justify-center shrink-0">
-                    <DollarSign size={20} className="text-[#2563EB]" />
+                <div className="flex items-center gap-2.5 mb-7">
+                  <div className="w-10 h-10 rounded-xl bg-[#EFF6FF] flex items-center justify-center shrink-0">
+                    <DollarSign size={18} className="text-[#2563EB]" />
                   </div>
                   <div>
-                    <p className="text-xs font-bold text-[#1E293B] uppercase tracking-wider">Monthly tool cost</p>
-                    <p className="text-xs text-slate-400">Bookkeeper salary vs. Datafyle</p>
+                    <p className="text-sm font-bold text-[#1E293B]">Monthly tool cost</p>
+                    <p className="text-xs text-slate-400 mt-0.5">Bookkeeper salary vs. Datafyle</p>
                   </div>
                 </div>
-                <div className="flex items-stretch gap-2 mb-7">
-                  <div className="flex-1 bg-red-50 border border-red-100 rounded-xl px-3 py-3 text-center">
-                    <p className="text-xs font-bold text-red-400 uppercase tracking-widest mb-1">Before</p>
-                    <p className="text-lg font-black text-red-500 line-through leading-none">$2,500</p>
-                  </div>
-                  <div className="flex items-center text-slate-300 text-lg font-bold px-0.5">→</div>
-                  <div className="flex-1 bg-green-50 border border-green-100 rounded-xl px-3 py-3 text-center">
-                    <p className="text-xs font-bold text-green-500 uppercase tracking-widest mb-1">After</p>
-                    <p className="text-lg font-black text-green-600 leading-none">$49</p>
-                  </div>
+                <div className="flex items-baseline gap-0.5 mb-1.5">
+                  <span className="text-4xl font-black text-[#2563EB] tabular-nums leading-none">{cnt98}</span>
+                  <span className="text-xl font-black text-[#2563EB]">%</span>
                 </div>
-                <div className="pt-5 border-t border-[#F1F5F9] text-center">
-                  <div className="flex items-baseline justify-center gap-0.5">
-                    <span className="text-5xl font-black text-[#2563EB] tabular-nums">{cnt98}</span>
-                    <span className="text-2xl font-black text-[#2563EB]">%</span>
-                  </div>
-                  <p className="text-sm text-slate-500 font-medium mt-1">cost reduction per month</p>
+                <p className="text-sm font-semibold text-[#1E293B] mb-0.5">cost reduction per month</p>
+                <p className="text-xs text-slate-400 mb-6">Replace a $2,500 bookkeeper for just $49/mo</p>
+                <div className="pt-5 border-t border-[#F1F5F9] flex items-center gap-2">
+                  <span className="text-sm text-slate-400 line-through">$2,500 / mo</span>
+                  <span className="text-slate-300">→</span>
+                  <span className="text-sm font-bold text-[#22C55E]">$49 / mo</span>
                 </div>
               </div>
             </motion.div>
 
             {/* Accuracy */}
             <motion.div initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.5, delay: 0.2 }}
-              className="bg-white rounded-2xl border border-[#E2E8F0] shadow-sm overflow-hidden hover:shadow-lg hover:-translate-y-1 transition-all duration-300">
+              className="bg-white rounded-2xl border border-[#E2E8F0] shadow-sm overflow-hidden hover:shadow-md hover:-translate-y-0.5 transition-all duration-300">
               <div className="h-1 bg-linear-to-r from-[#2563EB] to-[#4F46E5]" />
               <div className="p-7">
-                <div className="flex items-center gap-3 mb-6">
-                  <div className="w-11 h-11 rounded-xl bg-[#EFF6FF] flex items-center justify-center shrink-0">
-                    <Shield size={20} className="text-[#2563EB]" />
+                <div className="flex items-center gap-2.5 mb-7">
+                  <div className="w-10 h-10 rounded-xl bg-[#EFF6FF] flex items-center justify-center shrink-0">
+                    <Shield size={18} className="text-[#2563EB]" />
                   </div>
                   <div>
-                    <p className="text-xs font-bold text-[#1E293B] uppercase tracking-wider">Extraction accuracy</p>
-                    <p className="text-xs text-slate-400">Human error rate vs. AI</p>
+                    <p className="text-sm font-bold text-[#1E293B]">Extraction accuracy</p>
+                    <p className="text-xs text-slate-400 mt-0.5">Human error rate vs. AI</p>
                   </div>
                 </div>
-                <div className="flex items-stretch gap-2 mb-7">
-                  <div className="flex-1 bg-red-50 border border-red-100 rounded-xl px-3 py-3 text-center">
-                    <p className="text-xs font-bold text-red-400 uppercase tracking-widest mb-1">Before</p>
-                    <p className="text-lg font-black text-red-500 line-through leading-none">~12% err</p>
-                  </div>
-                  <div className="flex items-center text-slate-300 text-lg font-bold px-0.5">→</div>
-                  <div className="flex-1 bg-green-50 border border-green-100 rounded-xl px-3 py-3 text-center">
-                    <p className="text-xs font-bold text-green-500 uppercase tracking-widest mb-1">After</p>
-                    <p className="text-lg font-black text-green-600 leading-none">&lt;1% err</p>
-                  </div>
+                <div className="flex items-baseline gap-0.5 mb-1.5">
+                  <span className="text-4xl font-black text-[#2563EB] tabular-nums leading-none">{cnt97}</span>
+                  <span className="text-xl font-black text-[#2563EB]">%+</span>
                 </div>
-                <div className="pt-5 border-t border-[#F1F5F9] text-center">
-                  <div className="flex items-baseline justify-center gap-0.5">
-                    <span className="text-5xl font-black text-[#2563EB] tabular-nums">{cnt97}</span>
-                    <span className="text-2xl font-black text-[#2563EB]">%+</span>
-                  </div>
-                  <p className="text-sm text-slate-500 font-medium mt-1">field-level AI accuracy</p>
+                <p className="text-sm font-semibold text-[#1E293B] mb-0.5">field-level AI accuracy</p>
+                <p className="text-xs text-slate-400 mb-6">Confidence score on every extracted field</p>
+                <div className="pt-5 border-t border-[#F1F5F9] flex items-center gap-2">
+                  <span className="text-sm text-slate-400 line-through">~12% error rate</span>
+                  <span className="text-slate-300">→</span>
+                  <span className="text-sm font-bold text-[#22C55E]">&lt;1% error rate</span>
                 </div>
               </div>
             </motion.div>
