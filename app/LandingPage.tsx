@@ -533,8 +533,7 @@ export default function LandingPage() {
           </motion.div>
 
           <div className="grid md:grid-cols-3 gap-6 relative">
-            {/* Connecting line */}
-            <div className="hidden md:block absolute top-12 left-1/3 right-1/3 h-px bg-[#2563EB]/30 pointer-events-none" style={{ width: 'calc(66.666% - 2rem)', left: 'calc(16.666% + 1rem)' }} />
+
 
             {[
               { icon: Upload,   num: '01', title: 'Upload Your Documents', desc: 'PDF, Word, Excel, CSV, or images — any format up to 25MB. Drag & drop or click to browse.', delay: 0 },
