@@ -277,9 +277,9 @@ export default function LandingPage() {
   else if (docs > 3000) { calcPlan = 'Business'; calcPrice = 349 }
   else if (docs > 500)  { calcPlan = 'Professional'; calcPrice = 149 }
 
-  const monthlySaving = Math.max(0, staffCost - calcPrice)
-  const yearlySaving  = monthlySaving * 12
-  const hoursSaved    = Math.round(docs * 0.083)
+  const monthlySaving    = Math.max(0, staffCost - calcPrice)
+  const yearlySaving     = monthlySaving * 12
+  const hoursSavedPerWeek = Math.max(1, Math.round((docs * 0.083) / 4.33))
 
   const fadeUp = { hidden: { opacity: 0, y: 30 }, visible: { opacity: 1, y: 0 } }
 
@@ -660,66 +660,127 @@ export default function LandingPage() {
       </section>
 
       {/* ── SAVE CALCULATOR ─────────────────────────────────────────────────── */}
-      <section id="calculator" className="py-24 px-4 bg-white">
-        <div className="max-w-2xl mx-auto">
-          <motion.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} transition={{ duration: 0.5 }}>
-            <div className="text-center mb-10">
-              <h2 className="text-3xl sm:text-4xl font-bold text-[#1E293B] mb-3">Calculate Your Monthly Savings</h2>
-              <p className="text-slate-500">See exactly how much you save by switching to Datafyle.</p>
-            </div>
+      <section id="calculator" className="relative py-24 px-4 bg-black overflow-hidden">
 
-            <div className="rounded-2xl overflow-hidden shadow-xl border border-[#E2E8F0]">
-              {/* Header */}
-              <div className="bg-[#2563EB] px-8 py-6">
-                <h3 className="text-white font-bold text-base">Your Current Costs</h3>
-                <p className="text-blue-200 text-sm mt-0.5">Adjust the sliders to match your situation</p>
+        {/* Blue gradient aura — centered */}
+        <div className="absolute inset-0 pointer-events-none"
+          style={{ background: 'radial-gradient(ellipse 90% 70% at 50% 50%, rgba(37,99,235,0.22) 0%, rgba(37,99,235,0.06) 55%, transparent 75%)' }} />
+
+        {/* Dot grid */}
+        <div className="absolute inset-0 pointer-events-none"
+          style={{ backgroundImage: 'radial-gradient(circle, rgba(255,255,255,0.07) 1px, transparent 1px)', backgroundSize: '28px 28px' }} />
+
+        <div className="relative z-10 max-w-6xl mx-auto">
+
+          {/* Header */}
+          <motion.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} transition={{ duration: 0.5 }} className="text-center mb-14">
+            <span className="inline-flex items-center gap-2 text-xs font-bold text-[#2563EB] bg-[#2563EB]/10 border border-[#2563EB]/20 px-3 py-1.5 rounded-full uppercase tracking-widest mb-5">
+              Savings Calculator
+            </span>
+            <h2 className="text-3xl sm:text-4xl font-bold text-white mb-3">
+              See Exactly How Much You&apos;ll Save
+            </h2>
+            <p className="text-slate-400 text-base">Enter your numbers. Get your savings instantly.</p>
+          </motion.div>
+
+          <div className="grid lg:grid-cols-[1fr,500px] gap-10 items-center">
+
+            {/* Left — social proof */}
+            <motion.div initial={{ opacity: 0, x: -30 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }}>
+              <p className="text-slate-300 text-lg leading-relaxed mb-10">
+                Accounting firms that switch to Datafyle stop paying $2,400+ every month for manual data entry work — and get those hours back for actual client work.
+              </p>
+              <div className="grid grid-cols-3 gap-4 mb-10">
+                {[
+                  { value: '1,200+', label: 'Firms using Datafyle' },
+                  { value: '$28K+',  label: 'Average annual saving' },
+                  { value: '40h',    label: 'Avg hours saved/week' },
+                ].map((s) => (
+                  <div key={s.label} className="bg-white/5 border border-white/10 rounded-2xl p-5 text-center">
+                    <div className="text-2xl font-black text-white mb-1">{s.value}</div>
+                    <div className="text-[11px] text-slate-400 leading-snug">{s.label}</div>
+                  </div>
+                ))}
+              </div>
+              <div className="flex items-center gap-3 text-slate-400 text-sm">
+                <div className="flex -space-x-2">
+                  {['SK', 'MR', 'EP', 'JL'].map((init) => (
+                    <div key={init} className="w-8 h-8 rounded-full bg-[#2563EB] border-2 border-black flex items-center justify-center text-white text-[10px] font-bold">{init}</div>
+                  ))}
+                </div>
+                <span>Joined by 47+ firms this month alone</span>
+              </div>
+            </motion.div>
+
+            {/* Right — Calculator card */}
+            <motion.div initial={{ opacity: 0, x: 30 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }}
+              className="bg-white rounded-2xl shadow-2xl overflow-hidden">
+
+              {/* Card header */}
+              <div className="bg-[#2563EB] px-7 py-5">
+                <h3 className="text-white font-bold text-base">Your Current Situation</h3>
+                <p className="text-blue-200 text-sm mt-0.5">Fill in your numbers below</p>
               </div>
 
-              <div className="p-8 bg-white">
-                <div className="grid sm:grid-cols-2 gap-5 mb-8">
+              <div className="p-7">
+                {/* Inputs */}
+                <div className="space-y-4 mb-7">
                   <div>
-                    <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Monthly staff cost</label>
+                    <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Monthly staff / bookkeeper cost</label>
                     <div className="relative">
-                      <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#2563EB] font-bold text-sm">$</span>
-                      <input type="number" value={staffCost} onChange={(e) => setStaffCost(Number(e.target.value) || 0)}
-                        className="w-full pl-8 pr-4 py-3 border-2 border-[#E2E8F0] rounded-xl text-[#1E293B] font-bold text-sm focus:outline-none focus:border-[#2563EB] transition-colors min-h-[48px]" />
+                      <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[#2563EB] font-black text-sm">$</span>
+                      <input
+                        type="number" value={staffCost}
+                        onChange={(e) => setStaffCost(Number(e.target.value) || 0)}
+                        className="w-full pl-9 pr-4 py-3.5 border-2 border-[#E2E8F0] rounded-xl text-[#1E293B] font-bold text-base focus:outline-none focus:border-[#2563EB] transition-colors min-h-[52px]"
+                      />
                     </div>
                   </div>
                   <div>
-                    <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Docs per month</label>
-                    <input type="number" value={docs} onChange={(e) => setDocs(Number(e.target.value) || 0)}
-                      className="w-full px-4 py-3 border-2 border-[#E2E8F0] rounded-xl text-[#1E293B] font-bold text-sm focus:outline-none focus:border-[#2563EB] transition-colors min-h-[48px]" />
+                    <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Documents processed per month</label>
+                    <input
+                      type="number" value={docs}
+                      onChange={(e) => setDocs(Number(e.target.value) || 0)}
+                      className="w-full px-4 py-3.5 border-2 border-[#E2E8F0] rounded-xl text-[#1E293B] font-bold text-base focus:outline-none focus:border-[#2563EB] transition-colors min-h-[52px]"
+                    />
                   </div>
                 </div>
 
-                <div className="bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl p-6 mb-6">
-                  <div className="flex items-center justify-between mb-5">
-                    <p className="text-sm font-bold text-[#1E293B]">With Datafyle {calcPlan}</p>
-                    <span className="text-xs font-bold text-[#2563EB] bg-[#EFF6FF] px-2.5 py-1 rounded-full">${calcPrice}/month</span>
-                  </div>
-                  <div className="grid grid-cols-3 gap-4 text-center">
-                    <div className="bg-white rounded-xl p-4 border border-[#E2E8F0]">
-                      <div className="text-2xl font-black text-[#2563EB]">${monthlySaving.toLocaleString()}</div>
-                      <div className="text-[10px] text-slate-400 font-medium mt-1 uppercase tracking-wide">Monthly saving</div>
-                    </div>
-                    <div className="bg-white rounded-xl p-4 border border-[#E2E8F0]">
-                      <div className="text-2xl font-black text-[#2563EB]">${yearlySaving.toLocaleString()}</div>
-                      <div className="text-[10px] text-slate-400 font-medium mt-1 uppercase tracking-wide">Yearly saving</div>
-                    </div>
-                    <div className="bg-white rounded-xl p-4 border border-[#E2E8F0]">
-                      <div className="text-2xl font-black text-[#2563EB]">~{hoursSaved}h</div>
-                      <div className="text-[10px] text-slate-400 font-medium mt-1 uppercase tracking-wide">Hours saved</div>
-                    </div>
+                {/* Plan match */}
+                <div className="flex items-center justify-between bg-[#EFF6FF] border border-[#2563EB]/20 rounded-xl px-4 py-3 mb-5">
+                  <span className="text-sm font-semibold text-[#1E293B]">Best plan for you</span>
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm font-black text-[#2563EB]">{calcPlan}</span>
+                    <span className="text-xs bg-[#2563EB] text-white font-bold px-2 py-0.5 rounded-full">${calcPrice}/mo</span>
                   </div>
                 </div>
 
-                <Link href="/pricing" className="flex items-center justify-center gap-2 w-full py-4 bg-[#2563EB] text-white font-bold rounded-xl hover:bg-blue-700 transition-colors text-sm min-h-[52px] hover:-translate-y-0.5 hover:shadow-lg transition-all">
+                {/* Results */}
+                <div className="grid grid-cols-3 gap-3 mb-6">
+                  <div className="bg-[#F8FAFC] rounded-xl p-4 text-center border border-[#E2E8F0]">
+                    <div className="text-xl font-black text-[#2563EB] tabular-nums">${monthlySaving.toLocaleString()}</div>
+                    <div className="text-[10px] text-slate-400 font-semibold mt-1 uppercase tracking-wide">Saved/month</div>
+                  </div>
+                  <div className="bg-[#F8FAFC] rounded-xl p-4 text-center border border-[#E2E8F0]">
+                    <div className="text-xl font-black text-[#2563EB] tabular-nums">${yearlySaving.toLocaleString()}</div>
+                    <div className="text-[10px] text-slate-400 font-semibold mt-1 uppercase tracking-wide">Saved/year</div>
+                  </div>
+                  <div className="bg-[#F8FAFC] rounded-xl p-4 text-center border border-[#E2E8F0]">
+                    <div className="text-xl font-black text-[#2563EB] tabular-nums">{hoursSavedPerWeek}h</div>
+                    <div className="text-[10px] text-slate-400 font-semibold mt-1 uppercase tracking-wide">Freed/week</div>
+                  </div>
+                </div>
+
+                <Link href="/pricing"
+                  className="flex items-center justify-center gap-2 w-full py-4 bg-[#2563EB] text-white font-bold rounded-xl hover:bg-blue-700 transition-all text-sm min-h-[52px] hover:-translate-y-0.5 hover:shadow-lg">
                   Start Saving ${monthlySaving.toLocaleString()} This Month
                   <ArrowRight size={16} />
                 </Link>
+
+                <p className="text-center text-xs text-slate-400 mt-3">No credit card required · Cancel anytime</p>
               </div>
-            </div>
-          </motion.div>
+            </motion.div>
+          </div>
         </div>
       </section>
 
