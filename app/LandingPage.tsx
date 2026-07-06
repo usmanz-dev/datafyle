@@ -30,14 +30,22 @@ function useCounter(target: number, inView: boolean, duration = 1800) {
   return count
 }
 
-function CountStat({ target, format, label }: { target: number; format: (n: number) => string; label: string }) {
+function CountStat({ target, format, label, sublabel, icon }: {
+  target: number
+  format: (n: number) => string
+  label: string
+  sublabel?: string
+  icon?: React.ReactNode
+}) {
   const ref = useRef<HTMLDivElement>(null)
   const inView = useInView(ref, { once: true, margin: '-50px' })
   const count = useCounter(target, inView)
   return (
-    <div ref={ref} className="text-center px-4">
-      <div className="text-3xl sm:text-4xl font-bold text-[#1E293B] mb-1">{format(count)}</div>
-      <div className="text-sm text-slate-500 font-medium">{label}</div>
+    <div ref={ref} className="flex flex-col items-center text-center px-6 py-4 border-r border-white/8 last:border-0">
+      {icon && <div className="mb-3">{icon}</div>}
+      <div className="text-4xl sm:text-5xl font-black text-white tabular-nums mb-2 leading-none">{format(count)}</div>
+      <div className="text-sm font-semibold text-slate-300 mb-0.5">{label}</div>
+      {sublabel && <div className="text-xs text-slate-500">{sublabel}</div>}
     </div>
   )
 }
@@ -398,13 +406,54 @@ export default function LandingPage() {
       </section>
 
       {/* ── TRUST BAR ───────────────────────────────────────────────────────── */}
-      <section className="py-14 bg-[#F8FAFC] border-y border-[#E2E8F0]">
-        <div className="max-w-5xl mx-auto px-4">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 divide-x divide-[#E2E8F0]">
-            <CountStat target={1200} format={(n) => `${Math.floor(n).toLocaleString()}+`} label="Accounting Firms" />
-            <CountStat target={850}  format={(n) => `${Math.floor(n)}K+`}                 label="Documents Processed" />
-            <CountStat target={4.9}  format={(n) => `${n.toFixed(1)}★`}                   label="Star Rating" />
-            <CountStat target={99.7} format={(n) => `${n.toFixed(1)}%`}                   label="Uptime" />
+      <section className="relative py-16 bg-black overflow-hidden">
+        {/* Blue radial glow */}
+        <div className="absolute inset-0 pointer-events-none"
+          style={{ background: 'radial-gradient(ellipse 90% 140% at 50% 50%, rgba(37,99,235,0.20) 0%, transparent 70%)' }} />
+        {/* Dot grid */}
+        <div className="absolute inset-0 pointer-events-none"
+          style={{ backgroundImage: 'radial-gradient(circle, rgba(255,255,255,0.07) 1px, transparent 1px)', backgroundSize: '28px 28px' }} />
+
+        <div className="relative z-10 max-w-5xl mx-auto px-4">
+          {/* Eyebrow label */}
+          <p className="text-center text-[11px] font-bold text-slate-500 uppercase tracking-[0.2em] mb-10">
+            Trusted by accounting firms across UK, US &amp; Australia
+          </p>
+
+          <div className="grid grid-cols-2 md:grid-cols-4">
+            <CountStat
+              target={1200}
+              format={(n) => `${Math.floor(n).toLocaleString()}+`}
+              label="Accounting Firms"
+              sublabel="actively using Datafyle"
+              icon={
+                <div className="flex items-center gap-1.5">
+                  <span className="w-2 h-2 rounded-full bg-[#22C55E] animate-pulse" />
+                  <span className="text-[10px] font-bold text-[#22C55E] uppercase tracking-widest">Live</span>
+                </div>
+              }
+            />
+            <CountStat
+              target={850}
+              format={(n) => `${Math.floor(n)}K+`}
+              label="Documents Processed"
+              sublabel="invoices, receipts & more"
+              icon={<div className="w-6 h-px bg-[#2563EB]" />}
+            />
+            <CountStat
+              target={4.9}
+              format={(n) => `${n.toFixed(1)}★`}
+              label="Average Rating"
+              sublabel="across Capterra, G2 & Trustpilot"
+              icon={<div className="w-6 h-px bg-[#F59E0B]" />}
+            />
+            <CountStat
+              target={99.7}
+              format={(n) => `${n.toFixed(1)}%`}
+              label="Platform Uptime"
+              sublabel="SLA-backed reliability"
+              icon={<div className="w-6 h-px bg-[#2563EB]" />}
+            />
           </div>
         </div>
       </section>
