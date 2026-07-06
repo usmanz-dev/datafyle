@@ -374,7 +374,7 @@ export default function LandingPage() {
           <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1, duration: 0.5 }}
             className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-white/10 bg-white/5 text-xs text-slate-400 mb-8">
             <span className="w-1.5 h-1.5 rounded-full bg-[#22C55E] animate-pulse shrink-0" />
-            Trusted by 1,200+ accounting firms worldwide
+            Trusted by 50+ accounting firms worldwide
           </motion.div>
           <motion.h1 initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2, duration: 0.65 }}
             className="text-4xl sm:text-5xl lg:text-6xl font-bold leading-tight mb-6">
@@ -422,8 +422,8 @@ export default function LandingPage() {
 
           <div className="grid grid-cols-2 md:grid-cols-4">
             <CountStat
-              target={1200}
-              format={(n) => `${Math.floor(n).toLocaleString()}+`}
+              target={50}
+              format={(n) => `${Math.floor(n)}+`}
               label="Accounting Firms"
               sublabel="actively using Datafyle"
               icon={
@@ -434,7 +434,7 @@ export default function LandingPage() {
               }
             />
             <CountStat
-              target={850}
+              target={12}
               format={(n) => `${Math.floor(n)}K+`}
               label="Documents Processed"
               sublabel="invoices, receipts & more"
@@ -477,8 +477,8 @@ export default function LandingPage() {
               </p>
               <ul className="space-y-3.5 mb-10">
                 {[
-                  'Trusted by 1,200+ accounting firms in UK, US & Australia',
-                  'Processes 850,000+ documents every month',
+                  'Trusted by 50+ accounting firms in UK, US & Australia',
+                  'Processes 12,000+ documents every month',
                   '97%+ AI extraction accuracy across all file types',
                 ].map((item) => (
                   <li key={item} className="flex items-start gap-3">
@@ -612,7 +612,7 @@ export default function LandingPage() {
             </span>
             <h2 className="text-3xl sm:text-4xl font-bold text-[#1E293B] mb-3">What Accounting Firms Actually Save</h2>
             <p className="text-slate-500 text-base max-w-xl mx-auto">
-              Real numbers tracked across 1,200+ firms — measuring time, cost, and accuracy before and after switching to Datafyle.
+              Real numbers tracked across our early firm cohort — measuring time, cost, and accuracy before and after switching to Datafyle.
             </p>
           </motion.div>
 
@@ -729,8 +729,8 @@ export default function LandingPage() {
           <motion.div initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.5, delay: 0.3 }}
             className="grid grid-cols-2 md:grid-cols-4 bg-white rounded-2xl border border-[#E2E8F0] shadow-sm overflow-hidden divide-x divide-[#F1F5F9]">
             {[
-              { value: '1,200+',  label: 'Firms using Datafyle' },
-              { value: '850K+',   label: 'Documents processed' },
+              { value: '50+',   label: 'Firms using Datafyle' },
+              { value: '12K+',  label: 'Documents processed' },
               { value: '4.9 ★',  label: 'Average user rating' },
               { value: '99.7%',   label: 'Platform uptime' },
             ].map((s) => (
@@ -917,7 +917,7 @@ export default function LandingPage() {
               </p>
               <div className="grid grid-cols-3 gap-4 mb-10">
                 {[
-                  { value: '1,200+', label: 'Firms using Datafyle' },
+                  { value: '50+', label: 'Firms using Datafyle' },
                   { value: '$28K+',  label: 'Average annual saving' },
                   { value: '40h',    label: 'Avg hours saved/week' },
                 ].map((s) => (
@@ -933,7 +933,7 @@ export default function LandingPage() {
                     <div key={init} className="w-8 h-8 rounded-full bg-[#2563EB] border-2 border-black flex items-center justify-center text-white text-[10px] font-bold">{init}</div>
                   ))}
                 </div>
-                <span>Joined by 47+ firms this month alone</span>
+                <span>Joined by 12+ firms this month</span>
               </div>
             </motion.div>
 
@@ -1064,7 +1064,7 @@ export default function LandingPage() {
                 {Array(5).fill(null).map((_, j) => <Star key={j} size={18} className="text-[#F59E0B] fill-[#F59E0B]" />)}
               </div>
               <span className="font-bold text-[#1E293B] text-base">4.9</span>
-              <span className="text-slate-400 text-sm">· Based on 1,200+ verified reviews</span>
+              <span className="text-slate-400 text-sm">· Based on 40+ verified reviews</span>
             </div>
 
             {/* Platform badges */}
@@ -1244,7 +1244,7 @@ export default function LandingPage() {
         <div className="absolute inset-0 pointer-events-none" style={{ backgroundImage: 'radial-gradient(circle, rgba(255,255,255,0.07) 1px, transparent 1px)', backgroundSize: '28px 28px' }} />
         <motion.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} transition={{ duration: 0.5 }} className="relative z-10 max-w-2xl mx-auto text-center">
           <h2 className="text-3xl sm:text-4xl font-bold text-white mb-4">Stop Wasting 8 Hours a Day on Data Entry</h2>
-          <p className="text-slate-400 mb-8 text-lg">Join 1,200+ accounting firms already saving time with Datafyle</p>
+          <p className="text-slate-400 mb-8 text-lg">Join 50+ accounting firms already saving time with Datafyle</p>
           <Link href="/sign-up" className="inline-flex items-center gap-2 px-8 py-4 bg-[#2563EB] text-white text-lg font-bold rounded-xl hover:bg-blue-600 transition-all shadow-lg hover:-translate-y-0.5 min-h-[56px]">
             Get Started Now — It&apos;s Free
             <ArrowRight size={20} />
@@ -1282,7 +1282,7 @@ export default function LandingPage() {
                 AI-powered document processing for accounting and bookkeeping firms.
               </p>
               <p className="text-slate-500 text-xs leading-relaxed mb-6">
-                Trusted by 1,200+ firms in UK, US &amp; Australia.
+                Trusted by 50+ firms in UK, US &amp; Australia.
               </p>
 
               {/* Social icons */}
