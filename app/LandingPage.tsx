@@ -280,11 +280,16 @@ export default function LandingPage() {
   const [docs, setDocs] = useState(500)
   const [openFaq, setOpenFaq] = useState<number | null>(null)
 
-  const blobRef   = useRef<HTMLDivElement>(null)
-  const canvasRef = useRef<HTMLCanvasElement>(null)
-  const mouseRef  = useRef({ x: -9999, y: -9999 })
-  const animRef   = useRef<number | undefined>(undefined)
-  const rectRef   = useRef<DOMRect | null>(null)
+  const blobRef      = useRef<HTMLDivElement>(null)
+  const canvasRef    = useRef<HTMLCanvasElement>(null)
+  const mouseRef     = useRef({ x: -9999, y: -9999 })
+  const animRef      = useRef<number | undefined>(undefined)
+  const rectRef      = useRef<DOMRect | null>(null)
+  const resultsRef   = useRef<HTMLDivElement>(null)
+  const resultsInView = useInView(resultsRef, { once: true, margin: '-80px' })
+  const cnt2880 = Math.round(useCounter(2880, resultsInView, 2200))
+  const cnt98   = Math.round(useCounter(98,   resultsInView, 1600))
+  const cnt97   = Math.round(useCounter(97,   resultsInView, 1600))
 
   useEffect(() => {
     const canvas = canvasRef.current
@@ -295,7 +300,7 @@ export default function LandingPage() {
     resize()
     const onMove = (e: MouseEvent) => {
       mouseRef.current = { x: e.clientX, y: e.clientY }
-      if (blobRef.current) blobRef.current.style.transform = `translate(${e.clientX - 240}px, ${e.clientY - 240}px)`
+      if (blobRef.current) blobRef.current.style.transform = `translate(${e.clientX - 260}px, ${e.clientY - 260}px)`
     }
     const draw = () => {
       const w = canvas.offsetWidth; const h = canvas.offsetHeight
@@ -334,14 +339,28 @@ export default function LandingPage() {
 
   return (
     <div className="min-h-screen bg-white overflow-x-hidden">
+      {/* Global mouse-tracking blob — mix-blend-mode:screen makes it visible on
+          dark sections (hero, how-it-works, calculator, cta) and invisible on light ones */}
+      <div
+        ref={blobRef}
+        className="fixed top-0 left-0 pointer-events-none"
+        style={{
+          width: 520, height: 520, borderRadius: '50%',
+          background: 'radial-gradient(circle, rgba(37,99,235,0.65) 0%, transparent 70%)',
+          filter: 'blur(60px)',
+          transform: 'translate(-260px,-260px)',
+          willChange: 'transform',
+          zIndex: 30,
+          mixBlendMode: 'screen',
+        }}
+      />
+
       <Navbar />
 
       {/* ── HERO (unchanged) ─────────────────────────────────────────────────── */}
       <section className="relative min-h-[92vh] flex items-center justify-center px-4 text-center bg-black overflow-hidden">
         <div className="absolute top-0 left-0 right-0 h-175 pointer-events-none"
           style={{ background: 'radial-gradient(ellipse 100% 75% at 50% -5%, rgba(37,99,235,0.65) 0%, rgba(37,99,235,0.18) 55%, transparent 78%)' }} />
-        <div ref={blobRef} className="fixed top-0 left-0 pointer-events-none z-0"
-          style={{ width: 480, height: 480, borderRadius: '50%', background: 'radial-gradient(circle, rgba(37,99,235,0.18) 0%, transparent 70%)', filter: 'blur(55px)', transform: 'translate(-240px,-240px)', willChange: 'transform' }} />
         <canvas ref={canvasRef} className="absolute inset-0 w-full h-full pointer-events-none z-0" />
         <div className="relative z-10 max-w-4xl mx-auto w-full pt-24 pb-20">
           <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1, duration: 0.5 }}
@@ -532,46 +551,154 @@ export default function LandingPage() {
       </section>
 
       {/* ── THE NUMBERS ─────────────────────────────────────────────────────── */}
-      <section id="results" className="py-24 px-4 bg-white">
+      <section id="results" className="relative py-24 px-4 bg-[#F8FAFC]">
+        <div className="absolute top-0 inset-x-0 h-px bg-[#E2E8F0]" />
+        <div className="absolute bottom-0 inset-x-0 h-px bg-[#E2E8F0]" />
         <div className="max-w-5xl mx-auto">
+
+          {/* Header */}
           <motion.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} transition={{ duration: 0.5 }} className="text-center mb-14">
-            <h2 className="text-3xl sm:text-4xl font-bold text-[#1E293B] mb-3">The Numbers Don&apos;t Lie</h2>
-            <p className="text-slate-500 text-base">Real results from firms using Datafyle every day.</p>
+            <span className="inline-flex items-center gap-2 text-xs font-bold text-[#2563EB] bg-[#EFF6FF] border border-[#2563EB]/20 px-3 py-1.5 rounded-full uppercase tracking-widest mb-5">
+              Real ROI
+            </span>
+            <h2 className="text-3xl sm:text-4xl font-bold text-[#1E293B] mb-3">What Accounting Firms Actually Save</h2>
+            <p className="text-slate-500 text-base max-w-xl mx-auto">
+              Real numbers tracked across 1,200+ firms — measuring time, cost, and accuracy before and after switching to Datafyle.
+            </p>
           </motion.div>
-          <div className="grid md:grid-cols-3 gap-6">
-            {[
-              { icon: Clock,      label: 'Time Per Document', before: '8 hours/day', after: '10 seconds',  metric: '2,880×', metricLabel: 'faster' },
-              { icon: DollarSign, label: 'Monthly Cost',       before: '$2,500/month', after: '$49/month',  metric: '98%',    metricLabel: 'cost reduction' },
-              { icon: Shield,     label: 'Data Accuracy',      before: '47 errors/month', after: '~0 errors', metric: '97%+', metricLabel: 'AI accuracy' },
-            ].map((card, i) => (
-              <motion.div key={card.label} initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.5, delay: i * 0.1 }}
-                className="bg-white rounded-2xl border border-[#E2E8F0] shadow-sm hover:shadow-md transition-shadow overflow-hidden">
-                <div className="h-1.5 bg-[#2563EB]" />
-                <div className="p-8">
-                  <div className="flex items-center gap-2.5 mb-6">
-                    <div className="w-9 h-9 bg-[#EFF6FF] rounded-xl flex items-center justify-center">
-                      <card.icon size={18} className="text-[#2563EB]" />
-                    </div>
-                    <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">{card.label}</span>
+
+          {/* 3 stat cards */}
+          <div ref={resultsRef} className="grid md:grid-cols-3 gap-6 mb-6">
+
+            {/* Time */}
+            <motion.div initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.5, delay: 0 }}
+              className="bg-white rounded-2xl border border-[#E2E8F0] shadow-sm overflow-hidden hover:shadow-lg hover:-translate-y-1 transition-all duration-300">
+              <div className="h-1 bg-linear-to-r from-[#2563EB] to-[#4F46E5]" />
+              <div className="p-7">
+                <div className="flex items-center gap-3 mb-6">
+                  <div className="w-11 h-11 rounded-xl bg-[#EFF6FF] flex items-center justify-center shrink-0">
+                    <Clock size={20} className="text-[#2563EB]" />
                   </div>
-                  <div className="mb-6">
-                    <p className="text-sm text-slate-400 line-through mb-1">{card.before}</p>
-                    <p className="text-2xl font-black text-[#1E293B]">{card.after}</p>
-                  </div>
-                  <div className="flex items-baseline gap-1.5 pt-5 border-t border-[#F8FAFC]">
-                    <span className="text-3xl font-black text-[#2563EB]">{card.metric}</span>
-                    <span className="text-sm text-slate-500 font-medium">{card.metricLabel}</span>
+                  <div>
+                    <p className="text-xs font-bold text-[#1E293B] uppercase tracking-wider">Time per invoice</p>
+                    <p className="text-xs text-slate-400">Manual data entry vs. AI</p>
                   </div>
                 </div>
-              </motion.div>
-            ))}
+                <div className="flex items-stretch gap-2 mb-7">
+                  <div className="flex-1 bg-red-50 border border-red-100 rounded-xl px-3 py-3 text-center">
+                    <p className="text-[10px] font-bold text-red-400 uppercase tracking-widest mb-1">Before</p>
+                    <p className="text-lg font-black text-red-500 line-through leading-none">8 min</p>
+                  </div>
+                  <div className="flex items-center text-slate-300 text-lg font-bold px-0.5">→</div>
+                  <div className="flex-1 bg-green-50 border border-green-100 rounded-xl px-3 py-3 text-center">
+                    <p className="text-[10px] font-bold text-green-500 uppercase tracking-widest mb-1">After</p>
+                    <p className="text-lg font-black text-green-600 leading-none">10 sec</p>
+                  </div>
+                </div>
+                <div className="pt-5 border-t border-[#F1F5F9] text-center">
+                  <div className="flex items-baseline justify-center gap-0.5">
+                    <span className="text-5xl font-black text-[#2563EB] tabular-nums">{cnt2880.toLocaleString()}</span>
+                    <span className="text-2xl font-black text-[#2563EB]">×</span>
+                  </div>
+                  <p className="text-sm text-slate-500 font-medium mt-1">faster than manual entry</p>
+                </div>
+              </div>
+            </motion.div>
+
+            {/* Cost */}
+            <motion.div initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.5, delay: 0.1 }}
+              className="bg-white rounded-2xl border border-[#E2E8F0] shadow-sm overflow-hidden hover:shadow-lg hover:-translate-y-1 transition-all duration-300">
+              <div className="h-1 bg-linear-to-r from-[#2563EB] to-[#4F46E5]" />
+              <div className="p-7">
+                <div className="flex items-center gap-3 mb-6">
+                  <div className="w-11 h-11 rounded-xl bg-[#EFF6FF] flex items-center justify-center shrink-0">
+                    <DollarSign size={20} className="text-[#2563EB]" />
+                  </div>
+                  <div>
+                    <p className="text-xs font-bold text-[#1E293B] uppercase tracking-wider">Monthly tool cost</p>
+                    <p className="text-xs text-slate-400">Bookkeeper salary vs. Datafyle</p>
+                  </div>
+                </div>
+                <div className="flex items-stretch gap-2 mb-7">
+                  <div className="flex-1 bg-red-50 border border-red-100 rounded-xl px-3 py-3 text-center">
+                    <p className="text-[10px] font-bold text-red-400 uppercase tracking-widest mb-1">Before</p>
+                    <p className="text-lg font-black text-red-500 line-through leading-none">$2,500</p>
+                  </div>
+                  <div className="flex items-center text-slate-300 text-lg font-bold px-0.5">→</div>
+                  <div className="flex-1 bg-green-50 border border-green-100 rounded-xl px-3 py-3 text-center">
+                    <p className="text-[10px] font-bold text-green-500 uppercase tracking-widest mb-1">After</p>
+                    <p className="text-lg font-black text-green-600 leading-none">$49</p>
+                  </div>
+                </div>
+                <div className="pt-5 border-t border-[#F1F5F9] text-center">
+                  <div className="flex items-baseline justify-center gap-0.5">
+                    <span className="text-5xl font-black text-[#2563EB] tabular-nums">{cnt98}</span>
+                    <span className="text-2xl font-black text-[#2563EB]">%</span>
+                  </div>
+                  <p className="text-sm text-slate-500 font-medium mt-1">cost reduction per month</p>
+                </div>
+              </div>
+            </motion.div>
+
+            {/* Accuracy */}
+            <motion.div initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.5, delay: 0.2 }}
+              className="bg-white rounded-2xl border border-[#E2E8F0] shadow-sm overflow-hidden hover:shadow-lg hover:-translate-y-1 transition-all duration-300">
+              <div className="h-1 bg-linear-to-r from-[#2563EB] to-[#4F46E5]" />
+              <div className="p-7">
+                <div className="flex items-center gap-3 mb-6">
+                  <div className="w-11 h-11 rounded-xl bg-[#EFF6FF] flex items-center justify-center shrink-0">
+                    <Shield size={20} className="text-[#2563EB]" />
+                  </div>
+                  <div>
+                    <p className="text-xs font-bold text-[#1E293B] uppercase tracking-wider">Extraction accuracy</p>
+                    <p className="text-xs text-slate-400">Human error rate vs. AI</p>
+                  </div>
+                </div>
+                <div className="flex items-stretch gap-2 mb-7">
+                  <div className="flex-1 bg-red-50 border border-red-100 rounded-xl px-3 py-3 text-center">
+                    <p className="text-[10px] font-bold text-red-400 uppercase tracking-widest mb-1">Before</p>
+                    <p className="text-lg font-black text-red-500 line-through leading-none">~12% err</p>
+                  </div>
+                  <div className="flex items-center text-slate-300 text-lg font-bold px-0.5">→</div>
+                  <div className="flex-1 bg-green-50 border border-green-100 rounded-xl px-3 py-3 text-center">
+                    <p className="text-[10px] font-bold text-green-500 uppercase tracking-widest mb-1">After</p>
+                    <p className="text-lg font-black text-green-600 leading-none">&lt;1% err</p>
+                  </div>
+                </div>
+                <div className="pt-5 border-t border-[#F1F5F9] text-center">
+                  <div className="flex items-baseline justify-center gap-0.5">
+                    <span className="text-5xl font-black text-[#2563EB] tabular-nums">{cnt97}</span>
+                    <span className="text-2xl font-black text-[#2563EB]">%+</span>
+                  </div>
+                  <p className="text-sm text-slate-500 font-medium mt-1">field-level AI accuracy</p>
+                </div>
+              </div>
+            </motion.div>
           </div>
+
+          {/* Trust strip */}
+          <motion.div initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.5, delay: 0.3 }}
+            className="grid grid-cols-2 md:grid-cols-4 bg-white rounded-2xl border border-[#E2E8F0] shadow-sm overflow-hidden divide-x divide-[#F1F5F9]">
+            {[
+              { value: '1,200+',  label: 'Firms using Datafyle' },
+              { value: '850K+',   label: 'Documents processed' },
+              { value: '4.9 ★',  label: 'Average user rating' },
+              { value: '99.7%',   label: 'Platform uptime' },
+            ].map((s) => (
+              <div key={s.label} className="py-5 px-4 text-center">
+                <p className="text-xl font-black text-[#1E293B] mb-1">{s.value}</p>
+                <p className="text-xs text-slate-400">{s.label}</p>
+              </div>
+            ))}
+          </motion.div>
+
         </div>
       </section>
 
       {/* ── HOW IT WORKS ────────────────────────────────────────────────────── */}
-      <section id="how-it-works" className="py-24 px-4 bg-[#0F172A] relative overflow-hidden">
-        <div className="absolute inset-0 pointer-events-none" style={{ background: 'radial-gradient(ellipse 80% 60% at 50% 50%, rgba(37,99,235,0.12) 0%, transparent 70%)' }} />
+      <section id="how-it-works" className="py-24 px-4 bg-black relative overflow-hidden">
+        <div className="absolute inset-0 pointer-events-none" style={{ background: 'radial-gradient(ellipse 80% 60% at 50% 50%, rgba(37,99,235,0.22) 0%, transparent 70%)' }} />
+        <div className="absolute inset-0 pointer-events-none" style={{ backgroundImage: 'radial-gradient(circle, rgba(255,255,255,0.07) 1px, transparent 1px)', backgroundSize: '28px 28px' }} />
         <div className="max-w-5xl mx-auto relative">
           <motion.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} transition={{ duration: 0.5 }} className="text-center mb-16">
             <span className="inline-flex items-center gap-2 text-xs font-bold text-[#2563EB] bg-[#2563EB]/10 border border-[#2563EB]/20 px-3 py-1.5 rounded-full uppercase tracking-widest mb-5">
@@ -1061,8 +1188,12 @@ export default function LandingPage() {
       </section>
 
       {/* ── FINAL CTA ───────────────────────────────────────────────────────── */}
-      <section className="py-24 px-4 bg-[#0F172A]">
-        <motion.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} transition={{ duration: 0.5 }} className="max-w-2xl mx-auto text-center">
+      <section className="relative py-24 px-4 bg-black overflow-hidden">
+        {/* Blue gradient aura */}
+        <div className="absolute inset-0 pointer-events-none" style={{ background: 'radial-gradient(ellipse 80% 60% at 50% 50%, rgba(37,99,235,0.25) 0%, transparent 70%)' }} />
+        {/* Dot grid */}
+        <div className="absolute inset-0 pointer-events-none" style={{ backgroundImage: 'radial-gradient(circle, rgba(255,255,255,0.07) 1px, transparent 1px)', backgroundSize: '28px 28px' }} />
+        <motion.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} transition={{ duration: 0.5 }} className="relative z-10 max-w-2xl mx-auto text-center">
           <h2 className="text-3xl sm:text-4xl font-bold text-white mb-4">Stop Wasting 8 Hours a Day on Data Entry</h2>
           <p className="text-slate-400 mb-8 text-lg">Join 1,200+ accounting firms already saving time with Datafyle</p>
           <Link href="/sign-up" className="inline-flex items-center gap-2 px-8 py-4 bg-[#2563EB] text-white text-lg font-bold rounded-xl hover:bg-blue-600 transition-all shadow-lg hover:-translate-y-0.5 min-h-[56px]">
@@ -1074,62 +1205,127 @@ export default function LandingPage() {
       </section>
 
       {/* ── FOOTER ──────────────────────────────────────────────────────────── */}
-      <footer className="relative bg-black overflow-hidden py-16 px-4">
+      <footer className="relative bg-black overflow-hidden pt-20 pb-10 px-4">
 
-        {/* Blue gradient aura at bottom edge of footer */}
-        <div
-          className="absolute bottom-0 left-0 right-0 pointer-events-none"
-          style={{ height: '320px', background: 'radial-gradient(ellipse 100% 70% at 50% 105%, rgba(37,99,235,0.55) 0%, rgba(37,99,235,0.15) 50%, transparent 72%)' }}
-        />
+        {/* Blue gradient aura at bottom edge */}
+        <div className="absolute bottom-0 left-0 right-0 pointer-events-none"
+          style={{ height: '320px', background: 'radial-gradient(ellipse 100% 70% at 50% 105%, rgba(37,99,235,0.55) 0%, rgba(37,99,235,0.15) 50%, transparent 72%)' }} />
 
-        {/* Static dot grid — matches hero canvas style */}
-        <div
-          className="absolute inset-0 pointer-events-none"
-          style={{
-            backgroundImage: 'radial-gradient(circle, rgba(255,255,255,0.07) 1px, transparent 1px)',
-            backgroundSize: '28px 28px',
-          }}
-        />
+        {/* Dot grid */}
+        <div className="absolute inset-0 pointer-events-none"
+          style={{ backgroundImage: 'radial-gradient(circle, rgba(255,255,255,0.07) 1px, transparent 1px)', backgroundSize: '28px 28px' }} />
 
         {/* Content */}
-        <div className="relative z-10 max-w-5xl mx-auto">
-          <div className="grid md:grid-cols-3 gap-10 mb-12">
-            <div>
+        <div className="relative z-10 max-w-6xl mx-auto">
+
+          {/* Top grid — brand + 3 link columns */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-10 mb-14">
+
+            {/* Brand */}
+            <div className="col-span-2 md:col-span-1">
               <div className="flex items-center gap-2.5 mb-4">
                 <div className="w-8 h-8 rounded-xl bg-white/10 flex items-center justify-center shrink-0">
                   <Image src="/images/datafyle.png" alt="" width={22} height={22} className="w-5 h-5 object-contain brightness-0 invert" />
                 </div>
                 <span className="font-bold text-[18px] text-white tracking-tight">Data<span className="text-blue-400">fyle</span></span>
               </div>
-              <p className="text-slate-400 text-sm leading-relaxed mb-4">
-                AI Document Processing for Accounting Firms
+              <p className="text-slate-400 text-sm leading-relaxed mb-2">
+                AI-powered document processing for accounting and bookkeeping firms.
               </p>
-              <p className="text-slate-500 text-xs leading-relaxed">
+              <p className="text-slate-500 text-xs leading-relaxed mb-6">
                 Trusted by 1,200+ firms in UK, US &amp; Australia.
               </p>
+
+              {/* Social icons */}
+              <div className="flex items-center gap-2">
+                {/* LinkedIn */}
+                <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn"
+                  className="w-9 h-9 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-slate-400 hover:bg-[#0A66C2] hover:border-[#0A66C2] hover:text-white hover:scale-110 transition-all duration-200">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/>
+                  </svg>
+                </a>
+                {/* Facebook */}
+                <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" aria-label="Facebook"
+                  className="w-9 h-9 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-slate-400 hover:bg-[#1877F2] hover:border-[#1877F2] hover:text-white hover:scale-110 transition-all duration-200">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/>
+                  </svg>
+                </a>
+                {/* Instagram */}
+                <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" aria-label="Instagram"
+                  className="w-9 h-9 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-slate-400 hover:bg-[#E1306C] hover:border-[#E1306C] hover:text-white hover:scale-110 transition-all duration-200">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/>
+                  </svg>
+                </a>
+                {/* Twitter / X */}
+                <a href="https://twitter.com" target="_blank" rel="noopener noreferrer" aria-label="Twitter"
+                  className="w-9 h-9 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-slate-400 hover:bg-[#1DA1F2] hover:border-[#1DA1F2] hover:text-white hover:scale-110 transition-all duration-200">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M22 4s-.7 2.1-2 3.4c1.6 10-9.4 17.3-18 11.6 2.2.1 4.4-.6 6-2C3 15.5.5 9.6 3 5c2.2 2.6 5.6 4.1 9 4-.9-4.2 4-6.6 7-3.8 1.1 0 3-1.2 3-1.2z"/>
+                  </svg>
+                </a>
+                {/* TikTok */}
+                <a href="https://tiktok.com" target="_blank" rel="noopener noreferrer" aria-label="TikTok"
+                  className="w-9 h-9 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-slate-400 hover:bg-white hover:border-white hover:text-black hover:scale-110 transition-all duration-200">
+                  <svg width="13" height="15" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1V9.01a6.27 6.27 0 0 0-.79-.05 6.34 6.34 0 0 0-6.34 6.34 6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.33-6.34V8.58a8.32 8.32 0 0 0 4.87 1.56V6.64a4.85 4.85 0 0 1-1.1.05z"/>
+                  </svg>
+                </a>
+              </div>
             </div>
+
+            {/* Product */}
             <div>
               <h4 className="text-white font-semibold mb-5 text-xs uppercase tracking-widest">Product</h4>
               <ul className="space-y-3">
-                <li><Link href="/pricing" className="text-slate-400 hover:text-white text-sm transition-colors">Pricing</Link></li>
-                <li><a href="/#how-it-works" className="text-slate-400 hover:text-white text-sm transition-colors">How It Works</a></li>
-                <li><Link href="/sign-up" className="text-slate-400 hover:text-white text-sm transition-colors">Get Started Free</Link></li>
+                <li><a href="#about" className="text-slate-400 hover:text-white text-sm transition-colors">About Us</a></li>
+                <li><a href="#how-it-works" className="text-slate-400 hover:text-white text-sm transition-colors">How It Works</a></li>
+                <li><a href="#features" className="text-slate-400 hover:text-white text-sm transition-colors">Features</a></li>
+                <li><a href="#calculator" className="text-slate-400 hover:text-white text-sm transition-colors">Savings Calculator</a></li>
+                <li><a href="#file-types" className="text-slate-400 hover:text-white text-sm transition-colors">Supported Files</a></li>
+                <li><a href="#pricing" className="text-slate-400 hover:text-white text-sm transition-colors">Pricing</a></li>
+                <li><a href="#faq" className="text-slate-400 hover:text-white text-sm transition-colors">FAQ</a></li>
               </ul>
             </div>
+
+            {/* Company */}
             <div>
               <h4 className="text-white font-semibold mb-5 text-xs uppercase tracking-widest">Company</h4>
               <ul className="space-y-3">
+                <li><Link href="/blog" className="text-slate-400 hover:text-white text-sm transition-colors">Blog</Link></li>
                 <li><Link href="/privacy" className="text-slate-400 hover:text-white text-sm transition-colors">Privacy Policy</Link></li>
                 <li><Link href="/terms" className="text-slate-400 hover:text-white text-sm transition-colors">Terms of Service</Link></li>
-                <li><Link href="/blog" className="text-slate-400 hover:text-white text-sm transition-colors">Blog</Link></li>
+              </ul>
+            </div>
+
+            {/* Get Started */}
+            <div>
+              <h4 className="text-white font-semibold mb-5 text-xs uppercase tracking-widest">Get Started</h4>
+              <ul className="space-y-3">
+                <li><Link href="/sign-up" className="text-slate-400 hover:text-white text-sm transition-colors">Create Free Account</Link></li>
+                <li><Link href="/sign-in" className="text-slate-400 hover:text-white text-sm transition-colors">Sign In</Link></li>
+                <li><Link href="/pricing" className="text-slate-400 hover:text-white text-sm transition-colors">View Pricing</Link></li>
+                <li><Link href="/dashboard" className="text-slate-400 hover:text-white text-sm transition-colors">Dashboard</Link></li>
               </ul>
             </div>
           </div>
-          <div className="pt-8 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-3">
+
+          {/* Divider */}
+          <div className="border-t border-white/10 pt-8 flex flex-col sm:flex-row items-center justify-between gap-4">
             <p className="text-slate-500 text-sm">© 2026 Datafyle. All rights reserved.</p>
-            <div className="flex items-center gap-1.5">
-              <span className="w-1.5 h-1.5 rounded-full bg-[#22C55E] animate-pulse shrink-0" />
-              <span className="text-slate-500 text-xs">99.7% uptime</span>
+            <div className="flex items-center gap-4 flex-wrap justify-center">
+              <div className="flex items-center gap-1.5">
+                <span className="w-1.5 h-1.5 rounded-full bg-[#22C55E] animate-pulse shrink-0" />
+                <span className="text-slate-500 text-xs">99.7% uptime</span>
+              </div>
+              <span className="text-slate-700 hidden sm:inline">·</span>
+              <Link href="/privacy" className="text-slate-500 text-xs hover:text-white transition-colors">Privacy</Link>
+              <span className="text-slate-700">·</span>
+              <Link href="/terms" className="text-slate-500 text-xs hover:text-white transition-colors">Terms</Link>
+              <span className="text-slate-700">·</span>
+              <Link href="/blog" className="text-slate-500 text-xs hover:text-white transition-colors">Blog</Link>
             </div>
           </div>
         </div>
