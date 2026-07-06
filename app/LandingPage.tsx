@@ -110,6 +110,28 @@ const FEATURES = [
   { icon: FileText, color: 'text-[#2563EB]', bg: 'bg-[#EFF6FF]', title: 'Monthly Reports', desc: 'One-click PDF reports to share with clients every month.' },
 ]
 
+// ─── Nav section data ─────────────────────────────────────────────────────────
+const DESKTOP_NAV = [
+  { href: '#about',        label: 'About' },
+  { href: '#how-it-works', label: 'How It Works' },
+  { href: '#features',     label: 'Features' },
+  { href: '#pricing',      label: 'Pricing' },
+  { href: '#faq',          label: 'FAQ' },
+]
+
+const MOBILE_NAV = [
+  { href: '#about',        label: 'About Us' },
+  { href: '#comparison',   label: 'Why Datafyle' },
+  { href: '#results',      label: 'Results' },
+  { href: '#how-it-works', label: 'How It Works' },
+  { href: '#features',     label: 'Features' },
+  { href: '#calculator',   label: 'Calculator' },
+  { href: '#file-types',   label: 'File Types' },
+  { href: '#reviews',      label: 'Reviews' },
+  { href: '#pricing',      label: 'Pricing' },
+  { href: '#faq',          label: 'FAQ' },
+]
+
 // ─── Navbar ───────────────────────────────────────────────────────────────────
 function Navbar() {
   const [scrolled, setScrolled] = useState(false)
@@ -121,11 +143,19 @@ function Navbar() {
     return () => window.removeEventListener('scroll', handler)
   }, [])
 
+  function handleNavClick(e: React.MouseEvent<HTMLAnchorElement>, href: string) {
+    e.preventDefault()
+    setMenuOpen(false)
+    const id = href.replace('#', '')
+    const el = document.getElementById(id)
+    if (el) el.scrollIntoView({ behavior: 'smooth' })
+  }
+
   return (
     <>
       <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled || menuOpen ? 'backdrop-blur-sm bg-white/80 border-b border-[#E2E8F0] shadow-sm' : 'bg-transparent'}`}>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2.5">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-6">
+          <Link href="/" className="flex items-center gap-2.5 shrink-0">
             <div className={`w-8 h-8 rounded-xl flex items-center justify-center shrink-0 ${!scrolled && !menuOpen ? 'bg-white/15' : 'bg-[#2563EB]'}`}>
               <Image src="/images/datafyle.png" alt="" width={22} height={22} className="w-5 h-5 object-contain brightness-0 invert" priority />
             </div>
@@ -133,28 +163,60 @@ function Navbar() {
               Data<span className={!scrolled && !menuOpen ? 'text-blue-300' : 'text-[#2563EB]'}>fyle</span>
             </span>
           </Link>
-          <div className="hidden md:flex items-center gap-6">
-            <Link href="/pricing" className={`text-sm font-medium transition-colors duration-300 ${scrolled || menuOpen ? 'text-[#1E293B] hover:text-[#2563EB]' : 'text-white/80 hover:text-white'}`}>Pricing</Link>
-            <Link href="/sign-in" className={`text-sm font-medium transition-colors duration-300 ${scrolled || menuOpen ? 'text-[#1E293B] hover:text-[#2563EB]' : 'text-white/80 hover:text-white'}`}>Login</Link>
+
+          {/* Desktop nav links */}
+          <div className="hidden lg:flex items-center gap-1 flex-1">
+            {DESKTOP_NAV.map(({ href, label }) => (
+              <a
+                key={href}
+                href={href}
+                onClick={(e) => handleNavClick(e, href)}
+                className={`px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${scrolled ? 'text-[#1E293B] hover:text-[#2563EB] hover:bg-[#EFF6FF]' : 'text-white/80 hover:text-white hover:bg-white/10'}`}
+              >
+                {label}
+              </a>
+            ))}
+          </div>
+
+          <div className="hidden md:flex items-center gap-3 shrink-0">
+            <Link href="/sign-in" className={`text-sm font-medium transition-colors duration-300 ${scrolled ? 'text-[#1E293B] hover:text-[#2563EB]' : 'text-white/80 hover:text-white'}`}>Login</Link>
             <Link href="/sign-up" className="inline-flex items-center gap-1.5 px-5 py-2.5 bg-[#2563EB] text-white text-sm font-semibold rounded-lg hover:bg-blue-700 transition-colors min-h-[44px]">
               Get Started
             </Link>
           </div>
+
           <button className={`md:hidden p-2 transition-colors duration-300 ${scrolled || menuOpen ? 'text-[#1E293B] hover:text-[#2563EB]' : 'text-white hover:text-white/70'}`} onClick={() => setMenuOpen((o) => !o)} aria-label="Toggle menu">
             {menuOpen ? <X size={24} /> : <Menu size={24} />}
           </button>
         </div>
       </nav>
+
+      {/* Mobile full-screen menu */}
       <AnimatePresence>
         {menuOpen && (
           <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} transition={{ duration: 0.2 }}
-            className="fixed inset-0 z-40 bg-white flex flex-col pt-16">
-            <div className="flex flex-col items-center justify-center flex-1 gap-10">
-              <Link href="/pricing" onClick={() => setMenuOpen(false)} className="text-2xl font-semibold text-[#1E293B] hover:text-[#2563EB] transition-colors">Pricing</Link>
-              <Link href="/sign-in" onClick={() => setMenuOpen(false)} className="text-2xl font-semibold text-[#1E293B] hover:text-[#2563EB] transition-colors">Login</Link>
-              <Link href="/sign-up" onClick={() => setMenuOpen(false)} className="inline-flex items-center px-10 py-4 bg-[#2563EB] text-white text-xl font-bold rounded-xl hover:bg-blue-700 transition-colors">
-                Get Started Free
-              </Link>
+            className="fixed inset-0 z-40 bg-white flex flex-col pt-16 overflow-y-auto">
+            <div className="flex flex-col flex-1 px-6 py-8 gap-1">
+              <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-3 px-3">Sections</p>
+              {MOBILE_NAV.map(({ href, label }) => (
+                <a
+                  key={href}
+                  href={href}
+                  onClick={(e) => handleNavClick(e, href)}
+                  className="flex items-center gap-3 px-3 py-3.5 rounded-xl text-base font-semibold text-[#1E293B] hover:bg-[#EFF6FF] hover:text-[#2563EB] transition-all"
+                >
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#2563EB] shrink-0" />
+                  {label}
+                </a>
+              ))}
+              <div className="mt-6 pt-6 border-t border-[#E2E8F0] flex flex-col gap-3">
+                <Link href="/sign-in" onClick={() => setMenuOpen(false)} className="flex items-center justify-center py-3.5 rounded-xl text-base font-semibold text-[#1E293B] border-2 border-[#E2E8F0] hover:border-[#2563EB] hover:text-[#2563EB] transition-all">
+                  Login
+                </Link>
+                <Link href="/sign-up" onClick={() => setMenuOpen(false)} className="flex items-center justify-center py-3.5 bg-[#2563EB] text-white text-base font-bold rounded-xl hover:bg-blue-700 transition-colors">
+                  Get Started Free
+                </Link>
+              </div>
             </div>
           </motion.div>
         )}
@@ -280,7 +342,7 @@ export default function LandingPage() {
       </section>
 
       {/* ── ABOUT US ────────────────────────────────────────────────────────── */}
-      <section className="py-24 px-4 bg-white">
+      <section id="about" className="py-24 px-4 bg-white">
         <div className="max-w-6xl mx-auto">
           <div className="grid lg:grid-cols-2 gap-16 items-center">
             <motion.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} transition={{ duration: 0.6 }}>
@@ -342,7 +404,7 @@ export default function LandingPage() {
       </section>
 
       {/* ── PROBLEM VS SOLUTION ─────────────────────────────────────────────── */}
-      <section className="py-24 px-4 bg-[#F8FAFC]">
+      <section id="comparison" className="py-24 px-4 bg-[#F8FAFC]">
         <div className="max-w-5xl mx-auto">
           <motion.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} transition={{ duration: 0.5 }} className="text-center mb-14">
             <h2 className="text-3xl sm:text-4xl font-bold text-[#1E293B] mb-3">The Old Way vs The Datafyle Way</h2>
@@ -421,7 +483,7 @@ export default function LandingPage() {
       </section>
 
       {/* ── THE NUMBERS ─────────────────────────────────────────────────────── */}
-      <section className="py-24 px-4 bg-white">
+      <section id="results" className="py-24 px-4 bg-white">
         <div className="max-w-5xl mx-auto">
           <motion.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} transition={{ duration: 0.5 }} className="text-center mb-14">
             <h2 className="text-3xl sm:text-4xl font-bold text-[#1E293B] mb-3">The Numbers Don&apos;t Lie</h2>
@@ -506,7 +568,7 @@ export default function LandingPage() {
       </section>
 
       {/* ── FEATURES ────────────────────────────────────────────────────────── */}
-      <section className="py-24 px-4 bg-white">
+      <section id="features" className="py-24 px-4 bg-white">
         <div className="max-w-5xl mx-auto">
           <motion.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} transition={{ duration: 0.5 }} className="text-center mb-14">
             <h2 className="text-3xl sm:text-4xl font-bold text-[#1E293B] mb-3">Everything You Need</h2>
@@ -566,7 +628,7 @@ export default function LandingPage() {
       </section>
 
       {/* ── SAVE CALCULATOR ─────────────────────────────────────────────────── */}
-      <section className="py-24 px-4 bg-white">
+      <section id="calculator" className="py-24 px-4 bg-white">
         <div className="max-w-2xl mx-auto">
           <motion.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} transition={{ duration: 0.5 }}>
             <div className="text-center mb-10">
@@ -630,7 +692,7 @@ export default function LandingPage() {
       </section>
 
       {/* ── FILE TYPES ──────────────────────────────────────────────────────── */}
-      <section className="py-24 px-4 bg-[#F8FAFC]">
+      <section id="file-types" className="py-24 px-4 bg-[#F8FAFC]">
         <div className="max-w-5xl mx-auto">
           <motion.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} transition={{ duration: 0.5 }} className="text-center mb-14">
             <h2 className="text-3xl sm:text-4xl font-bold text-[#1E293B] mb-3">Works With All Your Files</h2>
@@ -671,7 +733,7 @@ export default function LandingPage() {
       </section>
 
       {/* ── REVIEWS ─────────────────────────────────────────────────────────── */}
-      <section className="py-24 px-4 bg-white">
+      <section id="reviews" className="py-24 px-4 bg-white">
         <div className="max-w-5xl mx-auto">
           <motion.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} transition={{ duration: 0.5 }} className="text-center mb-14">
             <h2 className="text-3xl sm:text-4xl font-bold text-[#1E293B] mb-3">Trusted by Accounting Firms Worldwide</h2>
@@ -701,7 +763,7 @@ export default function LandingPage() {
       </section>
 
       {/* ── PRICING ─────────────────────────────────────────────────────────── */}
-      <section className="py-24 px-4 bg-[#F8FAFC]">
+      <section id="pricing" className="py-24 px-4 bg-[#F8FAFC]">
         <div className="max-w-7xl mx-auto">
           <motion.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} transition={{ duration: 0.5 }} className="text-center mb-14">
             <h2 className="text-3xl sm:text-4xl font-bold text-[#1E293B] mb-3">Start Free, Upgrade When Ready</h2>
@@ -751,7 +813,7 @@ export default function LandingPage() {
       </section>
 
       {/* ── FAQ ─────────────────────────────────────────────────────────────── */}
-      <section className="py-24 px-4 bg-white">
+      <section id="faq" className="py-24 px-4 bg-white">
         <div className="max-w-2xl mx-auto">
           <motion.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} transition={{ duration: 0.5 }} className="text-center mb-12">
             <h2 className="text-3xl sm:text-4xl font-bold text-[#1E293B] mb-3">Frequently Asked Questions</h2>
