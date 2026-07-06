@@ -320,7 +320,7 @@ export default function LandingPage() {
               <div className="absolute -inset-4 bg-[#2563EB]/3 rounded-3xl rotate-2 hidden lg:block" />
               <div className="relative rounded-2xl overflow-hidden shadow-2xl border border-[#E2E8F0]">
                 <Image
-                  src="/images/best-ai-invoice-data-extraction-software.webp"
+                  src="/images/ai-invoice-processing-software.webp"
                   alt="Datafyle AI invoice data extraction"
                   width={700}
                   height={500}
@@ -554,8 +554,8 @@ export default function LandingPage() {
             <motion.div initial={{ opacity: 0, x: 30 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }}
               className="rounded-2xl overflow-hidden shadow-xl border border-[#E2E8F0]">
               <Image
-                src="/images/automated-pdf-receipt-parsing-to-excel-spreadsheet.webp"
-                alt="Automated PDF receipt parsing to Excel spreadsheet"
+                src="/images/ai-bookkeeping-automation-software.webp"
+                alt="AI bookkeeping automation software output"
                 width={700}
                 height={450}
                 className="w-full object-cover"
@@ -659,12 +659,13 @@ export default function LandingPage() {
           <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }}
             className="rounded-2xl overflow-hidden shadow-lg border border-[#E2E8F0]">
             <Image
-              src="/images/automated-pdf-receipt-parsing-to-excel.webp"
-              alt="Automated PDF receipt parsing to Excel"
+              src="/images/automated-document-extraction-tool.webp"
+              alt="Automated Document Extraction Tool"
               width={1200}
               height={400}
               className="w-full object-cover"
             />
+            
           </motion.div>
         </div>
       </section>
