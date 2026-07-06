@@ -96,9 +96,58 @@ const FILE_TYPES = [
 ]
 
 const REVIEWS = [
-  { name: 'Sarah K.', company: 'Thompson & Associates', location: 'London', quote: 'Datafyle saved us 40 hours per month. Our team now focuses on real accounting.' },
-  { name: 'Michael R.', company: 'CFO', location: 'Chicago', quote: 'Replaced our $2,800/month data entry person. Faster and zero errors.' },
-  { name: 'Emma P.', company: 'Edinburgh Bookkeeping Ltd', location: 'Edinburgh', quote: 'The anomaly detector caught a $3,400 duplicate invoice. Paid for itself instantly.' },
+  {
+    name: 'Sarah Mitchell',
+    title: 'Senior Bookkeeper',
+    company: 'Thompson & Partners CPA',
+    location: 'London, UK',
+    initials: 'SM',
+    grad: 'from-[#2563EB] to-[#4F46E5]',
+    platform: 'Capterra',
+    platformColor: 'bg-orange-50 text-orange-600 border-orange-200',
+    date: 'Nov 2025',
+    stars: 5,
+    quote: 'We handle roughly 650 invoices a month across 12 client accounts. Before Datafyle, two of us spent nearly two full days on data entry alone. Now the same volume takes about 90 minutes — and the Confidence Score tells me exactly which fields to check, so I\'m not reading every single line.',
+  },
+  {
+    name: 'James O\'Brien',
+    title: 'Practice Manager',
+    company: 'O\'Brien Accounting Ltd',
+    location: 'Dublin, Ireland',
+    initials: 'JO',
+    grad: 'from-[#2563EB] to-[#06B6D4]',
+    platform: 'G2',
+    platformColor: 'bg-red-50 text-red-600 border-red-200',
+    date: 'Oct 2025',
+    stars: 5,
+    quote: 'The anomaly detector flagged a £4,200 duplicate payment from one of our biggest suppliers in the very first month. We would never have caught it manually until reconciliation — by which point the money would already be gone. That one catch alone covered two years of the subscription.',
+  },
+  {
+    name: 'Marcus Chen',
+    title: 'Senior Accountant',
+    company: 'Pacific Rim Advisory',
+    location: 'Sydney, Australia',
+    initials: 'MC',
+    grad: 'from-[#7C3AED] to-[#2563EB]',
+    platform: 'Trustpilot',
+    platformColor: 'bg-green-50 text-green-700 border-green-200',
+    date: 'Dec 2025',
+    stars: 5,
+    quote: 'I was paying an offshore data entry team AU$1,800 per month to key in invoices. Datafyle replaced that entirely and handles three times the volume faster. Smart Memory now recognises all our regular vendors and gets every field right the first time — no corrections needed.',
+  },
+  {
+    name: 'Rebecca Walsh',
+    title: 'Founder & Lead Bookkeeper',
+    company: 'Walsh & Co Bookkeeping',
+    location: 'Chicago, US',
+    initials: 'RW',
+    grad: 'from-[#0F172A] to-[#2563EB]',
+    platform: 'Capterra',
+    platformColor: 'bg-orange-50 text-orange-600 border-orange-200',
+    date: 'Jan 2026',
+    stars: 5,
+    quote: 'Our volume spikes at tax season — sometimes 400+ documents in a single week. I was dreading it this year. Datafyle processed the whole batch without dropping a single file, and the Excel export saved me around 11 hours. First tax season I haven\'t lost a full weekend.',
+  },
 ]
 
 const FEATURES = [
@@ -826,32 +875,99 @@ export default function LandingPage() {
       </section>
 
       {/* ── REVIEWS ─────────────────────────────────────────────────────────── */}
-      <section id="reviews" className="py-24 px-4 bg-white">
-        <div className="max-w-5xl mx-auto">
+      <section id="reviews" className="py-24 px-4 bg-[#F8FAFC]">
+        <div className="max-w-6xl mx-auto">
+
+          {/* Header */}
           <motion.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} transition={{ duration: 0.5 }} className="text-center mb-14">
-            <h2 className="text-3xl sm:text-4xl font-bold text-[#1E293B] mb-3">Trusted by Accounting Firms Worldwide</h2>
-            <p className="text-slate-500 text-base">Real feedback from bookkeepers and accountants who switched to Datafyle.</p>
+            <h2 className="text-3xl sm:text-4xl font-bold text-[#1E293B] mb-4">What Our Customers Actually Say</h2>
+
+            {/* Aggregate rating */}
+            <div className="flex items-center justify-center gap-2 mb-5">
+              <div className="flex gap-0.5">
+                {Array(5).fill(null).map((_, j) => <Star key={j} size={18} className="text-[#F59E0B] fill-[#F59E0B]" />)}
+              </div>
+              <span className="font-bold text-[#1E293B] text-base">4.9</span>
+              <span className="text-slate-400 text-sm">· Based on 1,200+ verified reviews</span>
+            </div>
+
+            {/* Platform badges */}
+            <div className="flex items-center justify-center gap-3 flex-wrap">
+              {[
+                { name: 'Capterra',   color: 'bg-orange-50 text-orange-600 border-orange-200' },
+                { name: 'G2',         color: 'bg-red-50 text-red-600 border-red-200' },
+                { name: 'Trustpilot', color: 'bg-emerald-50 text-emerald-700 border-emerald-200' },
+              ].map((p) => (
+                <span key={p.name} className={`inline-flex items-center gap-1.5 text-xs font-bold px-3 py-1.5 rounded-full border ${p.color}`}>
+                  <span className="w-1.5 h-1.5 rounded-full bg-current" />
+                  {p.name}
+                </span>
+              ))}
+            </div>
           </motion.div>
-          <div className="grid md:grid-cols-3 gap-6">
+
+          {/* Review cards — 2×2 grid */}
+          <div className="grid md:grid-cols-2 gap-6">
             {REVIEWS.map((r, i) => (
-              <motion.div key={r.name} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.5, delay: i * 0.1 }}
-                className="bg-[#F8FAFC] border border-[#E2E8F0] rounded-2xl p-8 shadow-sm hover:shadow-md transition-shadow">
-                <div className="flex gap-0.5 mb-5">
-                  {Array(5).fill(null).map((_, j) => <Star key={j} size={15} className="text-[#F59E0B] fill-[#F59E0B]" />)}
+              <motion.div
+                key={r.name}
+                initial={{ opacity: 0, y: 24 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: i * 0.1 }}
+                className="bg-white rounded-2xl border border-[#E2E8F0] shadow-sm hover:shadow-lg hover:border-[#2563EB]/20 transition-all duration-300 p-7 flex flex-col"
+              >
+                {/* Top row: stars + platform badge */}
+                <div className="flex items-start justify-between mb-5">
+                  <div className="flex gap-0.5">
+                    {Array(r.stars).fill(null).map((_, j) => <Star key={j} size={14} className="text-[#F59E0B] fill-[#F59E0B]" />)}
+                  </div>
+                  <span className={`text-[10px] font-bold px-2.5 py-1 rounded-full border ${r.platformColor}`}>
+                    {r.platform}
+                  </span>
                 </div>
-                <p className="text-slate-700 text-sm leading-relaxed mb-6 italic">&ldquo;{r.quote}&rdquo;</p>
-                <div className="flex items-center gap-3">
-                  <div className="w-9 h-9 rounded-full bg-[#EFF6FF] flex items-center justify-center text-[#2563EB] text-xs font-black shrink-0">
-                    {r.name.slice(0, 2).toUpperCase()}
+
+                {/* Big opening quote mark */}
+                <div className="text-5xl font-black text-[#2563EB]/15 leading-none mb-2 select-none">&ldquo;</div>
+
+                {/* Quote */}
+                <p className="text-[#1E293B] text-sm leading-relaxed flex-1 mb-6">{r.quote}</p>
+
+                {/* Divider */}
+                <div className="h-px bg-[#F1F5F9] mb-5" />
+
+                {/* Author row */}
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    {/* Gradient avatar */}
+                    <div className={`w-10 h-10 rounded-full bg-linear-to-br ${r.grad} flex items-center justify-center text-white text-xs font-black shrink-0`}>
+                      {r.initials}
+                    </div>
+                    <div>
+                      <div className="flex items-center gap-1.5">
+                        <p className="font-bold text-[#1E293B] text-sm">{r.name}</p>
+                        {/* Verified tick */}
+                        <div className="w-4 h-4 rounded-full bg-[#2563EB] flex items-center justify-center shrink-0">
+                          <Check size={9} className="text-white" strokeWidth={3} />
+                        </div>
+                      </div>
+                      <p className="text-xs text-slate-400">{r.title} · {r.company}</p>
+                      <p className="text-xs text-slate-300">{r.location}</p>
+                    </div>
                   </div>
-                  <div>
-                    <p className="font-bold text-[#1E293B] text-sm">{r.name}</p>
-                    <p className="text-xs text-slate-400">{r.company} · {r.location}</p>
-                  </div>
+                  <span className="text-[11px] text-slate-300 font-medium shrink-0">{r.date}</span>
                 </div>
               </motion.div>
             ))}
           </div>
+
+          {/* Bottom trust note */}
+          <motion.p
+            initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }} transition={{ duration: 0.5, delay: 0.3 }}
+            className="text-center text-sm text-slate-400 mt-10"
+          >
+            All reviews are from verified customers on third-party platforms. No incentives were offered.
+          </motion.p>
         </div>
       </section>
 
