@@ -172,20 +172,18 @@ const DESKTOP_NAV = [
   { href: '#about',        label: 'About' },
   { href: '#how-it-works', label: 'How It Works' },
   { href: '#features',     label: 'Features' },
-  { href: '#pricing',      label: 'Pricing' },
   { href: '#faq',          label: 'FAQ' },
 ]
 
 const MOBILE_NAV = [
   { href: '#about',        label: 'About Us' },
   { href: '#comparison',   label: 'Why Datafyle' },
-  { href: '#results',      label: 'Results' },
   { href: '#how-it-works', label: 'How It Works' },
   { href: '#features',     label: 'Features' },
   { href: '#calculator',   label: 'Calculator' },
   { href: '#file-types',   label: 'File Types' },
   { href: '#reviews',      label: 'Reviews' },
-  { href: '#pricing',      label: 'Pricing' },
+  { href: '/pricing',      label: 'Pricing' },
   { href: '#faq',          label: 'FAQ' },
 ]
 
@@ -201,6 +199,7 @@ function Navbar() {
   }, [])
 
   function handleNavClick(e: React.MouseEvent<HTMLAnchorElement>, href: string) {
+    if (href.startsWith('/')) { setMenuOpen(false); return }
     e.preventDefault()
     setMenuOpen(false)
     const id = href.replace('#', '')
@@ -233,6 +232,16 @@ function Navbar() {
                 {label}
               </a>
             ))}
+            <Link
+              href="/pricing"
+              className={`ml-1 px-4 py-2 rounded-lg text-sm font-bold border-2 transition-all duration-200 ${
+                scrolled
+                  ? 'border-[#2563EB] text-[#2563EB] hover:bg-[#2563EB] hover:text-white'
+                  : 'border-white/50 text-white hover:border-white hover:bg-white/15'
+              }`}
+            >
+              Pricing
+            </Link>
           </div>
 
           <div className="hidden md:flex items-center gap-3 shrink-0">
@@ -1186,7 +1195,7 @@ export default function LandingPage() {
                 <li><a href="#features" className="text-slate-400 hover:text-white text-sm transition-colors">Features</a></li>
                 <li><a href="#calculator" className="text-slate-400 hover:text-white text-sm transition-colors">Savings Calculator</a></li>
                 <li><a href="#file-types" className="text-slate-400 hover:text-white text-sm transition-colors">Supported Files</a></li>
-                <li><a href="#pricing" className="text-slate-400 hover:text-white text-sm transition-colors">Pricing</a></li>
+                <li><Link href="/pricing" className="text-slate-400 hover:text-white text-sm transition-colors">Pricing</Link></li>
                 <li><a href="#faq" className="text-slate-400 hover:text-white text-sm transition-colors">FAQ</a></li>
               </ul>
             </div>
