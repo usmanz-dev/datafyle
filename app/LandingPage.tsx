@@ -8,7 +8,7 @@ import {
   Menu, X, Brain, Shield,
   FileText, FileSpreadsheet, Image as LucideImage, Code, AlignLeft,
   Check, ChevronDown, Star, ArrowRight, TrendingUp,
-  AlertCircle, FolderOpen, Plus, Minus, Sparkles,
+  AlertCircle, FolderOpen, Plus, Minus, Bot,
 } from 'lucide-react'
 
 // ─── Counter hook ─────────────────────────────────────────────────────────────
@@ -612,7 +612,7 @@ export default function LandingPage() {
 
             {[
               { icon: FolderOpen,      num: '01', title: 'Upload Your Documents', desc: 'PDF, Word, Excel, CSV, or images — any format up to 25MB. Drag & drop or click to browse.', delay: 0 },
-              { icon: Sparkles,        num: '02', title: 'AI Reads Everything',    desc: 'Claude AI extracts vendor, amount, date, and every line item — in under 10 seconds flat.', delay: 0.15 },
+              { icon: Bot,             num: '02', title: 'AI Reads Everything',    desc: 'Claude AI extracts vendor, amount, date, and every line item — in under 10 seconds flat.', delay: 0.15 },
               { icon: FileSpreadsheet, num: '03', title: 'Get Clean Data',         desc: 'Download your structured Excel file or sync directly to Google Sheets — ready to use instantly.', delay: 0.3 },
             ].map((step) => (
               <motion.div key={step.num} initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6, delay: step.delay }}
