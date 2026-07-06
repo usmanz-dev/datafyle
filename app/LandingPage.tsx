@@ -5,10 +5,10 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { motion, useInView, AnimatePresence } from 'framer-motion'
 import {
-  Menu, X, Upload, Brain, Download, Shield,
+  Menu, X, Brain, Shield,
   FileText, FileSpreadsheet, Image as LucideImage, Code, AlignLeft,
   Check, ChevronDown, Star, ArrowRight, TrendingUp,
-  AlertCircle, Clock, DollarSign, FolderOpen, Plus, Minus,
+  AlertCircle, FolderOpen, Plus, Minus, Sparkles,
 } from 'lucide-react'
 
 // ─── Counter hook ─────────────────────────────────────────────────────────────
@@ -293,11 +293,6 @@ export default function LandingPage() {
   const mouseRef     = useRef({ x: -9999, y: -9999 })
   const animRef      = useRef<number | undefined>(undefined)
   const rectRef      = useRef<DOMRect | null>(null)
-  const resultsRef   = useRef<HTMLDivElement>(null)
-  const resultsInView = useInView(resultsRef, { once: true, margin: '-80px' })
-  const cnt98t = Math.round(useCounter(98, resultsInView, 1600))
-  const cnt98  = Math.round(useCounter(98, resultsInView, 1600))
-  const cnt97  = Math.round(useCounter(97, resultsInView, 1600))
 
   useEffect(() => {
     const canvas = canvasRef.current
@@ -599,130 +594,6 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ── THE NUMBERS ─────────────────────────────────────────────────────── */}
-      <section id="results" className="relative py-24 px-4 bg-white">
-        <div className="absolute top-0 inset-x-0 h-px bg-[#E2E8F0]" />
-        <div className="absolute bottom-0 inset-x-0 h-px bg-[#E2E8F0]" />
-        <div className="max-w-5xl mx-auto">
-
-          {/* Header */}
-          <motion.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} transition={{ duration: 0.5 }} className="text-center mb-14">
-            <span className="inline-flex items-center gap-2 text-xs font-bold text-[#2563EB] bg-[#EFF6FF] border border-[#2563EB]/20 px-3 py-1.5 rounded-full uppercase tracking-widest mb-5">
-              Real ROI
-            </span>
-            <h2 className="text-3xl sm:text-4xl font-bold text-[#1E293B] mb-3">What Accounting Firms Actually Save</h2>
-            <p className="text-slate-500 text-base max-w-xl mx-auto">
-              Real numbers tracked across our early firm cohort — measuring time, cost, and accuracy before and after switching to Datafyle.
-            </p>
-          </motion.div>
-
-          {/* 3 stat cards */}
-          <div ref={resultsRef} className="grid md:grid-cols-3 gap-6 mb-6">
-
-            {/* Time */}
-            <motion.div initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.5, delay: 0 }}
-              className="bg-white rounded-2xl border border-[#E2E8F0] shadow-sm overflow-hidden hover:shadow-md hover:-translate-y-0.5 transition-all duration-300">
-              <div className="h-1 bg-linear-to-r from-[#2563EB] to-[#4F46E5]" />
-              <div className="p-7">
-                <div className="flex items-center gap-2.5 mb-7">
-                  <div className="w-10 h-10 rounded-xl bg-[#EFF6FF] flex items-center justify-center shrink-0">
-                    <Clock size={18} className="text-[#2563EB]" />
-                  </div>
-                  <div>
-                    <p className="text-sm font-bold text-[#1E293B]">Time per invoice</p>
-                    <p className="text-xs text-slate-400 mt-0.5">Manual entry vs. Datafyle AI</p>
-                  </div>
-                </div>
-                <div className="flex items-baseline gap-0.5 mb-1.5">
-                  <span className="text-4xl font-black text-[#2563EB] tabular-nums leading-none">{cnt98t}</span>
-                  <span className="text-xl font-black text-[#2563EB]">%</span>
-                </div>
-                <p className="text-sm font-semibold text-[#1E293B] mb-0.5">time saved per document</p>
-                <p className="text-xs text-slate-400 mb-6">AI processes every invoice in under 10 seconds</p>
-                <div className="pt-5 border-t border-[#F1F5F9] flex items-center gap-2">
-                  <span className="text-sm text-slate-400 line-through">8 min / doc</span>
-                  <span className="text-slate-300">→</span>
-                  <span className="text-sm font-bold text-[#22C55E]">10 sec / doc</span>
-                </div>
-              </div>
-            </motion.div>
-
-            {/* Cost */}
-            <motion.div initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.5, delay: 0.1 }}
-              className="bg-white rounded-2xl border border-[#E2E8F0] shadow-sm overflow-hidden hover:shadow-md hover:-translate-y-0.5 transition-all duration-300">
-              <div className="h-1 bg-linear-to-r from-[#2563EB] to-[#4F46E5]" />
-              <div className="p-7">
-                <div className="flex items-center gap-2.5 mb-7">
-                  <div className="w-10 h-10 rounded-xl bg-[#EFF6FF] flex items-center justify-center shrink-0">
-                    <DollarSign size={18} className="text-[#2563EB]" />
-                  </div>
-                  <div>
-                    <p className="text-sm font-bold text-[#1E293B]">Monthly tool cost</p>
-                    <p className="text-xs text-slate-400 mt-0.5">Bookkeeper salary vs. Datafyle</p>
-                  </div>
-                </div>
-                <div className="flex items-baseline gap-0.5 mb-1.5">
-                  <span className="text-4xl font-black text-[#2563EB] tabular-nums leading-none">{cnt98}</span>
-                  <span className="text-xl font-black text-[#2563EB]">%</span>
-                </div>
-                <p className="text-sm font-semibold text-[#1E293B] mb-0.5">cost reduction per month</p>
-                <p className="text-xs text-slate-400 mb-6">Replace a $2,500 bookkeeper for just $49/mo</p>
-                <div className="pt-5 border-t border-[#F1F5F9] flex items-center gap-2">
-                  <span className="text-sm text-slate-400 line-through">$2,500 / mo</span>
-                  <span className="text-slate-300">→</span>
-                  <span className="text-sm font-bold text-[#22C55E]">$49 / mo</span>
-                </div>
-              </div>
-            </motion.div>
-
-            {/* Accuracy */}
-            <motion.div initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.5, delay: 0.2 }}
-              className="bg-white rounded-2xl border border-[#E2E8F0] shadow-sm overflow-hidden hover:shadow-md hover:-translate-y-0.5 transition-all duration-300">
-              <div className="h-1 bg-linear-to-r from-[#2563EB] to-[#4F46E5]" />
-              <div className="p-7">
-                <div className="flex items-center gap-2.5 mb-7">
-                  <div className="w-10 h-10 rounded-xl bg-[#EFF6FF] flex items-center justify-center shrink-0">
-                    <Shield size={18} className="text-[#2563EB]" />
-                  </div>
-                  <div>
-                    <p className="text-sm font-bold text-[#1E293B]">Extraction accuracy</p>
-                    <p className="text-xs text-slate-400 mt-0.5">Human error rate vs. AI</p>
-                  </div>
-                </div>
-                <div className="flex items-baseline gap-0.5 mb-1.5">
-                  <span className="text-4xl font-black text-[#2563EB] tabular-nums leading-none">{cnt97}</span>
-                  <span className="text-xl font-black text-[#2563EB]">%+</span>
-                </div>
-                <p className="text-sm font-semibold text-[#1E293B] mb-0.5">field-level AI accuracy</p>
-                <p className="text-xs text-slate-400 mb-6">Confidence score on every extracted field</p>
-                <div className="pt-5 border-t border-[#F1F5F9] flex items-center gap-2">
-                  <span className="text-sm text-slate-400 line-through">~12% error rate</span>
-                  <span className="text-slate-300">→</span>
-                  <span className="text-sm font-bold text-[#22C55E]">&lt;1% error rate</span>
-                </div>
-              </div>
-            </motion.div>
-          </div>
-
-          {/* Trust strip */}
-          <motion.div initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.5, delay: 0.3 }}
-            className="grid grid-cols-2 md:grid-cols-4 bg-white rounded-2xl border border-[#E2E8F0] shadow-sm overflow-hidden divide-x divide-[#F1F5F9]">
-            {[
-              { value: '50+',   label: 'Firms using Datafyle' },
-              { value: '12K+',  label: 'Documents processed' },
-              { value: '4.9 ★',  label: 'Average user rating' },
-              { value: '99.7%',   label: 'Platform uptime' },
-            ].map((s) => (
-              <div key={s.label} className="py-5 px-4 text-center">
-                <p className="text-xl font-black text-[#1E293B] mb-1">{s.value}</p>
-                <p className="text-xs text-slate-400">{s.label}</p>
-              </div>
-            ))}
-          </motion.div>
-
-        </div>
-      </section>
-
       {/* ── HOW IT WORKS ────────────────────────────────────────────────────── */}
       <section id="how-it-works" className="py-24 px-4 bg-black relative overflow-hidden">
         <div className="absolute inset-0 pointer-events-none" style={{ background: 'radial-gradient(ellipse 80% 60% at 50% 50%, rgba(37,99,235,0.22) 0%, transparent 70%)' }} />
@@ -740,28 +611,27 @@ export default function LandingPage() {
 
 
             {[
-              { icon: Upload,   num: '01', title: 'Upload Your Documents', desc: 'PDF, Word, Excel, CSV, or images — any format up to 25MB. Drag & drop or click to browse.', delay: 0 },
-              { icon: Brain,    num: '02', title: 'AI Reads Everything',    desc: 'Claude AI extracts vendor, amount, date, and every line item — in under 10 seconds flat.', delay: 0.15 },
-              { icon: Download, num: '03', title: 'Get Clean Data',         desc: 'Download your structured Excel file or sync directly to Google Sheets — ready to use instantly.', delay: 0.3 },
+              { icon: FolderOpen,      num: '01', title: 'Upload Your Documents', desc: 'PDF, Word, Excel, CSV, or images — any format up to 25MB. Drag & drop or click to browse.', delay: 0 },
+              { icon: Sparkles,        num: '02', title: 'AI Reads Everything',    desc: 'Claude AI extracts vendor, amount, date, and every line item — in under 10 seconds flat.', delay: 0.15 },
+              { icon: FileSpreadsheet, num: '03', title: 'Get Clean Data',         desc: 'Download your structured Excel file or sync directly to Google Sheets — ready to use instantly.', delay: 0.3 },
             ].map((step) => (
               <motion.div key={step.num} initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6, delay: step.delay }}
                 className="relative bg-white/5 border border-white/10 rounded-2xl p-8 hover:bg-white/8 hover:border-[#2563EB]/40 transition-all group">
-                {/* Step number badge with pulse */}
-                <div className="flex justify-between items-start mb-6">
+                {/* Icon (left) + Step number badge (right) */}
+                <div className="flex items-center justify-between mb-7">
                   <motion.div
-                    animate={{ scale: [1, 1.12, 1], boxShadow: ['0 0 0 0 rgba(37,99,235,0)', '0 0 0 8px rgba(37,99,235,0.15)', '0 0 0 0 rgba(37,99,235,0)'] }}
+                    animate={{ y: [0, -5, 0] }}
+                    transition={{ repeat: Infinity, duration: 3, delay: step.delay, ease: 'easeInOut' }}
+                    className="w-12 h-12 bg-[#2563EB]/15 rounded-2xl flex items-center justify-center shrink-0">
+                    <step.icon size={22} className="text-[#3B82F6]" />
+                  </motion.div>
+                  <motion.div
+                    animate={{ scale: [1, 1.1, 1], boxShadow: ['0 0 0 0 rgba(37,99,235,0)', '0 0 0 8px rgba(37,99,235,0.18)', '0 0 0 0 rgba(37,99,235,0)'] }}
                     transition={{ repeat: Infinity, duration: 2.5, delay: step.delay }}
-                    className="w-10 h-10 rounded-xl bg-[#2563EB] flex items-center justify-center text-white text-xs font-black">
+                    className="w-10 h-10 rounded-xl bg-[#2563EB] flex items-center justify-center text-white text-xs font-black shrink-0">
                     {step.num}
                   </motion.div>
                 </div>
-                {/* Icon with float animation */}
-                <motion.div
-                  animate={{ y: [0, -6, 0] }}
-                  transition={{ repeat: Infinity, duration: 3, delay: step.delay, ease: 'easeInOut' }}
-                  className="w-14 h-14 bg-[#2563EB]/15 rounded-2xl flex items-center justify-center mb-6">
-                  <step.icon size={26} className="text-[#2563EB]" />
-                </motion.div>
                 <h3 className="font-bold text-white text-base mb-3">{step.title}</h3>
                 <p className="text-sm text-slate-400 leading-relaxed">{step.desc}</p>
               </motion.div>
