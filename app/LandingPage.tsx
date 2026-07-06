@@ -803,35 +803,64 @@ export default function LandingPage() {
       </section>
 
       {/* ── FOOTER ──────────────────────────────────────────────────────────── */}
-      <footer className="bg-[#0F172A] border-t border-white/10 py-14 px-4">
-        <div className="max-w-5xl mx-auto grid md:grid-cols-3 gap-10 mb-10">
-          <div>
-            <div className="flex items-center gap-2.5 mb-3">
-              <div className="w-8 h-8 rounded-xl bg-white/10 flex items-center justify-center shrink-0">
-                <Image src="/images/datafyle.png" alt="" width={22} height={22} className="w-5 h-5 object-contain brightness-0 invert" />
+      <footer className="relative bg-black overflow-hidden py-16 px-4">
+
+        {/* Same blue gradient aura as hero — at top edge of footer */}
+        <div
+          className="absolute top-0 left-0 right-0 pointer-events-none"
+          style={{ height: '320px', background: 'radial-gradient(ellipse 100% 70% at 50% -5%, rgba(37,99,235,0.55) 0%, rgba(37,99,235,0.15) 50%, transparent 72%)' }}
+        />
+
+        {/* Static dot grid — matches hero canvas style */}
+        <div
+          className="absolute inset-0 pointer-events-none"
+          style={{
+            backgroundImage: 'radial-gradient(circle, rgba(255,255,255,0.07) 1px, transparent 1px)',
+            backgroundSize: '28px 28px',
+          }}
+        />
+
+        {/* Content */}
+        <div className="relative z-10 max-w-5xl mx-auto">
+          <div className="grid md:grid-cols-3 gap-10 mb-12">
+            <div>
+              <div className="flex items-center gap-2.5 mb-4">
+                <div className="w-8 h-8 rounded-xl bg-white/10 flex items-center justify-center shrink-0">
+                  <Image src="/images/datafyle.png" alt="" width={22} height={22} className="w-5 h-5 object-contain brightness-0 invert" />
+                </div>
+                <span className="font-bold text-[18px] text-white tracking-tight">Data<span className="text-blue-400">fyle</span></span>
               </div>
-              <span className="font-bold text-[18px] text-white tracking-tight">Data<span className="text-blue-400">fyle</span></span>
+              <p className="text-slate-400 text-sm leading-relaxed mb-4">
+                AI Document Processing for Accounting Firms
+              </p>
+              <p className="text-slate-500 text-xs leading-relaxed">
+                Trusted by 1,200+ firms in UK, US &amp; Australia.
+              </p>
             </div>
-            <p className="text-slate-400 text-sm leading-relaxed">AI Document Processing for Accounting Firms</p>
+            <div>
+              <h4 className="text-white font-semibold mb-5 text-xs uppercase tracking-widest">Product</h4>
+              <ul className="space-y-3">
+                <li><Link href="/pricing" className="text-slate-400 hover:text-white text-sm transition-colors">Pricing</Link></li>
+                <li><a href="/#how-it-works" className="text-slate-400 hover:text-white text-sm transition-colors">How It Works</a></li>
+                <li><Link href="/sign-up" className="text-slate-400 hover:text-white text-sm transition-colors">Get Started Free</Link></li>
+              </ul>
+            </div>
+            <div>
+              <h4 className="text-white font-semibold mb-5 text-xs uppercase tracking-widest">Company</h4>
+              <ul className="space-y-3">
+                <li><Link href="/privacy" className="text-slate-400 hover:text-white text-sm transition-colors">Privacy Policy</Link></li>
+                <li><Link href="/terms" className="text-slate-400 hover:text-white text-sm transition-colors">Terms of Service</Link></li>
+                <li><Link href="/blog" className="text-slate-400 hover:text-white text-sm transition-colors">Blog</Link></li>
+              </ul>
+            </div>
           </div>
-          <div>
-            <h4 className="text-white font-semibold mb-4 text-sm uppercase tracking-wider">Product</h4>
-            <ul className="space-y-2.5">
-              <li><Link href="/pricing" className="text-slate-400 hover:text-white text-sm transition-colors">Pricing</Link></li>
-              <li><a href="/#how-it-works" className="text-slate-400 hover:text-white text-sm transition-colors">How It Works</a></li>
-            </ul>
+          <div className="pt-8 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-3">
+            <p className="text-slate-500 text-sm">© 2026 Datafyle. All rights reserved.</p>
+            <div className="flex items-center gap-1.5">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#22C55E] animate-pulse shrink-0" />
+              <span className="text-slate-500 text-xs">99.7% uptime</span>
+            </div>
           </div>
-          <div>
-            <h4 className="text-white font-semibold mb-4 text-sm uppercase tracking-wider">Company</h4>
-            <ul className="space-y-2.5">
-              <li><Link href="/privacy" className="text-slate-400 hover:text-white text-sm transition-colors">Privacy Policy</Link></li>
-              <li><Link href="/terms" className="text-slate-400 hover:text-white text-sm transition-colors">Terms of Service</Link></li>
-              <li><Link href="/blog" className="text-slate-400 hover:text-white text-sm transition-colors">Blog</Link></li>
-            </ul>
-          </div>
-        </div>
-        <div className="max-w-5xl mx-auto pt-8 border-t border-white/10 text-center">
-          <p className="text-slate-500 text-sm">Copyright 2026 Datafyle. All rights reserved.</p>
         </div>
       </footer>
     </div>
