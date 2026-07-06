@@ -537,7 +537,7 @@ export default function LandingPage() {
                   <span className="text-red-500 text-lg font-black">✗</span>
                 </div>
                 <div>
-                  <p className="text-[10px] font-bold text-red-400 uppercase tracking-widest">Manual Process</p>
+                  <p className="text-xs font-bold text-red-400 uppercase tracking-widest">Manual Process</p>
                   <h3 className="text-lg font-bold text-[#1E293B]">The Old Way</h3>
                 </div>
               </div>
@@ -571,7 +571,7 @@ export default function LandingPage() {
                   <Check size={18} className="text-white" strokeWidth={3} />
                 </div>
                 <div>
-                  <p className="text-[10px] font-bold text-[#2563EB] uppercase tracking-widest">AI-Powered</p>
+                  <p className="text-xs font-bold text-[#2563EB] uppercase tracking-widest">AI-Powered</p>
                   <h3 className="text-lg font-bold text-[#1E293B]">The Datafyle Way</h3>
                 </div>
               </div>
@@ -600,7 +600,7 @@ export default function LandingPage() {
       </section>
 
       {/* ── THE NUMBERS ─────────────────────────────────────────────────────── */}
-      <section id="results" className="relative py-24 px-4 bg-[#F8FAFC]">
+      <section id="results" className="relative py-24 px-4 bg-white">
         <div className="absolute top-0 inset-x-0 h-px bg-[#E2E8F0]" />
         <div className="absolute bottom-0 inset-x-0 h-px bg-[#E2E8F0]" />
         <div className="max-w-5xl mx-auto">
@@ -635,12 +635,12 @@ export default function LandingPage() {
                 </div>
                 <div className="flex items-stretch gap-2 mb-7">
                   <div className="flex-1 bg-red-50 border border-red-100 rounded-xl px-3 py-3 text-center">
-                    <p className="text-[10px] font-bold text-red-400 uppercase tracking-widest mb-1">Before</p>
+                    <p className="text-xs font-bold text-red-400 uppercase tracking-widest mb-1">Before</p>
                     <p className="text-lg font-black text-red-500 line-through leading-none">8 min</p>
                   </div>
                   <div className="flex items-center text-slate-300 text-lg font-bold px-0.5">→</div>
                   <div className="flex-1 bg-green-50 border border-green-100 rounded-xl px-3 py-3 text-center">
-                    <p className="text-[10px] font-bold text-green-500 uppercase tracking-widest mb-1">After</p>
+                    <p className="text-xs font-bold text-green-500 uppercase tracking-widest mb-1">After</p>
                     <p className="text-lg font-black text-green-600 leading-none">10 sec</p>
                   </div>
                 </div>
@@ -670,12 +670,12 @@ export default function LandingPage() {
                 </div>
                 <div className="flex items-stretch gap-2 mb-7">
                   <div className="flex-1 bg-red-50 border border-red-100 rounded-xl px-3 py-3 text-center">
-                    <p className="text-[10px] font-bold text-red-400 uppercase tracking-widest mb-1">Before</p>
+                    <p className="text-xs font-bold text-red-400 uppercase tracking-widest mb-1">Before</p>
                     <p className="text-lg font-black text-red-500 line-through leading-none">$2,500</p>
                   </div>
                   <div className="flex items-center text-slate-300 text-lg font-bold px-0.5">→</div>
                   <div className="flex-1 bg-green-50 border border-green-100 rounded-xl px-3 py-3 text-center">
-                    <p className="text-[10px] font-bold text-green-500 uppercase tracking-widest mb-1">After</p>
+                    <p className="text-xs font-bold text-green-500 uppercase tracking-widest mb-1">After</p>
                     <p className="text-lg font-black text-green-600 leading-none">$49</p>
                   </div>
                 </div>
@@ -705,12 +705,12 @@ export default function LandingPage() {
                 </div>
                 <div className="flex items-stretch gap-2 mb-7">
                   <div className="flex-1 bg-red-50 border border-red-100 rounded-xl px-3 py-3 text-center">
-                    <p className="text-[10px] font-bold text-red-400 uppercase tracking-widest mb-1">Before</p>
+                    <p className="text-xs font-bold text-red-400 uppercase tracking-widest mb-1">Before</p>
                     <p className="text-lg font-black text-red-500 line-through leading-none">~12% err</p>
                   </div>
                   <div className="flex items-center text-slate-300 text-lg font-bold px-0.5">→</div>
                   <div className="flex-1 bg-green-50 border border-green-100 rounded-xl px-3 py-3 text-center">
-                    <p className="text-[10px] font-bold text-green-500 uppercase tracking-widest mb-1">After</p>
+                    <p className="text-xs font-bold text-green-500 uppercase tracking-widest mb-1">After</p>
                     <p className="text-lg font-black text-green-600 leading-none">&lt;1% err</p>
                   </div>
                 </div>
@@ -847,14 +847,14 @@ export default function LandingPage() {
       </section>
 
       {/* ── PRODUCT VISUAL ──────────────────────────────────────────────────── */}
-      <section className="py-20 px-4 bg-[#F8FAFC] border-y border-[#E2E8F0]">
+      <section className="py-24 px-4 bg-white border-y border-[#E2E8F0]">
         <div className="max-w-5xl mx-auto">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <motion.div initial={{ opacity: 0, x: -30 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }}>
               <span className="inline-flex items-center gap-2 text-xs font-bold text-[#2563EB] bg-[#EFF6FF] px-3 py-1.5 rounded-full uppercase tracking-widest mb-5">
                 See the Output
               </span>
-              <h2 className="text-2xl sm:text-3xl font-bold text-[#1E293B] mb-5 leading-snug">
+              <h2 className="text-3xl sm:text-4xl font-bold text-[#1E293B] mb-5 leading-snug">
                 Clean, structured Excel data — ready the moment extraction completes
               </h2>
               <p className="text-slate-500 text-base leading-relaxed mb-6">
@@ -923,7 +923,7 @@ export default function LandingPage() {
                 ].map((s) => (
                   <div key={s.label} className="bg-white/5 border border-white/10 rounded-2xl p-5 text-center">
                     <div className="text-2xl font-black text-white mb-1">{s.value}</div>
-                    <div className="text-[11px] text-slate-400 leading-snug">{s.label}</div>
+                    <div className="text-xs text-slate-400 leading-snug">{s.label}</div>
                   </div>
                 ))}
               </div>
@@ -984,15 +984,15 @@ export default function LandingPage() {
                 <div className="grid grid-cols-3 gap-3 mb-6">
                   <div className="bg-[#F8FAFC] rounded-xl p-4 text-center border border-[#E2E8F0]">
                     <div className="text-xl font-black text-[#2563EB] tabular-nums">${monthlySaving.toLocaleString()}</div>
-                    <div className="text-[10px] text-slate-400 font-semibold mt-1 uppercase tracking-wide">Saved/month</div>
+                    <div className="text-xs text-slate-400 font-semibold mt-1 uppercase tracking-wide">Saved/month</div>
                   </div>
                   <div className="bg-[#F8FAFC] rounded-xl p-4 text-center border border-[#E2E8F0]">
                     <div className="text-xl font-black text-[#2563EB] tabular-nums">${yearlySaving.toLocaleString()}</div>
-                    <div className="text-[10px] text-slate-400 font-semibold mt-1 uppercase tracking-wide">Saved/year</div>
+                    <div className="text-xs text-slate-400 font-semibold mt-1 uppercase tracking-wide">Saved/year</div>
                   </div>
                   <div className="bg-[#F8FAFC] rounded-xl p-4 text-center border border-[#E2E8F0]">
                     <div className="text-xl font-black text-[#2563EB] tabular-nums">{hoursSavedPerWeek}h</div>
-                    <div className="text-[10px] text-slate-400 font-semibold mt-1 uppercase tracking-wide">Freed/week</div>
+                    <div className="text-xs text-slate-400 font-semibold mt-1 uppercase tracking-wide">Freed/week</div>
                   </div>
                 </div>
 
@@ -1013,8 +1013,11 @@ export default function LandingPage() {
       <section id="file-types" className="py-24 px-4 bg-[#F8FAFC]">
         <div className="max-w-5xl mx-auto">
           <motion.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} transition={{ duration: 0.5 }} className="text-center mb-14">
+            <span className="inline-flex items-center gap-2 text-xs font-bold text-[#2563EB] bg-[#EFF6FF] border border-[#2563EB]/20 px-3 py-1.5 rounded-full uppercase tracking-widest mb-5">
+              Supported Formats
+            </span>
             <h2 className="text-3xl sm:text-4xl font-bold text-[#1E293B] mb-3">Works With All Your Files</h2>
-            <p className="text-slate-500 text-base">Upload any format — Datafyle handles it automatically.</p>
+            <p className="text-slate-500 text-base max-w-xl mx-auto">Upload any document format — PDF, Word, Excel, CSV, images, and more. Datafyle handles it automatically, no conversion needed.</p>
           </motion.div>
 
           <div className="grid grid-cols-4 sm:grid-cols-8 gap-4 mb-16">
@@ -1051,7 +1054,7 @@ export default function LandingPage() {
       </section>
 
       {/* ── REVIEWS ─────────────────────────────────────────────────────────── */}
-      <section id="reviews" className="py-24 px-4 bg-[#F8FAFC]">
+      <section id="reviews" className="py-24 px-4 bg-white border-t border-[#E2E8F0]">
         <div className="max-w-6xl mx-auto">
 
           {/* Header */}
@@ -1167,7 +1170,7 @@ export default function LandingPage() {
                   </div>
                 )}
                 <div className={`mb-6 ${plan.popular ? 'mt-3' : ''}`}>
-                  <p className={`text-[10px] font-black uppercase tracking-widest mb-2 ${plan.popular ? 'text-blue-200' : 'text-slate-400'}`}>{plan.name}</p>
+                  <p className={`text-xs font-black uppercase tracking-widest mb-2 ${plan.popular ? 'text-blue-200' : 'text-slate-400'}`}>{plan.name}</p>
                   <div className="flex items-end gap-1">
                     <span className={`text-4xl font-black ${plan.textColor}`}>{plan.price === 0 ? 'Free' : `$${plan.price}`}</span>
                     {plan.price > 0 && <span className={`text-sm mb-1.5 ${plan.subColor}`}>/mo</span>}
@@ -1379,6 +1382,44 @@ export default function LandingPage() {
           </div>
         </div>
       </footer>
+
+      {/* ── JSON-LD SCHEMA ───────────────────────────────────────────────────── */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify({
+          '@context': 'https://schema.org',
+          '@type': 'FAQPage',
+          mainEntity: FAQS.map((faq) => ({
+            '@type': 'Question',
+            name: faq.q,
+            acceptedAnswer: { '@type': 'Answer', text: faq.a },
+          })),
+        }) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify({
+          '@context': 'https://schema.org',
+          '@type': 'SoftwareApplication',
+          name: 'Datafyle',
+          applicationCategory: 'BusinessApplication',
+          operatingSystem: 'Web',
+          description: 'AI-powered invoice and document data extraction for accounting firms. Upload any document — PDF, Word, Excel, CSV, or image — and get structured data in Excel or Google Sheets in under 10 seconds.',
+          url: 'https://datafyle.com',
+          offers: {
+            '@type': 'Offer',
+            price: '0',
+            priceCurrency: 'USD',
+            description: 'Free plan available. Paid plans from $49/month.',
+          },
+          aggregateRating: {
+            '@type': 'AggregateRating',
+            ratingValue: '4.9',
+            bestRating: '5',
+            ratingCount: '40',
+          },
+        }) }}
+      />
     </div>
   )
 }
