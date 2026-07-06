@@ -102,12 +102,12 @@ const REVIEWS = [
 ]
 
 const FEATURES = [
-  { icon: TrendingUp, color: 'text-[#2563EB]', bg: 'bg-[#EFF6FF]', title: 'Confidence Score', desc: 'Know exactly how accurate each extracted field is — green, yellow, or red.' },
-  { icon: AlertCircle, color: 'text-[#F59E0B]', bg: 'bg-amber-50', title: 'Anomaly Detector', desc: 'Automatically catches duplicate invoices and suspicious amounts.' },
-  { icon: Brain, color: 'text-[#2563EB]', bg: 'bg-[#EFF6FF]', title: 'Smart Memory', desc: 'Learns your vendor patterns over time for even higher accuracy.' },
-  { icon: FolderOpen, color: 'text-[#2563EB]', bg: 'bg-[#EFF6FF]', title: 'All File Types', desc: 'PDF, Word, Excel, CSV, XML, TXT, JPG, PNG — upload anything.' },
-  { icon: FileSpreadsheet, color: 'text-[#2563EB]', bg: 'bg-[#EFF6FF]', title: 'Google Sheets', desc: 'Auto-sync extracted data to your existing Google Sheets workflow.' },
-  { icon: FileText, color: 'text-[#2563EB]', bg: 'bg-[#EFF6FF]', title: 'Monthly Reports', desc: 'One-click PDF reports to share with clients every month.' },
+  { icon: TrendingUp,    num: '01', gradient: 'from-[#2563EB] to-[#4F46E5]', title: 'Confidence Score',  desc: 'Every extracted field shows a color-coded accuracy score — green, yellow, or red — so you always know how reliable the data is.', stat: '97%+ field accuracy' },
+  { icon: AlertCircle,  num: '02', gradient: 'from-[#F59E0B] to-[#EF4444]', title: 'Anomaly Detector',  desc: 'Automatically flags duplicate invoices, suspicious amount spikes, and future-dated entries before they reach your books.', stat: 'Catches every duplicate' },
+  { icon: Brain,        num: '03', gradient: 'from-[#2563EB] to-[#4F46E5]', title: 'Smart Memory',       desc: 'Datafyle learns your vendor patterns over time. Accuracy improves automatically — no configuration required.', stat: 'Gets smarter every use' },
+  { icon: FolderOpen,   num: '04', gradient: 'from-[#2563EB] to-[#4F46E5]', title: 'All File Types',     desc: 'PDF, Word, Excel, CSV, XML, TXT, JPG, PNG — upload any format up to 25MB without converting or reformatting first.', stat: '10 formats supported' },
+  { icon: FileSpreadsheet, num: '05', gradient: 'from-[#2563EB] to-[#4F46E5]', title: 'Google Sheets', desc: 'Push extracted data straight into your existing Google Sheets. No copy-pasting, no formatting — it just appears, ready to use.', stat: 'Real-time sync' },
+  { icon: FileText,     num: '06', gradient: 'from-[#2563EB] to-[#4F46E5]', title: 'Monthly Reports',    desc: 'Generate a branded PDF report for every client in one click — structured, professional, and ready to send instantly.', stat: '1-click PDF export' },
 ]
 
 // ─── Nav section data ─────────────────────────────────────────────────────────
@@ -567,21 +567,54 @@ export default function LandingPage() {
       </section>
 
       {/* ── FEATURES ────────────────────────────────────────────────────────── */}
-      <section id="features" className="py-24 px-4 bg-white">
-        <div className="max-w-5xl mx-auto">
-          <motion.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} transition={{ duration: 0.5 }} className="text-center mb-14">
-            <h2 className="text-3xl sm:text-4xl font-bold text-[#1E293B] mb-3">Everything You Need</h2>
-            <p className="text-slate-500 text-base">Purpose-built for accounting firms, not generic document tools.</p>
+      <section id="features" className="py-24 px-4 bg-[#F8FAFC]">
+        <div className="max-w-6xl mx-auto">
+          <motion.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} transition={{ duration: 0.5 }} className="text-center mb-16">
+            <span className="inline-flex items-center gap-2 text-xs font-bold text-[#2563EB] bg-[#EFF6FF] px-3 py-1.5 rounded-full uppercase tracking-widest mb-5">
+              Features
+            </span>
+            <h2 className="text-3xl sm:text-4xl font-bold text-[#1E293B] mb-3">
+              Everything You Need,{' '}
+              <span style={{ background: 'linear-gradient(135deg, #2563EB 0%, #4F46E5 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
+                In One Place
+              </span>
+            </h2>
+            <p className="text-slate-500 text-base max-w-xl mx-auto">Purpose-built for accounting firms — not a generic document tool.</p>
           </motion.div>
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
+
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {FEATURES.map((f, i) => (
-              <motion.div key={f.title} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.4, delay: (i % 3) * 0.1 }}
-                whileHover={{ y: -4 }} className="bg-[#F8FAFC] rounded-2xl border border-[#E2E8F0] p-7 cursor-default hover:shadow-lg hover:border-[#2563EB]/20 transition-all">
-                <div className={`w-11 h-11 ${f.bg} rounded-xl flex items-center justify-center mb-5`}>
-                  <f.icon size={22} className={f.color} />
+              <motion.div
+                key={f.title}
+                initial={{ opacity: 0, y: 28 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: i * 0.08 }}
+                whileHover={{ y: -6 }}
+                className="relative bg-white rounded-2xl p-7 border border-[#E2E8F0] shadow-sm hover:shadow-xl hover:shadow-blue-50 hover:border-[#2563EB]/25 transition-all duration-300 overflow-hidden group cursor-default"
+              >
+                {/* Large faded number in background */}
+                <span className="absolute top-3 right-5 text-7xl font-black text-slate-100 select-none leading-none pointer-events-none">
+                  {f.num}
+                </span>
+
+                {/* Gradient icon box */}
+                <div className={`relative w-12 h-12 rounded-2xl bg-linear-to-br ${f.gradient} flex items-center justify-center mb-6 shadow-md`}>
+                  <f.icon size={22} className="text-white" />
                 </div>
-                <h3 className="font-bold text-[#1E293B] mb-2 text-base">{f.title}</h3>
-                <p className="text-sm text-slate-500 leading-relaxed">{f.desc}</p>
+
+                {/* Content */}
+                <h3 className="font-bold text-[#1E293B] text-base mb-2.5">{f.title}</h3>
+                <p className="text-sm text-slate-500 leading-relaxed mb-6">{f.desc}</p>
+
+                {/* Stat pill */}
+                <div className="flex items-center gap-2">
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#2563EB] shrink-0" />
+                  <span className="text-xs font-semibold text-[#2563EB]">{f.stat}</span>
+                </div>
+
+                {/* Animated bottom accent line on hover */}
+                <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-linear-to-r from-[#2563EB] to-[#4F46E5] scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left" />
               </motion.div>
             ))}
           </div>
