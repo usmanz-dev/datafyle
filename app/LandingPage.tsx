@@ -805,10 +805,10 @@ export default function LandingPage() {
       {/* ── FOOTER ──────────────────────────────────────────────────────────── */}
       <footer className="relative bg-black overflow-hidden py-16 px-4">
 
-        {/* Same blue gradient aura as hero — at top edge of footer */}
+        {/* Blue gradient aura at bottom edge of footer */}
         <div
-          className="absolute top-0 left-0 right-0 pointer-events-none"
-          style={{ height: '320px', background: 'radial-gradient(ellipse 100% 70% at 50% -5%, rgba(37,99,235,0.55) 0%, rgba(37,99,235,0.15) 50%, transparent 72%)' }}
+          className="absolute bottom-0 left-0 right-0 pointer-events-none"
+          style={{ height: '320px', background: 'radial-gradient(ellipse 100% 70% at 50% 105%, rgba(37,99,235,0.55) 0%, rgba(37,99,235,0.15) 50%, transparent 72%)' }}
         />
 
         {/* Static dot grid — matches hero canvas style */}
