@@ -5,9 +5,9 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { motion, useInView, AnimatePresence } from 'framer-motion'
 import {
-  Menu, X, Brain, Shield,
+  Menu, X, Brain,
   FileText, FileSpreadsheet, Image as LucideImage, Code, AlignLeft,
-  Check, ChevronDown, Star, ArrowRight, TrendingUp,
+  Check, Star, ArrowRight, TrendingUp,
   AlertCircle, FolderOpen, Plus, Minus, Bot,
 } from 'lucide-react'
 
@@ -1016,10 +1016,10 @@ export default function LandingPage() {
             <p className="text-slate-500 text-base">No contracts. No hidden fees. Cancel anytime.</p>
           </motion.div>
 
-          <div className="flex gap-4 overflow-x-auto pb-4 lg:grid lg:grid-cols-5 lg:overflow-visible">
+          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-5 gap-4 items-start">
             {PLANS.map((plan, i) => (
               <motion.div key={plan.id} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.4, delay: i * 0.07 }}
-                className={`relative flex flex-col rounded-2xl border-2 p-7 shrink-0 w-64 lg:w-auto transition-all ${plan.border} ${plan.bg} ${plan.popular ? 'shadow-2xl ring-4 ring-[#2563EB]/20 lg:-translate-y-3 scale-[1.02]' : 'shadow-sm hover:shadow-md'}`}>
+                className={`relative flex flex-col rounded-2xl border-2 p-7 transition-all ${plan.border} ${plan.bg} ${plan.popular ? 'shadow-2xl ring-4 ring-[#2563EB]/20 xl:-translate-y-3 xl:scale-[1.02]' : 'shadow-sm hover:shadow-md'}`}>
                 {plan.popular && (
                   <div className="absolute -top-4 left-1/2 -translate-x-1/2">
                     <span className="inline-flex items-center gap-1 px-4 py-1.5 bg-white text-[#2563EB] text-xs font-black rounded-full shadow-lg border-2 border-[#2563EB]/20 whitespace-nowrap">

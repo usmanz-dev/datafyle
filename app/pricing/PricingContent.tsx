@@ -1,12 +1,12 @@
-'use client'
+﻿'use client'
 
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   Check, Minus, ChevronDown, Loader2, Zap, Users, FileSpreadsheet,
-  Shield, Brain, Upload, Menu, X, ArrowRight,
+  Shield, Brain, Upload, ArrowRight,
 } from 'lucide-react'
 
 // ─── Data ─────────────────────────────────────────────────────────────────────
@@ -96,123 +96,6 @@ const FAQS = [
   { q: 'Do you store my documents permanently?', a: 'Documents are stored for as long as your account is active. If you close your account, files are deleted within 30 days. You can also delete individual documents at any time from your dashboard.' },
 ]
 
-// ─── Navbar ───────────────────────────────────────────────────────────────────
-
-function PricingNavbar() {
-  const [scrolled, setScrolled] = useState(false)
-  const [menuOpen, setMenuOpen] = useState(false)
-
-  useEffect(() => {
-    const handler = () => setScrolled(window.scrollY > 10)
-    window.addEventListener('scroll', handler, { passive: true })
-    return () => window.removeEventListener('scroll', handler)
-  }, [])
-
-  const NAV_LINKS = [
-    { href: '/#about',        label: 'About' },
-    { href: '/#how-it-works', label: 'How It Works' },
-    { href: '/#features',     label: 'Features' },
-    { href: '/#faq',          label: 'FAQ' },
-  ]
-
-  return (
-    <>
-      <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        scrolled || menuOpen ? 'backdrop-blur-sm bg-white/90 border-b border-[#E2E8F0] shadow-sm' : 'bg-transparent'
-      }`}>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-6">
-          <Link href="/" className="flex items-center gap-2.5 shrink-0">
-            <div className={`w-8 h-8 rounded-xl flex items-center justify-center shrink-0 ${!scrolled && !menuOpen ? 'bg-white/15' : 'bg-[#2563EB]'}`}>
-              <Image src="/images/datafyle.png" alt="" width={22} height={22} className="w-5 h-5 object-contain brightness-0 invert" priority />
-            </div>
-            <span className={`font-bold text-[18px] tracking-tight transition-colors ${!scrolled && !menuOpen ? 'text-white' : 'text-[#1E293B]'}`}>
-              Data<span className={!scrolled && !menuOpen ? 'text-blue-300' : 'text-[#2563EB]'}>fyle</span>
-            </span>
-          </Link>
-
-          {/* Desktop nav */}
-          <div className="hidden lg:flex items-center gap-1 flex-1">
-            {NAV_LINKS.map(({ href, label }) => (
-              <Link
-                key={href}
-                href={href}
-                className={`px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
-                  scrolled ? 'text-[#1E293B] hover:text-[#2563EB] hover:bg-[#EFF6FF]' : 'text-white/80 hover:text-white hover:bg-white/10'
-                }`}
-              >
-                {label}
-              </Link>
-            ))}
-            {/* Pricing — active state since we're on this page */}
-            <span className={`ml-1 px-4 py-2 rounded-lg text-sm font-bold border-2 cursor-default ${
-              scrolled
-                ? 'bg-[#2563EB] border-[#2563EB] text-white'
-                : 'bg-white/20 border-white/80 text-white'
-            }`}>
-              Pricing
-            </span>
-          </div>
-
-          <div className="hidden md:flex items-center gap-3 shrink-0">
-            <Link href="/sign-in" className={`text-sm font-medium transition-colors ${scrolled ? 'text-[#1E293B] hover:text-[#2563EB]' : 'text-white/80 hover:text-white'}`}>
-              Login
-            </Link>
-            <Link href="/sign-up" className="inline-flex items-center gap-1.5 px-5 py-2.5 bg-[#2563EB] text-white text-sm font-semibold rounded-lg hover:bg-blue-700 transition-colors min-h-11">
-              Get Started
-            </Link>
-          </div>
-
-          <button
-            className={`md:hidden p-2 transition-colors ${scrolled || menuOpen ? 'text-[#1E293B]' : 'text-white'}`}
-            onClick={() => setMenuOpen((o) => !o)}
-            aria-label="Toggle menu"
-          >
-            {menuOpen ? <X size={24} /> : <Menu size={24} />}
-          </button>
-        </div>
-      </nav>
-
-      {/* Mobile menu */}
-      <AnimatePresence>
-        {menuOpen && (
-          <motion.div
-            initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}
-            transition={{ duration: 0.2 }}
-            className="fixed inset-0 z-40 bg-white flex flex-col pt-16 overflow-y-auto"
-          >
-            <div className="flex flex-col flex-1 px-6 py-8 gap-1">
-              <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-3 px-3">Navigation</p>
-              {NAV_LINKS.map(({ href, label }) => (
-                <Link
-                  key={href}
-                  href={href}
-                  onClick={() => setMenuOpen(false)}
-                  className="flex items-center gap-3 px-3 py-3.5 rounded-xl text-base font-semibold text-[#1E293B] hover:bg-[#EFF6FF] hover:text-[#2563EB] transition-all"
-                >
-                  <span className="w-1.5 h-1.5 rounded-full bg-[#2563EB] shrink-0" />
-                  {label}
-                </Link>
-              ))}
-              <div className="flex items-center gap-3 px-3 py-3.5 rounded-xl bg-[#EFF6FF]">
-                <span className="w-1.5 h-1.5 rounded-full bg-[#2563EB] shrink-0" />
-                <span className="text-base font-bold text-[#2563EB]">Pricing</span>
-              </div>
-              <div className="mt-6 pt-6 border-t border-[#E2E8F0] flex flex-col gap-3">
-                <Link href="/sign-in" onClick={() => setMenuOpen(false)} className="flex items-center justify-center py-3.5 rounded-xl text-base font-semibold text-[#1E293B] border-2 border-[#E2E8F0] hover:border-[#2563EB] hover:text-[#2563EB] transition-all">
-                  Login
-                </Link>
-                <Link href="/sign-up" onClick={() => setMenuOpen(false)} className="flex items-center justify-center py-3.5 bg-[#2563EB] text-white text-base font-bold rounded-xl hover:bg-blue-700 transition-colors">
-                  Get Started Free
-                </Link>
-              </div>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </>
-  )
-}
-
 // ─── Plan Button ──────────────────────────────────────────────────────────────
 
 function PlanButton({ variant, onClick, loading, href, label }: {
@@ -271,16 +154,26 @@ export function PricingContent() {
   return (
     <div className="min-h-screen bg-[#F8FAFC]">
 
-      <PricingNavbar />
-
       {/* ── HERO ──────────────────────────────────────────────────────────────── */}
-      <section className="relative bg-[#0F172A] overflow-hidden pt-32 pb-24 px-4">
+      <section className="relative bg-[#0F172A] overflow-hidden pt-12 pb-24 px-4">
         <div className="absolute inset-0 pointer-events-none"
           style={{ background: 'radial-gradient(ellipse 80% 60% at 50% 0%, rgba(37,99,235,0.35) 0%, transparent 70%)' }} />
         <div className="absolute inset-0 pointer-events-none"
           style={{ backgroundImage: 'radial-gradient(circle, rgba(255,255,255,0.06) 1px, transparent 1px)', backgroundSize: '28px 28px' }} />
 
         <div className="relative z-10 max-w-3xl mx-auto text-center">
+          {/* Centered logo linking back to landing page */}
+          <div className="flex justify-center mb-10">
+            <Link href="/" className="flex items-center gap-2.5 hover:opacity-80 transition-opacity">
+              <div className="w-8 h-8 rounded-xl bg-white/10 flex items-center justify-center shrink-0">
+                <Image src="/images/datafyle.png" alt="" width={22} height={22} className="w-5 h-5 object-contain brightness-0 invert" />
+              </div>
+              <span className="font-bold text-[18px] text-white tracking-tight">
+                Data<span className="text-blue-300">fyle</span>
+              </span>
+            </Link>
+          </div>
+
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
             <span className="inline-flex items-center gap-2 text-xs font-bold text-[#3B82F6] bg-[#2563EB]/15 border border-[#2563EB]/30 px-3 py-1.5 rounded-full uppercase tracking-widest mb-6">
               Transparent Pricing
@@ -581,111 +474,14 @@ export function PricingContent() {
         </div>
       </section>
 
-      {/* ── FOOTER ────────────────────────────────────────────────────────────── */}
-      <footer className="relative bg-black overflow-hidden pt-20 pb-10 px-4">
-        <div className="absolute bottom-0 left-0 right-0 pointer-events-none"
-          style={{ height: '320px', background: 'radial-gradient(ellipse 100% 70% at 50% 105%, rgba(37,99,235,0.55) 0%, rgba(37,99,235,0.15) 50%, transparent 72%)' }} />
-        <div className="absolute inset-0 pointer-events-none"
-          style={{ backgroundImage: 'radial-gradient(circle, rgba(255,255,255,0.07) 1px, transparent 1px)', backgroundSize: '28px 28px' }} />
-        <div className="relative z-10 max-w-6xl mx-auto">
-
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-10 mb-14">
-            {/* Brand */}
-            <div className="col-span-2 md:col-span-1">
-              <div className="flex items-center gap-2.5 mb-4">
-                <div className="w-8 h-8 rounded-xl bg-white/10 flex items-center justify-center shrink-0">
-                  <Image src="/images/datafyle.png" alt="" width={22} height={22} className="w-5 h-5 object-contain brightness-0 invert" />
-                </div>
-                <span className="font-bold text-[18px] text-white tracking-tight">Data<span className="text-blue-400">fyle</span></span>
-              </div>
-              <p className="text-slate-400 text-sm leading-relaxed mb-2">AI-powered document processing for accounting and bookkeeping firms.</p>
-              <p className="text-slate-500 text-xs leading-relaxed mb-6">Trusted by 50+ firms in UK, US &amp; Australia.</p>
-              <div className="flex items-center gap-2">
-                <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn"
-                  className="w-9 h-9 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-slate-400 hover:bg-[#0A66C2] hover:border-[#0A66C2] hover:text-white hover:scale-110 transition-all duration-200">
-                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/>
-                  </svg>
-                </a>
-                <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" aria-label="Facebook"
-                  className="w-9 h-9 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-slate-400 hover:bg-[#1877F2] hover:border-[#1877F2] hover:text-white hover:scale-110 transition-all duration-200">
-                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/>
-                  </svg>
-                </a>
-                <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" aria-label="Instagram"
-                  className="w-9 h-9 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-slate-400 hover:bg-[#E1306C] hover:border-[#E1306C] hover:text-white hover:scale-110 transition-all duration-200">
-                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/>
-                  </svg>
-                </a>
-                <a href="https://twitter.com" target="_blank" rel="noopener noreferrer" aria-label="Twitter"
-                  className="w-9 h-9 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-slate-400 hover:bg-[#1DA1F2] hover:border-[#1DA1F2] hover:text-white hover:scale-110 transition-all duration-200">
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M22 4s-.7 2.1-2 3.4c1.6 10-9.4 17.3-18 11.6 2.2.1 4.4-.6 6-2C3 15.5.5 9.6 3 5c2.2 2.6 5.6 4.1 9 4-.9-4.2 4-6.6 7-3.8 1.1 0 3-1.2 3-1.2z"/>
-                  </svg>
-                </a>
-                <a href="https://tiktok.com" target="_blank" rel="noopener noreferrer" aria-label="TikTok"
-                  className="w-9 h-9 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-slate-400 hover:bg-white hover:border-white hover:text-black hover:scale-110 transition-all duration-200">
-                  <svg width="13" height="15" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1V9.01a6.27 6.27 0 0 0-.79-.05 6.34 6.34 0 0 0-6.34 6.34 6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.33-6.34V8.58a8.32 8.32 0 0 0 4.87 1.56V6.64a4.85 4.85 0 0 1-1.1.05z"/>
-                  </svg>
-                </a>
-              </div>
-            </div>
-
-            {/* Product */}
-            <div>
-              <h4 className="text-white font-semibold mb-5 text-xs uppercase tracking-widest">Product</h4>
-              <ul className="space-y-3">
-                <li><Link href="/#about" className="text-slate-400 hover:text-white text-sm transition-colors">About Us</Link></li>
-                <li><Link href="/#how-it-works" className="text-slate-400 hover:text-white text-sm transition-colors">How It Works</Link></li>
-                <li><Link href="/#features" className="text-slate-400 hover:text-white text-sm transition-colors">Features</Link></li>
-                <li><Link href="/#calculator" className="text-slate-400 hover:text-white text-sm transition-colors">Savings Calculator</Link></li>
-                <li><Link href="/pricing" className="text-white text-sm font-medium">Pricing</Link></li>
-                <li><Link href="/#faq" className="text-slate-400 hover:text-white text-sm transition-colors">FAQ</Link></li>
-              </ul>
-            </div>
-
-            {/* Company */}
-            <div>
-              <h4 className="text-white font-semibold mb-5 text-xs uppercase tracking-widest">Company</h4>
-              <ul className="space-y-3">
-                <li><Link href="/blog" className="text-slate-400 hover:text-white text-sm transition-colors">Blog</Link></li>
-                <li><Link href="/privacy" className="text-slate-400 hover:text-white text-sm transition-colors">Privacy Policy</Link></li>
-                <li><Link href="/terms" className="text-slate-400 hover:text-white text-sm transition-colors">Terms of Service</Link></li>
-              </ul>
-            </div>
-
-            {/* Get Started */}
-            <div>
-              <h4 className="text-white font-semibold mb-5 text-xs uppercase tracking-widest">Get Started</h4>
-              <ul className="space-y-3">
-                <li><Link href="/sign-up" className="text-slate-400 hover:text-white text-sm transition-colors">Create Free Account</Link></li>
-                <li><Link href="/sign-in" className="text-slate-400 hover:text-white text-sm transition-colors">Sign In</Link></li>
-                <li><Link href="/pricing" className="text-slate-400 hover:text-white text-sm transition-colors">View Pricing</Link></li>
-                <li><Link href="/dashboard" className="text-slate-400 hover:text-white text-sm transition-colors">Dashboard</Link></li>
-              </ul>
-            </div>
-          </div>
-
-          <div className="border-t border-white/10 pt-8 flex flex-col sm:flex-row items-center justify-between gap-4">
-            <p className="text-slate-500 text-sm">© 2026 Datafyle. All rights reserved.</p>
-            <div className="flex items-center gap-4 flex-wrap justify-center">
-              <div className="flex items-center gap-1.5">
-                <span className="w-1.5 h-1.5 rounded-full bg-[#22C55E] animate-pulse shrink-0" />
-                <span className="text-slate-500 text-xs">99.7% uptime</span>
-              </div>
-              <span className="text-slate-700 hidden sm:inline">·</span>
-              <Link href="/privacy" className="text-slate-500 text-xs hover:text-white transition-colors">Privacy</Link>
-              <span className="text-slate-700">·</span>
-              <Link href="/terms" className="text-slate-500 text-xs hover:text-white transition-colors">Terms</Link>
-              <span className="text-slate-700">·</span>
-              <Link href="/blog" className="text-slate-500 text-xs hover:text-white transition-colors">Blog</Link>
-            </div>
-          </div>
-        </div>
+      {/* ── BACK TO HOME ──────────────────────────────────────────────────────── */}
+      <footer className="py-8 px-4 bg-[#F8FAFC] border-t border-[#E2E8F0] text-center">
+        <Link href="/" className="inline-flex items-center gap-2 text-sm text-slate-400 hover:text-[#2563EB] transition-colors">
+          ← Back to Datafyle
+        </Link>
+        <p className="text-xs text-slate-400 mt-2">© 2026 Datafyle. All rights reserved. · <Link href="/privacy" className="hover:text-[#2563EB] transition-colors">Privacy</Link> · <Link href="/terms" className="hover:text-[#2563EB] transition-colors">Terms</Link></p>
       </footer>
     </div>
   )
 }
+
