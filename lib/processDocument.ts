@@ -26,22 +26,28 @@ export async function processDocument(documentId: string, clerkUserId: string) {
   try {
     const keyStart = document.fileUrl.indexOf(clerkUserId + '/')
     const key = keyStart >= 0 ? document.fileUrl.slice(keyStart) : document.fileUrl
+
+    console.log('[process] downloading from R2, key:', key)
     const downloadUrl = await getSignedDownloadUrl(key)
     const fileRes = await fetch(downloadUrl)
-    if (!fileRes.ok) throw new Error('Failed to download file from storage')
+    if (!fileRes.ok) throw new Error(`Failed to download file from R2: ${fileRes.status} ${fileRes.statusText}`)
     const buffer = Buffer.from(await fileRes.arrayBuffer())
+    console.log('[process] file downloaded, size:', buffer.length, 'type:', document.fileType)
 
     const parsed = await parseFile(buffer, document.fileType)
     const text = parsed.text ?? ''
+    console.log('[process] parsed — text length:', text.length)
 
     const vendorHint = extractVendorHint(text)
     const vendorPattern = await getVendorPattern(user.id, vendorHint)
 
+    console.log('[process] calling Claude...')
     const claudeResult = await extractWithClaude(
       text,
       document.fileType,
       vendorPattern ? vendorHint : undefined
     )
+    console.log('[process] Claude done, confidence:', claudeResult.overallConfidence)
 
     const vendorName = (claudeResult.vendor?.value as string | null) ?? null
     const recentDocs = await prisma.document.findMany({

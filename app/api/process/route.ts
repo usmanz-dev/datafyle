@@ -3,6 +3,8 @@ import { auth } from '@clerk/nextjs/server'
 import { z } from 'zod'
 import { processDocument } from '@/lib/processDocument'
 
+export const maxDuration = 60
+
 const schema = z.object({ documentId: z.string().min(1) })
 
 export async function POST(req: NextRequest) {
@@ -20,7 +22,8 @@ export async function POST(req: NextRequest) {
     const result = await processDocument(body.data.documentId, userId)
     return NextResponse.json(result)
   } catch (error) {
-    console.error('Processing error:', error)
-    return NextResponse.json({ error: 'Processing failed' }, { status: 500 })
+    const message = error instanceof Error ? error.message : String(error)
+    console.error('Processing error:', message)
+    return NextResponse.json({ error: 'Processing failed', detail: message }, { status: 500 })
   }
 }
