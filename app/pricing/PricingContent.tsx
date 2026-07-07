@@ -1,6 +1,6 @@
 ﻿'use client'
 
-import { useState } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { motion, AnimatePresence } from 'framer-motion'
@@ -126,6 +126,58 @@ export function PricingContent() {
   const [openFaq, setOpenFaq] = useState<number | null>(null)
   const prices = annual ? ANNUAL : MONTHLY
 
+  const blobRef   = useRef<HTMLDivElement>(null)
+  const canvasRef = useRef<HTMLCanvasElement>(null)
+  const mouseRef  = useRef({ x: -9999, y: -9999 })
+  const animRef   = useRef<number | undefined>(undefined)
+  const rectRef   = useRef<DOMRect | null>(null)
+
+  useEffect(() => {
+    const canvas = canvasRef.current
+    if (!canvas) return
+    const ctx = canvas.getContext('2d')
+    if (!ctx) return
+    const resize = () => {
+      canvas.width  = canvas.offsetWidth
+      canvas.height = canvas.offsetHeight
+      rectRef.current = canvas.getBoundingClientRect()
+    }
+    resize()
+    const onMove = (e: MouseEvent) => {
+      mouseRef.current = { x: e.clientX, y: e.clientY }
+      if (blobRef.current)
+        blobRef.current.style.transform = `translate(${e.clientX - 260}px, ${e.clientY - 260}px)`
+    }
+    const draw = () => {
+      const w = canvas.offsetWidth; const h = canvas.offsetHeight
+      ctx.clearRect(0, 0, w, h)
+      const rect = rectRef.current
+      const mx = rect ? mouseRef.current.x - rect.left : -9999
+      const my = rect ? mouseRef.current.y - rect.top  : -9999
+      const spacing = 28
+      for (let cx = spacing / 2; cx < w; cx += spacing) {
+        for (let cy = spacing / 2; cy < h; cy += spacing) {
+          const dist = Math.hypot(cx - mx, cy - my)
+          const lit  = Math.max(0, 1 - dist / 100)
+          ctx.beginPath(); ctx.arc(cx, cy, 1 + lit * 2, 0, Math.PI * 2)
+          ctx.fillStyle = lit > 0.05
+            ? `rgba(59,130,246,${0.12 + lit * 0.6})`
+            : `rgba(255,255,255,0.07)`
+          ctx.fill()
+        }
+      }
+      animRef.current = requestAnimationFrame(draw)
+    }
+    draw()
+    window.addEventListener('mousemove', onMove, { passive: true })
+    window.addEventListener('resize', resize, { passive: true })
+    return () => {
+      window.removeEventListener('mousemove', onMove)
+      window.removeEventListener('resize', resize)
+      if (animRef.current !== undefined) cancelAnimationFrame(animRef.current)
+    }
+  }, [])
+
   async function handleCheckout(plan: string) {
     setLoading(plan)
     try {
@@ -154,12 +206,26 @@ export function PricingContent() {
   return (
     <div className="min-h-screen bg-[#F8FAFC]">
 
+      {/* Global mouse-tracking blob — mix-blend-mode:screen makes it glow on dark sections */}
+      <div
+        ref={blobRef}
+        className="fixed top-0 left-0 pointer-events-none"
+        style={{
+          width: 520, height: 520, borderRadius: '50%',
+          background: 'radial-gradient(circle, rgba(37,99,235,0.65) 0%, transparent 70%)',
+          filter: 'blur(60px)',
+          transform: 'translate(-260px,-260px)',
+          willChange: 'transform',
+          zIndex: 30,
+          mixBlendMode: 'screen',
+        }}
+      />
+
       {/* ── HERO ──────────────────────────────────────────────────────────────── */}
       <section className="relative bg-[#0F172A] overflow-hidden pt-12 pb-24 px-4">
         <div className="absolute inset-0 pointer-events-none"
           style={{ background: 'radial-gradient(ellipse 80% 60% at 50% 0%, rgba(37,99,235,0.35) 0%, transparent 70%)' }} />
-        <div className="absolute inset-0 pointer-events-none"
-          style={{ backgroundImage: 'radial-gradient(circle, rgba(255,255,255,0.06) 1px, transparent 1px)', backgroundSize: '28px 28px' }} />
+        <canvas ref={canvasRef} className="absolute inset-0 w-full h-full pointer-events-none z-0" />
 
         <div className="relative z-10 max-w-3xl mx-auto text-center">
           {/* Centered logo linking back to landing page */}
@@ -454,32 +520,54 @@ export function PricingContent() {
       </section>
 
       {/* ── FINAL CTA ─────────────────────────────────────────────────────────── */}
-      <section className="py-20 px-4 bg-white border-t border-[#E2E8F0]">
-        <div className="max-w-2xl mx-auto text-center">
-          <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.5 }}>
-            <h2 className="text-3xl font-bold text-[#1E293B] mb-3">Ready to save 8 hours a day?</h2>
-            <p className="text-slate-500 text-base mb-8">
-              Join 50+ accounting firms already using Datafyle to automate document processing.
-            </p>
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
-              <Link href="/sign-up" className="inline-flex items-center justify-center gap-2 px-8 py-3.5 bg-[#2563EB] text-white font-bold rounded-xl hover:bg-blue-700 transition-colors text-sm min-h-13 w-full sm:w-auto">
-                Start Free — No Card Required
-                <ArrowRight size={16} />
-              </Link>
-              <Link href="/sign-in" className="inline-flex items-center justify-center px-8 py-3.5 border-2 border-[#E2E8F0] text-[#1E293B] font-semibold rounded-xl hover:border-[#2563EB] hover:text-[#2563EB] transition-all text-sm min-h-13 w-full sm:w-auto">
-                Already have an account?
-              </Link>
-            </div>
-          </motion.div>
-        </div>
+      <section className="relative py-24 px-4 bg-black overflow-hidden">
+        {/* Blue gradient aura */}
+        <div className="absolute inset-0 pointer-events-none"
+          style={{ background: 'radial-gradient(ellipse 80% 60% at 50% 50%, rgba(37,99,235,0.25) 0%, transparent 70%)' }} />
+        {/* Dot grid */}
+        <div className="absolute inset-0 pointer-events-none"
+          style={{ backgroundImage: 'radial-gradient(circle, rgba(255,255,255,0.07) 1px, transparent 1px)', backgroundSize: '28px 28px' }} />
+        <motion.div
+          initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.5 }}
+          className="relative z-10 max-w-2xl mx-auto text-center"
+        >
+          <h2 className="text-3xl sm:text-4xl font-bold text-white mb-4">Ready to save 8 hours a day?</h2>
+          <p className="text-slate-400 text-lg mb-8">
+            Join 50+ accounting firms already using Datafyle to automate document processing.
+          </p>
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
+            <Link href="/sign-up" className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-[#2563EB] text-white font-bold rounded-xl hover:bg-blue-600 transition-all shadow-lg hover:-translate-y-0.5 text-sm min-h-14 w-full sm:w-auto">
+              Start Free — No Card Required
+              <ArrowRight size={16} />
+            </Link>
+            <Link href="/sign-in" className="inline-flex items-center justify-center px-8 py-4 border-2 border-white/15 text-white/80 font-semibold rounded-xl hover:border-white/40 hover:text-white hover:bg-white/5 transition-all text-sm min-h-14 w-full sm:w-auto">
+              Already have an account?
+            </Link>
+          </div>
+          <p className="mt-5 text-sm text-slate-500">No credit card · Free 10 documents · Setup in 3 minutes</p>
+        </motion.div>
       </section>
 
-      {/* ── BACK TO HOME ──────────────────────────────────────────────────────── */}
-      <footer className="py-8 px-4 bg-[#F8FAFC] border-t border-[#E2E8F0] text-center">
-        <Link href="/" className="inline-flex items-center gap-2 text-sm text-slate-400 hover:text-[#2563EB] transition-colors">
-          ← Back to Datafyle
-        </Link>
-        <p className="text-xs text-slate-400 mt-2">© 2026 Datafyle. All rights reserved. · <Link href="/privacy" className="hover:text-[#2563EB] transition-colors">Privacy</Link> · <Link href="/terms" className="hover:text-[#2563EB] transition-colors">Terms</Link></p>
+      {/* ── FOOTER ────────────────────────────────────────────────────────────── */}
+      <footer className="relative bg-black overflow-hidden pt-10 pb-8 px-4">
+        {/* Blue gradient aura at bottom */}
+        <div className="absolute bottom-0 left-0 right-0 pointer-events-none"
+          style={{ height: '240px', background: 'radial-gradient(ellipse 100% 70% at 50% 105%, rgba(37,99,235,0.45) 0%, rgba(37,99,235,0.12) 50%, transparent 72%)' }} />
+        {/* Dot grid */}
+        <div className="absolute inset-0 pointer-events-none"
+          style={{ backgroundImage: 'radial-gradient(circle, rgba(255,255,255,0.07) 1px, transparent 1px)', backgroundSize: '28px 28px' }} />
+
+        <div className="relative z-10 text-center">
+          <Link href="/" className="inline-flex items-center gap-2 text-sm text-slate-400 hover:text-white transition-colors">
+            ← Back to Datafyle
+          </Link>
+          <p className="text-xs text-slate-600 mt-3">
+            © 2026 Datafyle. All rights reserved. ·{' '}
+            <Link href="/privacy" className="hover:text-slate-400 transition-colors">Privacy</Link>
+            {' '}·{' '}
+            <Link href="/terms" className="hover:text-slate-400 transition-colors">Terms</Link>
+          </p>
+        </div>
       </footer>
     </div>
   )
