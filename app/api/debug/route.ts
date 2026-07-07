@@ -95,5 +95,36 @@ export async function GET() {
     }
   }
 
+  // Google Vision key check
+  results.GOOGLE_VISION_API_KEY = process.env.GOOGLE_VISION_API_KEY ? 'SET' : 'MISSING'
+
+  // PDF parse test — parse a minimal real PDF in memory
+  try {
+    // Minimal 1-page PDF with the word "TEST" as selectable text
+    const minimalPdf = Buffer.from(
+      '%PDF-1.4\n1 0 obj<</Type/Catalog/Pages 2 0 R>>endobj\n' +
+      '2 0 obj<</Type/Pages/Kids[3 0 R]/Count 1>>endobj\n' +
+      '3 0 obj<</Type/Page/MediaBox[0 0 612 792]/Parent 2 0 R/Contents 4 0 R/Resources<</Font<</F1 5 0 R>>>>>>endobj\n' +
+      '4 0 obj<</Length 44>>\nstream\nBT /F1 12 Tf 100 700 Td (TEST INVOICE) Tj ET\nendstream\nendobj\n' +
+      '5 0 obj<</Type/Font/Subtype/Type1/BaseFont/Helvetica>>endobj\n' +
+      'xref\n0 6\n0000000000 65535 f\n0000000009 00000 n\n0000000058 00000 n\n' +
+      '0000000115 00000 n\n0000000274 00000 n\n0000000370 00000 n\n' +
+      'trailer<</Size 6/Root 1 0 R>>\nstartxref\n441\n%%EOF',
+      'utf-8'
+    )
+
+    const mod = await import('pdf-parse')
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const pdfParse: (b: Buffer) => Promise<{ text: string; numpages: number }> =
+      (mod as any).default ?? mod
+    const data = await pdfParse(minimalPdf)
+    const extracted = data.text?.trim() ?? ''
+    results.PDF_PARSE = extracted.length > 0
+      ? `OK - extracted ${extracted.length} chars: "${extracted.slice(0, 60)}"`
+      : 'PARSED but text empty (0 chars)'
+  } catch (e) {
+    results.PDF_PARSE = 'FAILED: ' + (e instanceof Error ? e.message : String(e))
+  }
+
   return NextResponse.json(results)
 }
