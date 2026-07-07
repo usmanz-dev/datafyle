@@ -63,12 +63,12 @@ export async function POST(req: NextRequest) {
       row.eachCell((cell: any) => {
         cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: BLUE } }
         cell.font = { bold: true, color: { argb: WHITE }, size: 11 }
-        cell.alignment = { vertical: 'middle', horizontal: 'left' }
+        cell.alignment = { vertical: 'middle', horizontal: 'left', wrapText: false }
         cell.border = {
           bottom: { style: 'thin', color: { argb: 'FFE2E8F0' } },
         }
       })
-      row.height = 28
+      row.height = 24
     }
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -80,12 +80,21 @@ export async function POST(req: NextRequest) {
           pattern: 'solid',
           fgColor: { argb: alt ? LIGHT_GRAY : WHITE },
         }
-        cell.alignment = { vertical: 'middle' }
+        cell.alignment = { vertical: 'middle', horizontal: 'left', wrapText: false }
         cell.border = {
           bottom: { style: 'thin', color: { argb: 'FFE2E8F0' } },
         }
       })
-      row.height = 22
+      row.height = 20
+    }
+
+    // Ensure all columns are at least 20 wide
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    function applyMinColWidth(ws: any, minWidth = 20) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      ws.columns.forEach((col: any) => {
+        if (!col.width || col.width < minWidth) col.width = minWidth
+      })
     }
 
     // ── Sheet 1: Summary ─────────────────────────────────────────────────────
@@ -204,6 +213,11 @@ export async function POST(req: NextRequest) {
         }
       })
     }
+
+    // Apply minimum column width (20) to all sheets
+    applyMinColWidth(ws1)
+    applyMinColWidth(ws2)
+    applyMinColWidth(ws3)
 
     // Freeze header row on all sheets
     ws1.views = [{ state: 'frozen', xSplit: 0, ySplit: 1 }]
