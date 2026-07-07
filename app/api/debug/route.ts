@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import { auth } from '@clerk/nextjs/server'
 import { prisma } from '@/lib/prisma'
 import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3'
+import Anthropic from '@anthropic-ai/sdk'
 
 export async function GET() {
   const results: Record<string, string> = {}
@@ -64,6 +65,34 @@ export async function GET() {
     results.R2_UPLOAD = 'OK'
   } catch (e) {
     results.R2_UPLOAD = 'FAILED: ' + (e instanceof Error ? e.message : String(e))
+  }
+
+  // Anthropic API test
+  try {
+    const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
+    const res = await anthropic.messages.create({
+      model: 'claude-haiku-4-5-20251001',
+      max_tokens: 10,
+      messages: [{ role: 'user', content: 'Say OK' }],
+    })
+    results.ANTHROPIC_API = 'OK - model: claude-haiku-4-5-20251001'
+    results.ANTHROPIC_RESPONSE = res.content[0].type === 'text' ? res.content[0].text : 'no text'
+  } catch (e) {
+    const msg = e instanceof Error ? e.message : String(e)
+    results.ANTHROPIC_API = 'FAILED: ' + msg
+
+    // Try older model as fallback test
+    try {
+      const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
+      await anthropic.messages.create({
+        model: 'claude-3-5-haiku-20241022',
+        max_tokens: 10,
+        messages: [{ role: 'user', content: 'Say OK' }],
+      })
+      results.ANTHROPIC_FALLBACK = 'OK - claude-3-5-haiku-20241022 works (model access issue with haiku-4-5)'
+    } catch (e2) {
+      results.ANTHROPIC_FALLBACK = 'FAILED: ' + (e2 instanceof Error ? e2.message : String(e2))
+    }
   }
 
   return NextResponse.json(results)
