@@ -36,13 +36,24 @@ export function PublicNav() {
   return (
     <>
       <nav
-        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 overflow-hidden ${
           scrolled || menuOpen
-            ? 'backdrop-blur-sm bg-white/80 border-b border-[#E2E8F0] shadow-sm'
-            : 'bg-black/85 backdrop-blur-md border-b border-white/8'
+            ? 'bg-white/90 backdrop-blur-sm border-b border-[#E2E8F0] shadow-sm'
+            : 'border-b border-white/10'
         }`}
       >
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-6">
+        {/* Gradient + dots — visible only when not scrolled */}
+        {!scrolled && !menuOpen && (
+          <>
+            <div className="absolute inset-0 pointer-events-none"
+              style={{ background: 'linear-gradient(135deg, #0F172A 0%, #1a3060 50%, #0F172A 100%)' }} />
+            <div className="absolute inset-0 pointer-events-none"
+              style={{ background: 'radial-gradient(ellipse 70% 300% at 50% -30%, rgba(37,99,235,0.6) 0%, transparent 65%)' }} />
+            <div className="absolute inset-0 pointer-events-none"
+              style={{ backgroundImage: 'radial-gradient(circle, rgba(255,255,255,0.07) 1px, transparent 1px)', backgroundSize: '20px 20px' }} />
+          </>
+        )}
+        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-6">
           <Link href="/" className="flex items-center gap-2.5 shrink-0">
             <div className={`w-8 h-8 rounded-xl flex items-center justify-center shrink-0 ${!scrolled && !menuOpen ? 'bg-white/15' : 'bg-[#2563EB]'}`}>
               <Image src="/images/datafyle.png" alt="" width={22} height={22} className="w-5 h-5 object-contain brightness-0 invert" priority />
