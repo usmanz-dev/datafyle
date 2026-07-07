@@ -867,6 +867,56 @@ export default function LandingPage() {
         </div>
       </section>
 
+      {/* ── PRICING ─────────────────────────────────────────────────────────── */}
+      <section id="pricing" className="py-24 px-4 bg-[#F8FAFC]">
+        <div className="max-w-7xl mx-auto">
+          <motion.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} transition={{ duration: 0.5 }} className="text-center mb-14">
+            <h2 className="text-3xl sm:text-4xl font-bold text-[#1E293B] mb-3">Start Free, Upgrade When Ready</h2>
+            <p className="text-slate-500 text-base">No contracts. No hidden fees. Cancel anytime.</p>
+          </motion.div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-5 gap-4 items-start">
+            {PLANS.map((plan, i) => (
+              <motion.div key={plan.id} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.4, delay: i * 0.07 }}
+                className={`relative flex flex-col rounded-2xl border-2 p-7 transition-all ${plan.border} ${plan.bg} ${plan.popular ? 'shadow-2xl ring-4 ring-[#2563EB]/20 xl:-translate-y-3 xl:scale-[1.02]' : 'shadow-sm hover:shadow-md'}`}>
+                {plan.popular && (
+                  <div className="absolute -top-4 left-1/2 -translate-x-1/2">
+                    <span className="inline-flex items-center gap-1 px-4 py-1.5 bg-white text-[#2563EB] text-xs font-black rounded-full shadow-lg border-2 border-[#2563EB]/20 whitespace-nowrap">
+                      ★ Most Popular
+                    </span>
+                  </div>
+                )}
+                <div className={`mb-6 ${plan.popular ? 'mt-3' : ''}`}>
+                  <p className={`text-xs font-black uppercase tracking-widest mb-2 ${plan.popular ? 'text-blue-200' : 'text-slate-400'}`}>{plan.name}</p>
+                  <div className="flex items-end gap-1">
+                    <span className={`text-4xl font-black ${plan.textColor}`}>{plan.price === 0 ? 'Free' : `$${plan.price}`}</span>
+                    {plan.price > 0 && <span className={`text-sm mb-1.5 ${plan.subColor}`}>/mo</span>}
+                  </div>
+                  <p className={`text-xs mt-2 ${plan.subColor}`}>{plan.docs} · {plan.seats}</p>
+                </div>
+                <div className={`h-px mb-6 ${plan.popular ? 'bg-white/20' : 'bg-[#E2E8F0]'}`} />
+                <ul className="space-y-3 flex-1 mb-7">
+                  {plan.features.map((f) => (
+                    <li key={f} className="flex items-start gap-2.5">
+                      <Check size={14} className={`mt-0.5 shrink-0 ${plan.checkColor}`} strokeWidth={2.5} />
+                      <span className={`text-sm ${plan.textColor}`}>{f}</span>
+                    </li>
+                  ))}
+                </ul>
+                <Link href={plan.buttonHref} className={`inline-flex items-center justify-center w-full py-3.5 rounded-xl font-bold text-sm transition-all min-h-[48px] ${plan.buttonStyle}`}>
+                  {plan.buttonLabel}
+                </Link>
+              </motion.div>
+            ))}
+          </div>
+
+          <p className="text-center text-sm text-slate-400 mt-8">
+            +$19/month per extra seat ·{' '}
+            <Link href="/pricing" className="text-[#2563EB] hover:underline font-medium">See full plan comparison →</Link>
+          </p>
+        </div>
+      </section>
+
       {/* ── FILE TYPES ──────────────────────────────────────────────────────── */}
       <section id="file-types" className="py-24 px-4 bg-[#F8FAFC]">
         <div className="max-w-5xl mx-auto">
@@ -1005,56 +1055,6 @@ export default function LandingPage() {
           >
             All reviews are from verified customers on third-party platforms. No incentives were offered.
           </motion.p>
-        </div>
-      </section>
-
-      {/* ── PRICING ─────────────────────────────────────────────────────────── */}
-      <section id="pricing" className="py-24 px-4 bg-[#F8FAFC]">
-        <div className="max-w-7xl mx-auto">
-          <motion.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} transition={{ duration: 0.5 }} className="text-center mb-14">
-            <h2 className="text-3xl sm:text-4xl font-bold text-[#1E293B] mb-3">Start Free, Upgrade When Ready</h2>
-            <p className="text-slate-500 text-base">No contracts. No hidden fees. Cancel anytime.</p>
-          </motion.div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-5 gap-4 items-start">
-            {PLANS.map((plan, i) => (
-              <motion.div key={plan.id} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.4, delay: i * 0.07 }}
-                className={`relative flex flex-col rounded-2xl border-2 p-7 transition-all ${plan.border} ${plan.bg} ${plan.popular ? 'shadow-2xl ring-4 ring-[#2563EB]/20 xl:-translate-y-3 xl:scale-[1.02]' : 'shadow-sm hover:shadow-md'}`}>
-                {plan.popular && (
-                  <div className="absolute -top-4 left-1/2 -translate-x-1/2">
-                    <span className="inline-flex items-center gap-1 px-4 py-1.5 bg-white text-[#2563EB] text-xs font-black rounded-full shadow-lg border-2 border-[#2563EB]/20 whitespace-nowrap">
-                      ★ Most Popular
-                    </span>
-                  </div>
-                )}
-                <div className={`mb-6 ${plan.popular ? 'mt-3' : ''}`}>
-                  <p className={`text-xs font-black uppercase tracking-widest mb-2 ${plan.popular ? 'text-blue-200' : 'text-slate-400'}`}>{plan.name}</p>
-                  <div className="flex items-end gap-1">
-                    <span className={`text-4xl font-black ${plan.textColor}`}>{plan.price === 0 ? 'Free' : `$${plan.price}`}</span>
-                    {plan.price > 0 && <span className={`text-sm mb-1.5 ${plan.subColor}`}>/mo</span>}
-                  </div>
-                  <p className={`text-xs mt-2 ${plan.subColor}`}>{plan.docs} · {plan.seats}</p>
-                </div>
-                <div className={`h-px mb-6 ${plan.popular ? 'bg-white/20' : 'bg-[#E2E8F0]'}`} />
-                <ul className="space-y-3 flex-1 mb-7">
-                  {plan.features.map((f) => (
-                    <li key={f} className="flex items-start gap-2.5">
-                      <Check size={14} className={`mt-0.5 shrink-0 ${plan.checkColor}`} strokeWidth={2.5} />
-                      <span className={`text-sm ${plan.textColor}`}>{f}</span>
-                    </li>
-                  ))}
-                </ul>
-                <Link href={plan.buttonHref} className={`inline-flex items-center justify-center w-full py-3.5 rounded-xl font-bold text-sm transition-all min-h-[48px] ${plan.buttonStyle}`}>
-                  {plan.buttonLabel}
-                </Link>
-              </motion.div>
-            ))}
-          </div>
-
-          <p className="text-center text-sm text-slate-400 mt-8">
-            +$19/month per extra seat ·{' '}
-            <Link href="/pricing" className="text-[#2563EB] hover:underline font-medium">See full plan comparison →</Link>
-          </p>
         </div>
       </section>
 
