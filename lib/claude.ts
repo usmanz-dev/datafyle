@@ -39,8 +39,11 @@ No explanation. No markdown. Just pure JSON parseable by JSON.parse().`
     })
 
     const raw = response.content[0].type === 'text' ? response.content[0].text : ''
-    return JSON.parse(raw)
-  } catch {
+    const jsonMatch = raw.match(/\{[\s\S]*\}/)
+    return JSON.parse(jsonMatch ? jsonMatch[0] : raw)
+  } catch (err) {
+    const errMsg = err instanceof Error ? err.message : String(err)
+    console.error('[claude] primary call failed:', errMsg)
     try {
       const simple = await anthropic.messages.create({
         model: 'claude-haiku-4-5-20251001',
@@ -53,9 +56,12 @@ No explanation. No markdown. Just pure JSON parseable by JSON.parse().`
         ],
       })
       const raw = simple.content[0].type === 'text' ? simple.content[0].text : '{}'
-      return JSON.parse(raw)
-    } catch {
-      throw new Error('Claude API unavailable — check API key and billing at console.anthropic.com')
+      const jsonMatch = raw.match(/\{[\s\S]*\}/)
+      return JSON.parse(jsonMatch ? jsonMatch[0] : raw)
+    } catch (err2) {
+      const err2Msg = err2 instanceof Error ? err2.message : String(err2)
+      console.error('[claude] fallback call failed:', err2Msg)
+      throw new Error(`Claude API error: ${errMsg}`)
     }
   }
 }
