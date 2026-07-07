@@ -10,6 +10,7 @@ const DESKTOP_NAV = [
   { href: '/#about',        label: 'About' },
   { href: '/#how-it-works', label: 'How It Works' },
   { href: '/#features',     label: 'Features' },
+  { href: '/#calculator',   label: 'Savings Calculator' },
   { href: '/#faq',          label: 'FAQ' },
 ]
 
@@ -17,7 +18,7 @@ const MOBILE_NAV = [
   { href: '/#about',        label: 'About Us' },
   { href: '/#how-it-works', label: 'How It Works' },
   { href: '/#features',     label: 'Features' },
-  { href: '/#calculator',   label: 'Calculator' },
+  { href: '/#calculator',   label: 'Savings Calculator' },
   { href: '/#file-types',   label: 'File Types' },
   { href: '/pricing',       label: 'Pricing' },
   { href: '/#faq',          label: 'FAQ' },
