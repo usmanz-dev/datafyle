@@ -1,8 +1,9 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
-import { FileText, Mail, ExternalLink } from 'lucide-react'
+import { FileText, Mail } from 'lucide-react'
 import { PublicNav } from '@/components/PublicNav'
 import { PublicFooter } from '@/components/PublicFooter'
+import { MouseBlobClient } from '@/components/MouseBlobClient'
 
 export const metadata: Metadata = {
   title: 'Terms of Service — Datafyle',
@@ -43,6 +44,7 @@ function UL({ items }: { items: React.ReactNode[] }) {
 export default function TermsPage() {
   return (
     <div className="min-h-screen bg-[#F8FAFC] flex flex-col">
+      <MouseBlobClient />
       <PublicNav />
 
       {/* Hero */}
@@ -205,13 +207,6 @@ export default function TermsPage() {
 
         </div>
 
-        {/* Footer links */}
-        <div className="flex items-center justify-between mt-8 pt-6 border-t border-[#E2E8F0]">
-          <Link href="/" className="text-sm text-[#2563EB] hover:underline">← Back to Datafyle</Link>
-          <Link href="/privacy" className="inline-flex items-center gap-1.5 text-sm text-[#2563EB] hover:underline">
-            Privacy Policy <ExternalLink size={13} />
-          </Link>
-        </div>
       </main>
 
       <PublicFooter />

@@ -5,6 +5,7 @@ import { prisma } from '@/lib/prisma'
 import { MarkdownContent } from './MarkdownContent'
 import { PublicNav } from '@/components/PublicNav'
 import { PublicFooter } from '@/components/PublicFooter'
+import { MouseBlobClient } from '@/components/MouseBlobClient'
 
 export async function generateMetadata({
   params,
@@ -34,7 +35,9 @@ export default async function BlogPostPage({
 
   return (
     <div className="min-h-screen bg-white flex flex-col">
+      <MouseBlobClient />
       <PublicNav />
+
 
       <main className="flex-1">
         <div className="max-w-3xl mx-auto px-4 sm:px-6 py-12">

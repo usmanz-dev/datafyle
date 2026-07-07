@@ -3,6 +3,7 @@ import type { Metadata } from 'next'
 import { prisma } from '@/lib/prisma'
 import { PublicNav } from '@/components/PublicNav'
 import { PublicFooter } from '@/components/PublicFooter'
+import { MouseBlobClient } from '@/components/MouseBlobClient'
 
 export const metadata: Metadata = {
   title: 'Blog — Accounting Automation Tips',
@@ -21,6 +22,7 @@ export default async function BlogPage() {
 
   return (
     <div className="min-h-screen bg-white flex flex-col">
+      <MouseBlobClient />
       <PublicNav />
 
       <main className="flex-1">
