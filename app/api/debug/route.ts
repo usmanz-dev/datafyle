@@ -100,7 +100,7 @@ export async function GET() {
 
   // PDF parse test — parse a minimal PDF using pdf2json (pure Node.js, no browser APIs)
   try {
-    const { PDFParser } = await import('pdf2json')
+    const { default: PDFParser } = await import('pdf2json')
 
     // Minimal 1-page PDF with selectable text
     const minimalPdf = Buffer.from(
