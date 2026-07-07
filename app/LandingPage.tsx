@@ -172,6 +172,7 @@ const DESKTOP_NAV = [
   { href: '#about',        label: 'About' },
   { href: '#how-it-works', label: 'How It Works' },
   { href: '#features',     label: 'Features' },
+  { href: '#calculator',   label: 'Savings Calculator' },
   { href: '#faq',          label: 'FAQ' },
 ]
 
@@ -180,7 +181,7 @@ const MOBILE_NAV = [
   { href: '#comparison',   label: 'Why Datafyle' },
   { href: '#how-it-works', label: 'How It Works' },
   { href: '#features',     label: 'Features' },
-  { href: '#calculator',   label: 'Calculator' },
+  { href: '#calculator',   label: 'Savings Calculator' },
   { href: '#file-types',   label: 'File Types' },
   { href: '#reviews',      label: 'Reviews' },
   { href: '/pricing',      label: 'Pricing' },
