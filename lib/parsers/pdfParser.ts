@@ -1,22 +1,37 @@
+import { PDFParser } from 'pdf2json'
+
 export async function parsePDF(buffer: Buffer) {
   try {
-    // pdf-parse is CommonJS — dynamic import with interop
-    const mod = await import('pdf-parse')
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const pdfParse: (b: Buffer) => Promise<{ text: string; numpages: number }> =
-      (mod as any).default ?? mod
+    const text = await new Promise<string>((resolve, reject) => {
+      const parser = new PDFParser(null, true) // true = raw text mode
 
-    const data = await pdfParse(buffer)
-    const text = data.text?.trim() ?? ''
+      parser.on('pdfParser_dataReady', () => {
+        try {
+          const raw = parser.getRawTextContent()
+          resolve(raw?.trim() ?? '')
+        } catch {
+          resolve('')
+        }
+      })
+
+      parser.on('pdfParser_dataError', (err: unknown) => {
+        const msg = err && typeof err === 'object' && 'parserError' in err
+          ? String((err as { parserError: unknown }).parserError)
+          : String(err)
+        reject(new Error(msg))
+      })
+
+      parser.parseBuffer(buffer)
+    })
 
     if (text.length >= 30) {
-      return { text, pageCount: data.numpages, method: 'pdf-parse' }
+      return { text, pageCount: 1, method: 'pdf2json' }
     }
 
-    // Scanned PDF — fall back to Google Vision image OCR
+    // Very short text — likely a scanned PDF
     return await callGoogleVision(buffer)
   } catch (err) {
-    console.error('[pdf-parse] failed:', err instanceof Error ? err.message : String(err))
+    console.error('[pdf2json] failed:', err instanceof Error ? err.message : String(err))
     return await callGoogleVision(buffer)
   }
 }
@@ -29,7 +44,6 @@ async function callGoogleVision(buffer: Buffer) {
   }
 
   try {
-    // Send PDF as base64 — Vision handles PDF files inline via DOCUMENT_TEXT_DETECTION
     const base64 = buffer.toString('base64')
     const res = await fetch(
       `https://vision.googleapis.com/v1/images:annotate?key=${apiKey}`,

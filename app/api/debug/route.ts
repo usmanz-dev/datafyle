@@ -98,9 +98,11 @@ export async function GET() {
   // Google Vision key check
   results.GOOGLE_VISION_API_KEY = process.env.GOOGLE_VISION_API_KEY ? 'SET' : 'MISSING'
 
-  // PDF parse test — parse a minimal real PDF in memory
+  // PDF parse test — parse a minimal PDF using pdf2json (pure Node.js, no browser APIs)
   try {
-    // Minimal 1-page PDF with the word "TEST" as selectable text
+    const { PDFParser } = await import('pdf2json')
+
+    // Minimal 1-page PDF with selectable text
     const minimalPdf = Buffer.from(
       '%PDF-1.4\n1 0 obj<</Type/Catalog/Pages 2 0 R>>endobj\n' +
       '2 0 obj<</Type/Pages/Kids[3 0 R]/Count 1>>endobj\n' +
@@ -113,15 +115,18 @@ export async function GET() {
       'utf-8'
     )
 
-    const mod = await import('pdf-parse')
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const pdfParse: (b: Buffer) => Promise<{ text: string; numpages: number }> =
-      (mod as any).default ?? mod
-    const data = await pdfParse(minimalPdf)
-    const extracted = data.text?.trim() ?? ''
+    const extracted = await new Promise<string>((resolve, reject) => {
+      const parser = new PDFParser(null, true)
+      parser.on('pdfParser_dataReady', () => {
+        try { resolve(parser.getRawTextContent()?.trim() ?? '') } catch { resolve('') }
+      })
+      parser.on('pdfParser_dataError', (e: unknown) => reject(new Error(String(e))))
+      parser.parseBuffer(minimalPdf)
+    })
+
     results.PDF_PARSE = extracted.length > 0
-      ? `OK - extracted ${extracted.length} chars: "${extracted.slice(0, 60)}"`
-      : 'PARSED but text empty (0 chars)'
+      ? `OK - extracted ${extracted.length} chars`
+      : 'PARSED but text empty (scanned PDF path would be used)'
   } catch (e) {
     results.PDF_PARSE = 'FAILED: ' + (e instanceof Error ? e.message : String(e))
   }
