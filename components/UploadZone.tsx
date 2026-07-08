@@ -41,9 +41,33 @@ export function UploadZone({ onUploadComplete, atLimit, onUpgradePlan }: Props) 
   const [items, setItems] = useState<FileItem[]>([])
   const [busy, setBusy] = useState(false)
   const [downloading, setDownloading] = useState<Set<string>>(new Set())
+  const [sessionIds, setSessionIds] = useState<string[]>([])
+  const [exportingSession, setExportingSession] = useState(false)
 
   function update(id: string, patch: Partial<FileItem>) {
     setItems((prev) => prev.map((f) => (f.id === id ? { ...f, ...patch } : f)))
+  }
+
+  async function exportSessionFiles() {
+    if (sessionIds.length === 0) return
+    setExportingSession(true)
+    try {
+      const res = await fetch('/api/export/excel', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ documentIds: sessionIds }),
+      })
+      if (!res.ok) return
+      const blob = await res.blob()
+      const date = new Date().toISOString().slice(0, 10)
+      const a = document.createElement('a')
+      a.href = URL.createObjectURL(blob)
+      a.download = `datafyle-${sessionIds.length}-files-${date}.xlsx`
+      a.click()
+      URL.revokeObjectURL(a.href)
+    } finally {
+      setExportingSession(false)
+    }
   }
 
   async function downloadFile(item: FileItem) {
@@ -127,7 +151,10 @@ export function UploadZone({ onUploadComplete, atLimit, onUpgradePlan }: Props) 
         }
       }
 
-      if (successIds.length > 0) onUploadComplete(successIds)
+      if (successIds.length > 0) {
+        onUploadComplete(successIds)
+        setSessionIds(successIds)
+      }
       setBusy(false)
     },
     [busy, atLimit, onUploadComplete]
@@ -183,6 +210,28 @@ export function UploadZone({ onUploadComplete, atLimit, onUpgradePlan }: Props) 
         <p className="text-xs text-slate-400 mt-1.5">PDF · Word · Excel · CSV · XML · TXT · Images</p>
         <p className="text-xs text-slate-400">Max 25 MB per file</p>
       </div>
+
+      {/* Session bulk export — shows after all uploads finish with 2+ files */}
+      {!busy && sessionIds.length >= 2 && (
+        <div className="flex items-center justify-between gap-3 px-4 py-3 bg-[#EFF6FF] border border-blue-200 rounded-xl">
+          <div className="flex items-center gap-2 min-w-0">
+            <FileSpreadsheet size={16} className="text-[#2563EB] shrink-0" />
+            <span className="text-sm font-medium text-[#1E293B]">
+              {sessionIds.length} files ready — export all together
+            </span>
+          </div>
+          <button
+            onClick={exportSessionFiles}
+            disabled={exportingSession}
+            className="inline-flex items-center gap-1.5 px-4 py-2 text-sm font-semibold bg-[#2563EB] text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-60 shrink-0"
+          >
+            {exportingSession
+              ? <Loader2 size={13} className="animate-spin" />
+              : <Download size={13} />}
+            {exportingSession ? 'Preparing...' : `Export ${sessionIds.length} Files`}
+          </button>
+        </div>
+      )}
 
       {/* File list */}
       {items.length > 0 && (
