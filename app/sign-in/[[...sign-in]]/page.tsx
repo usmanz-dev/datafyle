@@ -10,7 +10,7 @@ export default function SignInPage() {
         <span className="text-[#1E293B] font-bold text-xl">Datafyle</span>
       </div>
       <SignIn
-        fallbackRedirectUrl="/dashboard"
+        forceRedirectUrl="/dashboard"
         signUpUrl="/sign-up"
       />
     </div>

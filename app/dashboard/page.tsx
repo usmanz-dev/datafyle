@@ -13,6 +13,9 @@ export default async function DashboardPage() {
   const user = await prisma.user.findUnique({ where: { clerkId: userId } })
   if (!user) redirect('/sign-in')
 
+  // Admin users go straight to admin dashboard
+  if (user.email === process.env.ADMIN_EMAIL) redirect('/admin')
+
   const now = new Date()
   const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1)
 
