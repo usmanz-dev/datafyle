@@ -46,7 +46,15 @@ export function Sidebar({ plan, email, collapsed, onToggle }: Props) {
     <>
       {/* Desktop sidebar — no overflow-hidden so the toggle button is never clipped */}
       <aside
-        className={`hidden md:flex flex-col fixed left-0 top-0 h-full bg-[#2563EB] z-30 transition-all duration-300 ease-in-out ${collapsed ? 'w-16' : 'w-60'}`}
+        className={`hidden md:flex flex-col fixed left-0 top-0 h-full z-30 transition-all duration-300 ease-in-out ${collapsed ? 'w-16' : 'w-60'}`}
+        style={{
+          background: `
+            radial-gradient(circle, rgba(255,255,255,0.055) 1px, transparent 1px),
+            radial-gradient(ellipse 120% 40% at 50% 60%, rgba(37,99,235,0.45) 0%, transparent 70%),
+            linear-gradient(180deg, #0F172A 0%, #0f1f45 50%, #0F172A 100%)
+          `,
+          backgroundSize: '20px 20px, 100% 100%, 100% 100%',
+        }}
       >
         {/* Logo */}
         <div className="flex items-center h-16 shrink-0 relative border-b border-white/10">
@@ -82,7 +90,7 @@ export function Sidebar({ plan, email, collapsed, onToggle }: Props) {
           <button
             onClick={onToggle}
             aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
-            className="absolute -right-3.5 top-1/2 -translate-y-1/2 w-7 h-7 rounded-full bg-white border-2 border-[#2563EB] shadow-lg flex items-center justify-center hover:scale-110 transition-all z-10"
+            className="absolute -right-3.5 top-1/2 -translate-y-1/2 w-7 h-7 rounded-full bg-white border-2 border-slate-300 shadow-lg flex items-center justify-center hover:scale-110 transition-all z-10"
           >
             {collapsed
               ? <ChevronRight size={13} className="text-[#2563EB]" />
@@ -146,7 +154,16 @@ export function Sidebar({ plan, email, collapsed, onToggle }: Props) {
       </aside>
 
       {/* Mobile bottom nav */}
-      <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-[#2563EB] z-30 shadow-[0_-2px_12px_rgba(37,99,235,0.3)]">
+      <nav
+        className="md:hidden fixed bottom-0 left-0 right-0 z-30 shadow-[0_-2px_12px_rgba(0,0,0,0.4)]"
+        style={{
+          background: `
+            radial-gradient(circle, rgba(255,255,255,0.055) 1px, transparent 1px),
+            linear-gradient(90deg, #0F172A 0%, #0f1f45 50%, #0F172A 100%)
+          `,
+          backgroundSize: '20px 20px, 100% 100%',
+        }}
+      >
         <div className="flex">
           {[
             { href: '/dashboard',         icon: LayoutDashboard, label: 'Home',    exact: true  },
