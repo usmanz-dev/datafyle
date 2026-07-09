@@ -12,6 +12,7 @@ const updateSchema = z.object({
   seoTitle:       z.string().nullable().optional(),
   seoDescription: z.string().nullable().optional(),
   published:      z.boolean().optional(),
+  featured:       z.boolean().optional(),
 })
 
 async function isAdmin(): Promise<boolean> {
@@ -35,7 +36,7 @@ export async function PUT(
       return NextResponse.json({ error: body.error.issues[0]?.message ?? 'Invalid input' }, { status: 400 })
     }
 
-    const { published, ...rest } = body.data
+    const { published, featured, ...rest } = body.data
 
     const existing = await prisma.blogPost.findUnique({
       where: { id },
@@ -60,6 +61,7 @@ export async function PUT(
       data: {
         ...rest,
         ...(published !== undefined ? { published } : {}),
+        ...(featured  !== undefined ? { featured  } : {}),
         ...(publishedAt !== undefined ? { publishedAt } : {}),
       },
     })

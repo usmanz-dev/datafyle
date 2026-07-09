@@ -12,6 +12,7 @@ const schema = z.object({
   seoTitle:       z.string().nullable().optional(),
   seoDescription: z.string().nullable().optional(),
   published:      z.boolean().default(false),
+  featured:       z.boolean().default(false),
 })
 
 async function isAdmin(): Promise<boolean> {
@@ -31,7 +32,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: body.error.issues[0]?.message ?? 'Invalid input' }, { status: 400 })
     }
 
-    const { title, slug, content, tags, featuredImage, seoTitle, seoDescription, published } = body.data
+    const { title, slug, content, tags, featuredImage, seoTitle, seoDescription, published, featured } = body.data
 
     const post = await prisma.blogPost.create({
       data: {
@@ -40,6 +41,7 @@ export async function POST(req: NextRequest) {
         seoTitle:       seoTitle       ?? null,
         seoDescription: seoDescription ?? null,
         published,
+        featured,
         publishedAt: published ? new Date() : null,
       },
     })

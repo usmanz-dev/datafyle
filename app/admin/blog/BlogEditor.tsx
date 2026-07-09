@@ -26,6 +26,7 @@ export interface BlogPostData {
   seoTitle: string | null
   seoDescription: string | null
   published: boolean
+  featured: boolean
 }
 
 export function BlogEditor({ initial }: { initial: BlogPostData }) {
@@ -38,6 +39,7 @@ export function BlogEditor({ initial }: { initial: BlogPostData }) {
   const [featuredImage, setFeaturedImage] = useState<string | null>(initial.featuredImage)
   const [seoTitle, setSeoTitle]         = useState(initial.seoTitle ?? '')
   const [seoDesc, setSeoDesc]           = useState(initial.seoDescription ?? '')
+  const [featured, setFeatured]         = useState(initial.featured)
   const [saving, setSaving]             = useState(false)
   const [uploadingImage, setUploadingImage] = useState(false)
   const [error, setError]               = useState<string | null>(null)
@@ -103,6 +105,7 @@ export function BlogEditor({ initial }: { initial: BlogPostData }) {
           seoTitle:       seoTitle.trim() || null,
           seoDescription: seoDesc.trim()  || null,
           published: publish,
+          featured,
         }),
       })
 
@@ -266,6 +269,21 @@ export function BlogEditor({ initial }: { initial: BlogPostData }) {
             rows={3}
             className="w-full px-4 py-2 text-[#1E293B] text-sm border border-[#E2E8F0] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 focus:border-[#2563EB] resize-none"
           />
+        </div>
+      </div>
+
+      {/* Featured toggle */}
+      <div className="flex items-center gap-3 p-4 bg-amber-50 border border-amber-200 rounded-lg">
+        <button
+          type="button"
+          onClick={() => setFeatured((f) => !f)}
+          className={`w-10 h-6 rounded-full transition-colors duration-200 relative shrink-0 ${featured ? 'bg-amber-400' : 'bg-slate-200'}`}
+        >
+          <span className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform duration-200 ${featured ? 'translate-x-4' : 'translate-x-0'}`} />
+        </button>
+        <div>
+          <p className="text-sm font-semibold text-[#1E293B]">⭐ Featured Article</p>
+          <p className="text-xs text-slate-500">Featured articles appear in the Featured filter on the blog page</p>
         </div>
       </div>
 

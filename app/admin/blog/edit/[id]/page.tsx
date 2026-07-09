@@ -28,6 +28,7 @@ export default async function EditBlogPostPage({
           seoTitle:       post.seoTitle,
           seoDescription: post.seoDescription,
           published:      post.published,
+          featured:       post.featured,
         }}
       />
     </div>

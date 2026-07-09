@@ -10,7 +10,7 @@ export default function NewBlogPostPage() {
       <BlogEditor
         initial={{
           title: '', slug: '', content: '', tags: [],
-          featuredImage: null, seoTitle: null, seoDescription: null, published: false,
+          featuredImage: null, seoTitle: null, seoDescription: null, published: false, featured: false,
         }}
       />
     </div>
