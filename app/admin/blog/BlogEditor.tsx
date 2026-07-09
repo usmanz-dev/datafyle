@@ -210,7 +210,7 @@ export function BlogEditor({ initial }: { initial: BlogPostData }) {
               <div className="flex flex-col items-center gap-1.5 text-slate-400">
                 <ImageIcon size={24} />
                 <span className="text-sm">Click to upload image</span>
-                <span className="text-xs">Max 5MB, any image format</span>
+                <span className="text-xs">Recommended: 1280 × 720px · Max 5MB</span>
               </div>
             )}
           </button>

@@ -5,6 +5,8 @@ import { PublicNav } from '@/components/PublicNav'
 import { PublicFooter } from '@/components/PublicFooter'
 import { MouseBlobClient } from '@/components/MouseBlobClient'
 
+export const dynamic = 'force-dynamic'
+
 export const metadata: Metadata = {
   title: 'Blog — Accounting Automation Tips',
   description: 'Accounting automation tips, guides, and industry insights from Datafyle.',
