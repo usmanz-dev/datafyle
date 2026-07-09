@@ -774,15 +774,15 @@ export default function LandingPage() {
               <p className="text-slate-300 text-lg leading-relaxed mb-10">
                 Accounting firms that switch to Datafyle stop paying $2,400+ every month for manual data entry work — and get those hours back for actual client work.
               </p>
-              <div className="grid grid-cols-3 gap-4 mb-10">
+              <div className="grid grid-cols-3 gap-2 sm:gap-4 mb-10">
                 {[
                   { value: '50+', label: 'Firms using Datafyle' },
                   { value: '$28K+',  label: 'Average annual saving' },
                   { value: '40h',    label: 'Avg hours saved/week' },
                 ].map((s) => (
-                  <div key={s.label} className="bg-white/5 border border-white/10 rounded-2xl p-5 text-center">
-                    <div className="text-2xl font-black text-white mb-1">{s.value}</div>
-                    <div className="text-xs text-slate-400 leading-snug">{s.label}</div>
+                  <div key={s.label} className="bg-white/5 border border-white/10 rounded-xl sm:rounded-2xl p-3 sm:p-5 text-center">
+                    <div className="text-base sm:text-2xl font-black text-white mb-1">{s.value}</div>
+                    <div className="text-[10px] sm:text-xs text-slate-400 leading-snug">{s.label}</div>
                   </div>
                 ))}
               </div>
@@ -840,18 +840,18 @@ export default function LandingPage() {
                 </div>
 
                 {/* Results */}
-                <div className="grid grid-cols-3 gap-3 mb-6">
-                  <div className="bg-[#F8FAFC] rounded-xl p-4 text-center border border-[#E2E8F0]">
-                    <div className="text-xl font-black text-[#2563EB] tabular-nums">${monthlySaving.toLocaleString()}</div>
-                    <div className="text-xs text-slate-400 font-semibold mt-1 uppercase tracking-wide">Saved/month</div>
+                <div className="grid grid-cols-3 gap-2 sm:gap-3 mb-6">
+                  <div className="bg-[#F8FAFC] rounded-lg sm:rounded-xl p-2 sm:p-4 text-center border border-[#E2E8F0]">
+                    <div className="text-sm sm:text-xl font-black text-[#2563EB] tabular-nums">${monthlySaving.toLocaleString()}</div>
+                    <div className="text-[9px] sm:text-xs text-slate-400 font-semibold mt-1 uppercase tracking-wide">Saved/month</div>
                   </div>
-                  <div className="bg-[#F8FAFC] rounded-xl p-4 text-center border border-[#E2E8F0]">
-                    <div className="text-xl font-black text-[#2563EB] tabular-nums">${yearlySaving.toLocaleString()}</div>
-                    <div className="text-xs text-slate-400 font-semibold mt-1 uppercase tracking-wide">Saved/year</div>
+                  <div className="bg-[#F8FAFC] rounded-lg sm:rounded-xl p-2 sm:p-4 text-center border border-[#E2E8F0]">
+                    <div className="text-sm sm:text-xl font-black text-[#2563EB] tabular-nums">${yearlySaving.toLocaleString()}</div>
+                    <div className="text-[9px] sm:text-xs text-slate-400 font-semibold mt-1 uppercase tracking-wide">Saved/year</div>
                   </div>
-                  <div className="bg-[#F8FAFC] rounded-xl p-4 text-center border border-[#E2E8F0]">
-                    <div className="text-xl font-black text-[#2563EB] tabular-nums">{hoursSavedPerWeek}h</div>
-                    <div className="text-xs text-slate-400 font-semibold mt-1 uppercase tracking-wide">Freed/week</div>
+                  <div className="bg-[#F8FAFC] rounded-lg sm:rounded-xl p-2 sm:p-4 text-center border border-[#E2E8F0]">
+                    <div className="text-sm sm:text-xl font-black text-[#2563EB] tabular-nums">{hoursSavedPerWeek}h</div>
+                    <div className="text-[9px] sm:text-xs text-slate-400 font-semibold mt-1 uppercase tracking-wide">Freed/week</div>
                   </div>
                 </div>
 

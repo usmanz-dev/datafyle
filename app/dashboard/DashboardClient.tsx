@@ -281,7 +281,7 @@ export function DashboardClient({
     <div className="min-h-screen bg-slate-50">
 
       {/* ── Top header bar ──────────────────────────────────────────────────── */}
-      <div className="bg-white border-b border-slate-100 sticky top-0 z-20">
+      <div className="bg-white border-b border-slate-100 sticky top-14 md:top-0 z-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-4">
           <div className="flex items-center gap-3 min-w-0">
             <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-[#2563EB] to-[#1d4ed8] flex items-center justify-center shrink-0">
