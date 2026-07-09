@@ -40,12 +40,13 @@ export async function POST(req: NextRequest) {
       )
     }
 
-    const serviceAccountJson = process.env.GOOGLE_SERVICE_ACCOUNT_JSON
-    if (!serviceAccountJson) {
-      return NextResponse.json(
-        { error: 'Google Sheets not configured. Add GOOGLE_SERVICE_ACCOUNT_JSON to environment variables.' },
-        { status: 503 }
-      )
+    // Get user's saved Google OAuth token
+    const token = await prisma.userToken.findUnique({
+      where: { userId_provider: { userId: user.id, provider: 'google' } },
+    })
+
+    if (!token) {
+      return NextResponse.json({ error: 'not_connected' }, { status: 403 })
     }
 
     const body = schema.safeParse(await req.json())
@@ -56,7 +57,6 @@ export async function POST(req: NextRequest) {
       orderBy: { createdAt: 'desc' },
     })
 
-    // Build row data
     const headers = [
       'File Name', 'Doc Type', 'Vendor', 'Invoice #',
       'Date', 'Due Date', 'Amount', 'Currency', 'Confidence %', 'Anomaly', 'Date Processed',
@@ -79,23 +79,37 @@ export async function POST(req: NextRequest) {
       ]
     })
 
-    // Auth with Google via service account JWT
     const { google } = await import('googleapis')
-    const credentials = JSON.parse(serviceAccountJson)
-    const auth2 = new google.auth.GoogleAuth({
-      credentials,
-      scopes: [
-        'https://www.googleapis.com/auth/spreadsheets',
-        'https://www.googleapis.com/auth/drive',
-      ],
+    const oauth2Client = new google.auth.OAuth2(
+      process.env.GOOGLE_CLIENT_ID,
+      process.env.GOOGLE_CLIENT_SECRET
+    )
+    oauth2Client.setCredentials({
+      access_token: token.accessToken,
+      refresh_token: token.refreshToken,
+      expiry_date: token.expiresAt.getTime(),
     })
-    const sheets = google.sheets({ version: 'v4', auth: auth2 })
+
+    // Persist refreshed tokens if they change
+    oauth2Client.on('tokens', async (newTokens) => {
+      if (newTokens.access_token) {
+        await prisma.userToken.update({
+          where: { userId_provider: { userId: user.id, provider: 'google' } },
+          data: {
+            accessToken: newTokens.access_token,
+            ...(newTokens.refresh_token ? { refreshToken: newTokens.refresh_token } : {}),
+            expiresAt: new Date(newTokens.expiry_date ?? Date.now() + 3600_000),
+          },
+        })
+      }
+    })
+
+    const sheets = google.sheets({ version: 'v4', auth: oauth2Client })
 
     let spreadsheetId = body.data.spreadsheetId
     const date = new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
 
     if (!spreadsheetId) {
-      // Create a new spreadsheet
       const created = await sheets.spreadsheets.create({
         requestBody: {
           properties: { title: `Datafyle Export ${date}` },
@@ -104,7 +118,7 @@ export async function POST(req: NextRequest) {
       })
       spreadsheetId = created.data.spreadsheetId!
 
-      // Style the header row blue
+      // Blue header row
       await sheets.spreadsheets.batchUpdate({
         spreadsheetId,
         requestBody: {
@@ -126,26 +140,11 @@ export async function POST(req: NextRequest) {
       })
     }
 
-    // Append data
     await sheets.spreadsheets.values.append({
       spreadsheetId,
       range: 'A1',
       valueInputOption: 'RAW',
-      requestBody: {
-        values: [headers, ...rows],
-      },
-    })
-
-    // Share the spreadsheet with the user so they can actually open it
-    const drive = google.drive({ version: 'v3', auth: auth2 })
-    await drive.permissions.create({
-      fileId: spreadsheetId,
-      requestBody: {
-        role: 'writer',
-        type: 'user',
-        emailAddress: user.email,
-      },
-      sendNotificationEmail: false,
+      requestBody: { values: [headers, ...rows] },
     })
 
     const spreadsheetUrl = `https://docs.google.com/spreadsheets/d/${spreadsheetId}`

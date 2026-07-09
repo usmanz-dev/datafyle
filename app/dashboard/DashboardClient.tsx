@@ -52,6 +52,7 @@ interface Props {
   isTeamAdmin: boolean
   teamMembers: { userId: string; name: string }[]
   currentUserId: string
+  googleConnected: boolean
 }
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -85,7 +86,7 @@ const PAGE_SIZE = 20
 
 export function DashboardClient({
   firstName, user, initialStats, initialDocuments,
-  isTeamAdmin, teamMembers, currentUserId,
+  isTeamAdmin, teamMembers, currentUserId, googleConnected,
 }: Props) {
   const [docs, setDocs] = useState<DocRow[]>(initialDocuments)
   const [search, setSearch] = useState('')
@@ -103,16 +104,34 @@ export function DashboardClient({
   const nextRouter   = useNextRouter()
 
   useEffect(() => {
-    if (searchParams.get('success') !== '1') return
+    const sheets = searchParams.get('sheets')
+    const success = searchParams.get('success')
     const plan = searchParams.get('plan') ?? ''
-    toast.success(`Welcome to Datafyle ${PLAN_NAMES[plan] ?? 'Paid'}!`, {
-      description: 'Your subscription is now active.',
-      duration: 6000,
-    })
-    const url = new URL(window.location.href)
-    url.searchParams.delete('success')
-    url.searchParams.delete('plan')
-    nextRouter.replace(url.pathname + (url.search || ''))
+
+    if (success === '1') {
+      toast.success(`Welcome to Datafyle ${PLAN_NAMES[plan] ?? 'Paid'}!`, {
+        description: 'Your subscription is now active.',
+        duration: 6000,
+      })
+    } else if (sheets === 'connected') {
+      toast.success('Google Account connected!', {
+        description: 'You can now export documents to Google Sheets.',
+        duration: 5000,
+      })
+    } else if (sheets === 'error') {
+      toast.error('Google connection failed', {
+        description: 'Please try connecting your Google account again.',
+        duration: 5000,
+      })
+    }
+
+    if (success || sheets) {
+      const url = new URL(window.location.href)
+      url.searchParams.delete('success')
+      url.searchParams.delete('plan')
+      url.searchParams.delete('sheets')
+      nextRouter.replace(url.pathname + (url.search || ''))
+    }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
@@ -246,9 +265,13 @@ export function DashboardClient({
       const ids = selected.size > 0 ? [...selected] : docs.map((d) => d.id)
       const res = await fetch('/api/export/sheets', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ documentIds: ids }) })
       const data = await res.json()
-      if (!res.ok) { alert(data.error ?? 'Google Sheets export failed'); return }
+      if (data.error === 'not_connected') {
+        window.location.href = '/api/auth/google'
+        return
+      }
+      if (!res.ok) { toast.error(data.error ?? 'Google Sheets export failed'); return }
       window.open(data.spreadsheetUrl, '_blank')
-    } catch { alert('Google Sheets export failed.') }
+    } catch { toast.error('Google Sheets export failed.') }
     finally { setSheetsExporting(false) }
   }
 
@@ -411,7 +434,9 @@ export function DashboardClient({
                       ? <Loader2 size={12} className="animate-spin text-green-600" />
                       : <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><rect width="24" height="24" rx="4" fill="#34A853" /><path d="M5 7h14M5 12h14M5 17h14" stroke="white" strokeWidth="2.5" strokeLinecap="round" /></svg>
                     }
-                    {selected.size > 0 ? `Sheets (${selected.size})` : 'Google Sheets'}
+                    {!googleConnected
+                      ? 'Connect Google'
+                      : selected.size > 0 ? `Sheets (${selected.size})` : 'Google Sheets'}
                   </button>
                 </div>
               </div>

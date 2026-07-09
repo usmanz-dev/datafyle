@@ -26,6 +26,7 @@ model User {
   subscription        Subscription?
   vendorPatterns      VendorPattern[]
   teamMemberships     TeamMember[]
+  userTokens          UserToken[]
 }
 
 model Document {
@@ -87,6 +88,19 @@ model TeamMember {
   inviteEmail String
   status      String    @default("pending")
   joinedAt    DateTime?
+}
+
+model UserToken {
+  id           String   @id @default(cuid())
+  userId       String
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  provider     String
+  accessToken  String   @db.Text
+  refreshToken String   @db.Text
+  expiresAt    DateTime
+  createdAt    DateTime @default(now())
+
+  @@unique([userId, provider])
 }
 
 model BlogPost {

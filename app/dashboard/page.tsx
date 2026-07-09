@@ -36,7 +36,7 @@ export default async function DashboardPage() {
     : []
   const allUserIds = [user.id, ...teamMemberIds.filter((id) => id !== user.id)]
 
-  const [thisMonthCount, anomaliesCount, documents] = await Promise.all([
+  const [thisMonthCount, anomaliesCount, documents, googleToken] = await Promise.all([
     prisma.document.count({
       where: { userId: { in: allUserIds }, createdAt: { gte: startOfMonth } },
     }),
@@ -50,6 +50,10 @@ export default async function DashboardPage() {
       where: { userId: { in: allUserIds } },
       orderBy: { createdAt: 'desc' },
       take: 200,
+    }),
+    prisma.userToken.findUnique({
+      where: { userId_provider: { userId: user.id, provider: 'google' } },
+      select: { id: true },
     }),
   ])
 
@@ -95,6 +99,7 @@ export default async function DashboardPage() {
       isTeamAdmin={!!team}
       teamMembers={teamMembers}
       currentUserId={user.id}
+      googleConnected={!!googleToken}
     />
   )
 }
