@@ -84,7 +84,10 @@ export async function POST(req: NextRequest) {
     const credentials = JSON.parse(serviceAccountJson)
     const auth2 = new google.auth.GoogleAuth({
       credentials,
-      scopes: ['https://www.googleapis.com/auth/spreadsheets'],
+      scopes: [
+        'https://www.googleapis.com/auth/spreadsheets',
+        'https://www.googleapis.com/auth/drive',
+      ],
     })
     const sheets = google.sheets({ version: 'v4', auth: auth2 })
 
@@ -131,6 +134,18 @@ export async function POST(req: NextRequest) {
       requestBody: {
         values: [headers, ...rows],
       },
+    })
+
+    // Share the spreadsheet with the user so they can actually open it
+    const drive = google.drive({ version: 'v3', auth: auth2 })
+    await drive.permissions.create({
+      fileId: spreadsheetId,
+      requestBody: {
+        role: 'writer',
+        type: 'user',
+        emailAddress: user.email,
+      },
+      sendNotificationEmail: false,
     })
 
     const spreadsheetUrl = `https://docs.google.com/spreadsheets/d/${spreadsheetId}`
