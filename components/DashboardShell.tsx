@@ -30,8 +30,8 @@ export function DashboardShell({ plan, email, children }: Props) {
   return (
     <div className="min-h-screen bg-[#F0F4F8]">
 
-      {/* Mobile top bar — only visible on mobile */}
-      <div className="md:hidden fixed top-0 left-0 right-0 h-14 z-30 bg-white border-b border-slate-100 flex items-center px-4 gap-3 shadow-sm">
+      {/* Mobile/tablet top bar */}
+      <div className="lg:hidden fixed top-0 left-0 right-0 h-14 z-30 bg-white border-b border-slate-100 flex items-center px-4 gap-3 shadow-sm">
         <button
           onClick={() => setMobileOpen(true)}
           aria-label="Open menu"
@@ -65,8 +65,8 @@ export function DashboardShell({ plan, email, children }: Props) {
       />
 
       <main
-        className={`min-h-screen pt-14 md:pt-0 pb-0 transition-all duration-300 ease-in-out ${
-          collapsed ? 'md:ml-16' : 'md:ml-60'
+        className={`min-h-screen pt-14 lg:pt-0 pb-0 transition-all duration-300 ease-in-out ${
+          collapsed ? 'lg:ml-16' : 'lg:ml-60'
         }`}
       >
         {children}

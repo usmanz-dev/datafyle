@@ -72,7 +72,7 @@ export function AdminSidebar({ collapsed, onToggle, mobileOpen, onMobileClose, a
     <>
       {/* ── Desktop sidebar ─────────────────────────────────────────────────── */}
       <aside
-        className={`hidden md:flex flex-col fixed left-0 top-0 h-full z-30 transition-all duration-300 ease-in-out ${collapsed ? 'w-16' : 'w-60'}`}
+        className={`hidden lg:flex flex-col fixed left-0 top-0 h-full z-30 transition-all duration-300 ease-in-out ${collapsed ? 'w-16' : 'w-60'}`}
         style={SIDEBAR_BG}
       >
         {/* Logo */}
@@ -151,7 +151,7 @@ export function AdminSidebar({ collapsed, onToggle, mobileOpen, onMobileClose, a
 
       {/* Backdrop */}
       <div
-        className={`md:hidden fixed inset-0 bg-black/60 z-40 transition-opacity duration-300 ${
+        className={`lg:hidden fixed inset-0 bg-black/60 z-40 transition-opacity duration-300 ${
           mobileOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
         }`}
         onClick={onMobileClose}
@@ -159,7 +159,7 @@ export function AdminSidebar({ collapsed, onToggle, mobileOpen, onMobileClose, a
 
       {/* Slide-out panel */}
       <aside
-        className={`md:hidden fixed left-0 top-0 h-full w-72 z-50 flex flex-col transition-transform duration-300 ease-in-out ${
+        className={`lg:hidden fixed left-0 top-0 h-full w-72 z-50 flex flex-col transition-transform duration-300 ease-in-out ${
           mobileOpen ? 'translate-x-0' : '-translate-x-full'
         }`}
         style={SIDEBAR_BG}
