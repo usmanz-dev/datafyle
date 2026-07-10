@@ -76,12 +76,12 @@ export default async function BlogPostPage({
 
           {/* Featured image */}
           {post.featuredImage && (
-            <div className="mb-8 rounded-xl overflow-hidden border border-[#E2E8F0]">
+            <div className="mb-8 rounded-xl overflow-hidden border border-[#E2E8F0] aspect-video w-full">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src={post.featuredImage}
                 alt={post.title}
-                className="w-full object-cover max-h-80"
+                className="w-full h-full object-cover"
               />
             </div>
           )}
