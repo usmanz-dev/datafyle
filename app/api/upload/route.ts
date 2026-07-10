@@ -22,8 +22,14 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'User not found' }, { status: 401 })
     }
 
+    // Monthly limit: count docs uploaded THIS month only (auto-resets each month)
+    const now = new Date()
+    const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1)
+    const thisMonthCount = await prisma.document.count({
+      where: { userId: user.id, createdAt: { gte: startOfMonth } },
+    })
     const effectiveLimit = getDocsLimit(user.plan)
-    if (user.docsUsed >= effectiveLimit) {
+    if (thisMonthCount >= effectiveLimit) {
       return NextResponse.json({ error: 'limit', upgrade: true }, { status: 403 })
     }
 

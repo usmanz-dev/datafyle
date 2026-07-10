@@ -23,6 +23,12 @@ export default async function SettingsPage() {
 
   if (!user) redirect('/sign-in')
 
+  const now = new Date()
+  const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1)
+  const thisMonthCount = await prisma.document.count({
+    where: { userId: user.id, createdAt: { gte: startOfMonth } },
+  })
+
   const subscription = user.subscription ?? null
 
   return (
@@ -33,7 +39,7 @@ export default async function SettingsPage() {
         imageUrl: clerkUser?.imageUrl ?? null,
       }}
       plan={user.plan}
-      docsUsed={user.docsUsed}
+      docsUsed={thisMonthCount}
       docsLimit={getDocsLimit(user.plan)}
       totalDocsProcessed={user.totalDocsProcessed}
       paidAt={user.paidAt?.toISOString() ?? null}

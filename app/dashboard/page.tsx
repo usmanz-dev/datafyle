@@ -37,9 +37,14 @@ export default async function DashboardPage() {
     : []
   const allUserIds = [user.id, ...teamMemberIds.filter((id) => id !== user.id)]
 
-  const [thisMonthCount, anomaliesCount, documents, googleToken] = await Promise.all([
+  const [thisMonthCount, myMonthCount, anomaliesCount, documents, googleToken] = await Promise.all([
+    // All team docs this month (for stats display)
     prisma.document.count({
       where: { userId: { in: allUserIds }, createdAt: { gte: startOfMonth } },
+    }),
+    // Owner's own docs this month (for personal limit bar)
+    prisma.document.count({
+      where: { userId: user.id, createdAt: { gte: startOfMonth } },
     }),
     prisma.document.count({
       where: {
@@ -71,7 +76,7 @@ export default async function DashboardPage() {
       firstName={firstName}
       user={{
         plan: user.plan,
-        docsUsed: user.docsUsed,
+        docsUsed: myMonthCount,
         docsLimit: getDocsLimit(user.plan),
         totalDocsProcessed: user.totalDocsProcessed,
         id: user.id,
