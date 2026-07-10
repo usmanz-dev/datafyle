@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { auth } from '@clerk/nextjs/server'
 import { prisma } from '@/lib/prisma'
 import { uploadFile } from '@/lib/r2'
+import { getDocsLimit } from '@/lib/plans'
 
 const ALLOWED_EXTENSIONS = new Set([
   'pdf', 'docx', 'doc', 'xlsx', 'xls', 'csv', 'txt', 'xml', 'jpg', 'jpeg', 'png',
@@ -21,7 +22,8 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'User not found' }, { status: 401 })
     }
 
-    if (user.docsUsed >= user.docsLimit) {
+    const effectiveLimit = getDocsLimit(user.plan)
+    if (user.docsUsed >= effectiveLimit) {
       return NextResponse.json({ error: 'limit', upgrade: true }, { status: 403 })
     }
 

@@ -4,8 +4,9 @@ import { z } from 'zod'
 import { prisma } from '@/lib/prisma'
 
 const schema = z.object({
-  month: z.number().int().min(1).max(12),
-  year: z.number().int().min(2020).max(2100),
+  startDate: z.string(), // ISO date string e.g. "2026-07-01"
+  endDate:   z.string(), // ISO date string e.g. "2026-07-31"
+  label:     z.string().optional(), // "July 2026", "This Week", etc.
 })
 
 export async function POST(req: NextRequest) {
@@ -23,21 +24,23 @@ export async function POST(req: NextRequest) {
     const body = schema.safeParse(await req.json())
     if (!body.success) return NextResponse.json({ error: 'Invalid request' }, { status: 400 })
 
-    const { month, year } = body.data
+    const { startDate, endDate, label } = body.data
+    const start = new Date(startDate)
+    const end   = new Date(endDate)
+    // end date is inclusive — set to end of day
+    end.setHours(23, 59, 59, 999)
+
+    const reportLabel = label ?? `${start.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })} – ${end.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}`
 
     const docs = await prisma.document.findMany({
       where: {
         userId: user.id,
         status: 'done',
-        createdAt: {
-          gte: new Date(year, month - 1, 1),
-          lt: new Date(year, month, 1),
-        },
+        createdAt: { gte: start, lte: end },
       },
       orderBy: { createdAt: 'desc' },
     })
 
-    // Calculate stats
     let totalAmount = 0
     let totalConfidence = 0
     let anomaliesCount = 0
@@ -70,14 +73,12 @@ export async function POST(req: NextRequest) {
       .slice(0, 5)
       .map(([name, amount]) => ({ name, amount }))
 
-    // Dynamic import to keep JSX in .tsx file
     const ReactPDF = await import('@react-pdf/renderer')
-    const { MonthlyReportDocument } = await import('@/lib/pdf/MonthlyReport')
+    const { ReportDocument } = await import('@/lib/pdf/MonthlyReport')
     const React = await import('react')
 
-    const element = React.createElement(MonthlyReportDocument, {
-      month,
-      year,
+    const element = React.createElement(ReportDocument, {
+      label: reportLabel,
       userEmail: user.email,
       totalDocuments,
       totalAmount,
@@ -97,10 +98,13 @@ export async function POST(req: NextRequest) {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const pdfBuffer = await (ReactPDF.renderToBuffer as (element: unknown) => Promise<Buffer>)(element)
 
+    // Safe filename from label
+    const safeLabel = reportLabel.replace(/[^a-zA-Z0-9-]/g, '-').replace(/-+/g, '-').toLowerCase()
+
     return new NextResponse(new Uint8Array(pdfBuffer), {
       headers: {
         'Content-Type': 'application/pdf',
-        'Content-Disposition': `attachment; filename="datafyle-${year}-${String(month).padStart(2, '0')}.pdf"`,
+        'Content-Disposition': `attachment; filename="datafyle-${safeLabel}.pdf"`,
       },
     })
   } catch (error) {

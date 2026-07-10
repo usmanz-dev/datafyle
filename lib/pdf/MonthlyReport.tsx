@@ -1,29 +1,24 @@
 import { Document, Page, View, Text, StyleSheet } from '@react-pdf/renderer'
 
-const MONTH_NAMES = [
-  'January', 'February', 'March', 'April', 'May', 'June',
-  'July', 'August', 'September', 'October', 'November', 'December',
-]
-
 const styles = StyleSheet.create({
-  page: { padding: 40, backgroundColor: '#FFFFFF', fontFamily: 'Helvetica' },
-  header: { marginBottom: 24, paddingBottom: 16, borderBottomWidth: 2, borderBottomColor: '#2563EB' },
-  brand: { fontSize: 22, fontWeight: 'bold', color: '#2563EB' },
-  subtitle: { fontSize: 11, color: '#64748B', marginTop: 4 },
-  sectionTitle: { fontSize: 13, fontWeight: 'bold', color: '#1E293B', marginBottom: 10, marginTop: 20 },
-  statsRow: { flexDirection: 'row', gap: 12, marginBottom: 12 },
-  statBox: { flex: 1, backgroundColor: '#F8FAFC', borderRadius: 8, padding: 14, borderWidth: 1, borderColor: '#E2E8F0' },
-  statLabel: { fontSize: 9, color: '#64748B', marginBottom: 4 },
-  statValue: { fontSize: 18, fontWeight: 'bold', color: '#1E293B' },
-  table: { borderWidth: 1, borderColor: '#E2E8F0', borderRadius: 6, overflow: 'hidden' },
-  tableHeader: { flexDirection: 'row', backgroundColor: '#2563EB', padding: '8 12' },
-  tableHeaderText: { color: '#FFFFFF', fontSize: 10, fontWeight: 'bold', flex: 1 },
-  tableRow: { flexDirection: 'row', padding: '7 12', borderBottomWidth: 1, borderBottomColor: '#E2E8F0', backgroundColor: '#FFFFFF' },
-  tableRowAlt: { flexDirection: 'row', padding: '7 12', borderBottomWidth: 1, borderBottomColor: '#E2E8F0', backgroundColor: '#F8FAFC' },
-  tableCell: { fontSize: 10, color: '#1E293B', flex: 1 },
+  page:           { padding: 40, backgroundColor: '#FFFFFF', fontFamily: 'Helvetica' },
+  header:         { marginBottom: 24, paddingBottom: 16, borderBottomWidth: 2, borderBottomColor: '#2563EB' },
+  brand:          { fontSize: 22, fontWeight: 'bold', color: '#2563EB' },
+  subtitle:       { fontSize: 11, color: '#64748B', marginTop: 4 },
+  sectionTitle:   { fontSize: 13, fontWeight: 'bold', color: '#1E293B', marginBottom: 10, marginTop: 20 },
+  statsRow:       { flexDirection: 'row', gap: 12, marginBottom: 12 },
+  statBox:        { flex: 1, backgroundColor: '#F8FAFC', borderRadius: 8, padding: 14, borderWidth: 1, borderColor: '#E2E8F0' },
+  statLabel:      { fontSize: 9, color: '#64748B', marginBottom: 4 },
+  statValue:      { fontSize: 18, fontWeight: 'bold', color: '#1E293B' },
+  table:          { borderWidth: 1, borderColor: '#E2E8F0', borderRadius: 6, overflow: 'hidden' },
+  tableHeader:    { flexDirection: 'row', backgroundColor: '#2563EB', padding: '8 12' },
+  tableHeaderText:{ color: '#FFFFFF', fontSize: 10, fontWeight: 'bold', flex: 1 },
+  tableRow:       { flexDirection: 'row', padding: '7 12', borderBottomWidth: 1, borderBottomColor: '#E2E8F0', backgroundColor: '#FFFFFF' },
+  tableRowAlt:    { flexDirection: 'row', padding: '7 12', borderBottomWidth: 1, borderBottomColor: '#E2E8F0', backgroundColor: '#F8FAFC' },
+  tableCell:      { fontSize: 10, color: '#1E293B', flex: 1 },
   tableCellRight: { fontSize: 10, color: '#1E293B', flex: 1, textAlign: 'right' },
-  footer: { position: 'absolute', bottom: 24, left: 40, right: 40, flexDirection: 'row', justifyContent: 'space-between' },
-  footerText: { fontSize: 9, color: '#94A3B8' },
+  footer:         { position: 'absolute', bottom: 24, left: 40, right: 40, flexDirection: 'row', justifyContent: 'space-between' },
+  footerText:     { fontSize: 9, color: '#94A3B8' },
 })
 
 interface DocItem {
@@ -35,8 +30,7 @@ interface DocItem {
 }
 
 interface ReportProps {
-  month: number
-  year: number
+  label: string
   userEmail: string
   totalDocuments: number
   totalAmount: number
@@ -47,21 +41,16 @@ interface ReportProps {
   docs: DocItem[]
 }
 
-export function MonthlyReportDocument(props: ReportProps) {
-  const {
-    month, year, userEmail, totalDocuments, totalAmount,
-    anomaliesCount, averageConfidence, top5Vendors, typeMap, docs,
-  } = props
-
-  const monthLabel = `${MONTH_NAMES[month - 1]} ${year}`
+export function ReportDocument(props: ReportProps) {
+  const { label, userEmail, totalDocuments, totalAmount, anomaliesCount, averageConfidence, top5Vendors, typeMap, docs } = props
 
   return (
-    <Document title={`Datafyle Report — ${monthLabel}`} author="Datafyle">
+    <Document title={`Datafyle Report — ${label}`} author="Datafyle">
       {/* Page 1 — Overview */}
       <Page size="A4" style={styles.page}>
         <View style={styles.header}>
           <Text style={styles.brand}>Datafyle</Text>
-          <Text style={styles.subtitle}>Monthly Report — {monthLabel}</Text>
+          <Text style={styles.subtitle}>Report — {label}</Text>
           <Text style={styles.subtitle}>{userEmail}</Text>
         </View>
 
@@ -79,9 +68,7 @@ export function MonthlyReportDocument(props: ReportProps) {
         <View style={styles.statsRow}>
           <View style={styles.statBox}>
             <Text style={styles.statLabel}>ANOMALIES</Text>
-            <Text style={{ ...styles.statValue, color: anomaliesCount > 0 ? '#EF4444' : '#22C55E' }}>
-              {anomaliesCount}
-            </Text>
+            <Text style={{ ...styles.statValue, color: anomaliesCount > 0 ? '#EF4444' : '#22C55E' }}>{anomaliesCount}</Text>
           </View>
           <View style={styles.statBox}>
             <Text style={styles.statLabel}>AVG ACCURACY</Text>
@@ -109,7 +96,7 @@ export function MonthlyReportDocument(props: ReportProps) {
 
         <View style={styles.footer}>
           <Text style={styles.footerText}>Generated by Datafyle</Text>
-          <Text style={styles.footerText}>{monthLabel} | Page 1</Text>
+          <Text style={styles.footerText}>{label} · Page 1</Text>
         </View>
       </Page>
 
@@ -118,7 +105,7 @@ export function MonthlyReportDocument(props: ReportProps) {
         <Page size="A4" style={styles.page}>
           <View style={styles.header}>
             <Text style={styles.brand}>Datafyle</Text>
-            <Text style={styles.subtitle}>Top Vendors — {monthLabel}</Text>
+            <Text style={styles.subtitle}>Top Vendors — {label}</Text>
           </View>
           <Text style={styles.sectionTitle}>Top 5 Vendors by Amount</Text>
           <View style={styles.table}>
@@ -135,7 +122,7 @@ export function MonthlyReportDocument(props: ReportProps) {
           </View>
           <View style={styles.footer}>
             <Text style={styles.footerText}>Generated by Datafyle</Text>
-            <Text style={styles.footerText}>{monthLabel} | Page 2</Text>
+            <Text style={styles.footerText}>{label} · Page 2</Text>
           </View>
         </Page>
       )}
@@ -144,7 +131,7 @@ export function MonthlyReportDocument(props: ReportProps) {
       <Page size="A4" style={styles.page}>
         <View style={styles.header}>
           <Text style={styles.brand}>Datafyle</Text>
-          <Text style={styles.subtitle}>All Documents — {monthLabel}</Text>
+          <Text style={styles.subtitle}>All Documents — {label}</Text>
         </View>
         <Text style={styles.sectionTitle}>Documents ({totalDocuments})</Text>
         <View style={styles.table}>
@@ -172,7 +159,7 @@ export function MonthlyReportDocument(props: ReportProps) {
         </View>
         <View style={styles.footer}>
           <Text style={styles.footerText}>Generated by Datafyle</Text>
-          <Text style={styles.footerText}>{monthLabel} | Page 3</Text>
+          <Text style={styles.footerText}>{label} · Page 3</Text>
         </View>
       </Page>
 
@@ -181,7 +168,7 @@ export function MonthlyReportDocument(props: ReportProps) {
         <Page size="A4" style={styles.page}>
           <View style={styles.header}>
             <Text style={styles.brand}>Datafyle</Text>
-            <Text style={{ ...styles.subtitle, color: '#EF4444' }}>Anomalies — {monthLabel}</Text>
+            <Text style={{ ...styles.subtitle, color: '#EF4444' }}>Anomalies — {label}</Text>
           </View>
           <Text style={styles.sectionTitle}>Anomalies Found ({anomaliesCount})</Text>
           <View style={styles.table}>
@@ -209,10 +196,13 @@ export function MonthlyReportDocument(props: ReportProps) {
           </View>
           <View style={styles.footer}>
             <Text style={styles.footerText}>Generated by Datafyle</Text>
-            <Text style={styles.footerText}>{monthLabel} | Page 4</Text>
+            <Text style={styles.footerText}>{label} · Page 4</Text>
           </View>
         </Page>
       )}
     </Document>
   )
 }
+
+// Keep old export name for any references
+export { ReportDocument as MonthlyReportDocument }

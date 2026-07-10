@@ -27,3 +27,17 @@ export const PLAN_NAMES: Record<string, string> = {
   business:     'Business',
   enterprise:   'Enterprise',
 }
+
+// Always derive doc limits from plan, not from docsLimit column
+// (so manually changing plan in DB immediately takes effect)
+export const PLAN_DOCS_LIMIT: Record<string, number> = {
+  free:         10,
+  starter:      500,
+  professional: 3000,
+  business:     10000,
+  enterprise:   20000,
+}
+
+export function getDocsLimit(plan: string): number {
+  return PLAN_DOCS_LIMIT[plan] ?? 10
+}
