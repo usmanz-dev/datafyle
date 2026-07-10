@@ -40,9 +40,8 @@ function getInitials(name: string | null, email: string) {
   return src.slice(0, 2).toUpperCase()
 }
 
-function StatusChip({ plan, subscriptionStatus, cancelledAt }: {
+function StatusChip({ plan, cancelledAt }: {
   plan: string
-  subscriptionStatus: string | null
   cancelledAt: string | null
 }) {
   if (cancelledAt) {
@@ -53,7 +52,7 @@ function StatusChip({ plan, subscriptionStatus, cancelledAt }: {
       </span>
     )
   }
-  if (plan !== 'free' && subscriptionStatus === 'active') {
+  if (plan !== 'free') {
     return (
       <span className="inline-flex items-center gap-1.5 text-xs font-medium px-2.5 py-1 rounded-full bg-green-50 text-green-700">
         <span className="w-1.5 h-1.5 rounded-full bg-green-500" />
@@ -170,7 +169,6 @@ function UserTable({ rows, filter }: { rows: UserRow[]; filter: string }) {
                     <td className="px-5 py-3.5">
                       <StatusChip
                         plan={u.plan}
-                        subscriptionStatus={u.subscriptionStatus}
                         cancelledAt={u.cancelledAt}
                       />
                     </td>
@@ -186,7 +184,7 @@ function UserTable({ rows, filter }: { rows: UserRow[]; filter: string }) {
 }
 
 export function UsersClient({ users }: Props) {
-  const paid      = users.filter((u) => u.plan !== 'free' && u.subscriptionStatus === 'active')
+  const paid      = users.filter((u) => u.plan !== 'free' && !u.cancelledAt)
   const cancelled = users.filter((u) => u.cancelledAt !== null)
   const free      = users.filter((u) => u.plan === 'free')
 

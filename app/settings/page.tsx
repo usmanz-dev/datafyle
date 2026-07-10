@@ -3,6 +3,7 @@ import { redirect } from 'next/navigation'
 import type { Metadata } from 'next'
 import { prisma } from '@/lib/prisma'
 import { SettingsClient } from './SettingsClient'
+import { getDocsLimit } from '@/lib/plans'
 
 export const metadata: Metadata = {
   title: 'Settings',
@@ -33,7 +34,7 @@ export default async function SettingsPage() {
       }}
       plan={user.plan}
       docsUsed={user.docsUsed}
-      docsLimit={user.docsLimit}
+      docsLimit={getDocsLimit(user.plan)}
       totalDocsProcessed={user.totalDocsProcessed}
       paidAt={user.paidAt?.toISOString() ?? null}
       cancelledAt={user.cancelledAt?.toISOString() ?? null}

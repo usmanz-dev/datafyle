@@ -2,6 +2,7 @@ import { auth, currentUser } from '@clerk/nextjs/server'
 import { redirect } from 'next/navigation'
 import { prisma } from '@/lib/prisma'
 import { DashboardClient } from './DashboardClient'
+import { getDocsLimit } from '@/lib/plans'
 
 export default async function DashboardPage() {
   const { userId } = await auth()
@@ -65,16 +66,13 @@ export default async function DashboardPage() {
       }))
     : []
 
-  // Welcome banner for new team members
-  const welcomeTeam = false // handled client-side via ?welcome=team
-
   return (
     <DashboardClient
       firstName={firstName}
       user={{
         plan: user.plan,
         docsUsed: user.docsUsed,
-        docsLimit: user.docsLimit,
+        docsLimit: getDocsLimit(user.plan),
         totalDocsProcessed: user.totalDocsProcessed,
         id: user.id,
       }}
