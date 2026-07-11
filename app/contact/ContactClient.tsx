@@ -304,9 +304,25 @@ function Footer() {
 // ─── Page ─────────────────────────────────────────────────────────────────────
 export default function ContactClient() {
   const fadeUp = { hidden: { opacity: 0, y: 24 }, visible: { opacity: 1, y: 0 } }
+  const [mouse, setMouse] = useState({ x: -500, y: -500 })
+
+  useEffect(() => {
+    const handler = (e: MouseEvent) => setMouse({ x: e.clientX, y: e.clientY })
+    window.addEventListener('mousemove', handler)
+    return () => window.removeEventListener('mousemove', handler)
+  }, [])
 
   return (
     <div className="min-h-screen bg-white">
+
+      {/* ── Mouse glow ──────────────────────────────────────────────────────── */}
+      <div
+        className="pointer-events-none fixed inset-0 z-[999]"
+        style={{
+          background: `radial-gradient(500px circle at ${mouse.x}px ${mouse.y}px, rgba(37,99,235,0.10) 0%, rgba(37,99,235,0.04) 35%, transparent 65%)`,
+        }}
+      />
+
       <Navbar />
 
       {/* ── Hero ─────────────────────────────────────────────────────────────── */}
