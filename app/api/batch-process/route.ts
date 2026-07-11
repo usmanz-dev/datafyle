@@ -1,7 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { auth } from '@clerk/nextjs/server'
 import { z } from 'zod'
-import { inngest } from '@/inngest/client'
+import { processDocument } from '@/lib/processDocument'
+import { sendBatchStartedEmail } from '@/lib/emails'
+import { prisma } from '@/lib/prisma'
+
+export const maxDuration = 300 // 5 min — allows large batches on Vercel Pro
 
 const schema = z.object({
   documentIds: z.array(z.string().min(1)).min(1).max(500),
@@ -19,14 +23,36 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Invalid request' }, { status: 400 })
     }
 
-    await inngest.send({
-      name: 'doc/batch',
-      data: { documentIds: body.data.documentIds, userId },
-    })
+    const { documentIds } = body.data
 
-    return NextResponse.json({ success: true, total: body.data.documentIds.length })
+    // Send batch started email (non-blocking)
+    const user = await prisma.user.findUnique({ where: { clerkId: userId } })
+    if (user) {
+      sendBatchStartedEmail(user.email, documentIds.length, user.name).catch((e) =>
+        console.error('Failed to send batch email:', e)
+      )
+    }
+
+    // Process each document sequentially (same as single upload)
+    const results = { success: 0, failed: 0 }
+    for (const documentId of documentIds) {
+      try {
+        await processDocument(documentId, userId)
+        results.success++
+      } catch (e) {
+        console.error(`Failed to process document ${documentId}:`, e)
+        results.failed++
+      }
+    }
+
+    return NextResponse.json({
+      success: true,
+      total: documentIds.length,
+      processed: results.success,
+      failed: results.failed,
+    })
   } catch (error) {
     console.error('Batch process error:', error)
-    return NextResponse.json({ error: 'Failed to queue batch' }, { status: 500 })
+    return NextResponse.json({ error: 'Failed to process batch' }, { status: 500 })
   }
 }
