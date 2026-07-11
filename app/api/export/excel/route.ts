@@ -53,9 +53,18 @@ export async function POST(req: NextRequest) {
     wb.creator = 'Datafyle'
     wb.created = new Date()
 
-    const BLUE = 'FF2563EB'
-    const WHITE = 'FFFFFFFF'
+    const BLUE       = 'FF2563EB'
+    const WHITE      = 'FFFFFFFF'
     const LIGHT_GRAY = 'FFF8FAFC'
+    const BORDER_CLR = 'FFD1D5DB'   // visible gray border
+    const BLUE_DARK  = 'FF1D4ED8'   // slightly darker blue for header dividers
+
+    const fullBorder = (color: string) => ({
+      top:    { style: 'thin' as const, color: { argb: color } },
+      left:   { style: 'thin' as const, color: { argb: color } },
+      bottom: { style: 'thin' as const, color: { argb: color } },
+      right:  { style: 'thin' as const, color: { argb: color } },
+    })
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     function styleHeader(row: any) {
@@ -64,11 +73,9 @@ export async function POST(req: NextRequest) {
         cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: BLUE } }
         cell.font = { bold: true, color: { argb: WHITE }, size: 11 }
         cell.alignment = { vertical: 'middle', horizontal: 'left', wrapText: false }
-        cell.border = {
-          bottom: { style: 'thin', color: { argb: 'FFE2E8F0' } },
-        }
+        cell.border = fullBorder(BLUE_DARK)
       })
-      row.height = 24
+      row.height = 26
     }
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -81,11 +88,9 @@ export async function POST(req: NextRequest) {
           fgColor: { argb: alt ? LIGHT_GRAY : WHITE },
         }
         cell.alignment = { vertical: 'middle', horizontal: 'left', wrapText: false }
-        cell.border = {
-          bottom: { style: 'thin', color: { argb: 'FFE2E8F0' } },
-        }
+        cell.border = fullBorder(BORDER_CLR)
       })
-      row.height = 20
+      row.height = 22
     }
 
     // Ensure all columns are at least 20 wide
