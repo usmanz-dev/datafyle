@@ -402,15 +402,17 @@ export default function ContactClient() {
               {/* Trust */}
               <div className="p-5 bg-[#EFF6FF] border border-blue-100 rounded-2xl">
                 <p className="text-xs font-bold text-[#2563EB] uppercase tracking-wide mb-3">Trusted by firms worldwide</p>
-                <div className="grid grid-cols-3 gap-4 text-center">
+                <div className="grid grid-cols-2 gap-4 text-center">
                   {[
-                    { num: '1,200+', label: 'Firms' },
-                    { num: '850K+', label: 'Docs Processed' },
-                    { num: '4.9★', label: 'Avg Rating' },
-                  ].map(({ num, label }) => (
-                    <div key={label}>
-                      <p className="text-lg font-black text-[#1E293B]">{num}</p>
-                      <p className="text-[11px] text-slate-500">{label}</p>
+                    { num: '50+',   label: 'Accounting Firms',     sub: 'actively using Datafyle'              },
+                    { num: '12K+',  label: 'Documents Processed',  sub: 'invoices, receipts & more'            },
+                    { num: '4.9★',  label: 'Average Rating',       sub: 'across Capterra, G2 & Trustpilot'    },
+                    { num: '99.7%', label: 'Platform Uptime',      sub: 'SLA-backed reliability'               },
+                  ].map(({ num, label, sub }) => (
+                    <div key={label} className="py-1">
+                      <p className="text-xl font-black text-[#1E293B]">{num}</p>
+                      <p className="text-[11px] font-semibold text-slate-600 mt-0.5">{label}</p>
+                      <p className="text-[10px] text-slate-400">{sub}</p>
                     </div>
                   ))}
                 </div>
