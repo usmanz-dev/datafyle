@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { motion } from 'framer-motion'
@@ -304,22 +304,33 @@ function Footer() {
 // ─── Page ─────────────────────────────────────────────────────────────────────
 export default function ContactClient() {
   const fadeUp = { hidden: { opacity: 0, y: 24 }, visible: { opacity: 1, y: 0 } }
-  const [mouse, setMouse] = useState({ x: -500, y: -500 })
+  const blobRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
-    const handler = (e: MouseEvent) => setMouse({ x: e.clientX, y: e.clientY })
-    window.addEventListener('mousemove', handler)
+    const handler = (e: MouseEvent) => {
+      if (blobRef.current) {
+        blobRef.current.style.transform = `translate(${e.clientX - 260}px, ${e.clientY - 260}px)`
+      }
+    }
+    window.addEventListener('mousemove', handler, { passive: true })
     return () => window.removeEventListener('mousemove', handler)
   }, [])
 
   return (
     <div className="min-h-screen bg-white">
 
-      {/* ── Mouse glow ──────────────────────────────────────────────────────── */}
+      {/* ── Mouse blob — same as landing page ───────────────────────────────── */}
       <div
-        className="pointer-events-none fixed inset-0 z-[999]"
+        ref={blobRef}
+        className="fixed top-0 left-0 pointer-events-none"
         style={{
-          background: `radial-gradient(500px circle at ${mouse.x}px ${mouse.y}px, rgba(37,99,235,0.10) 0%, rgba(37,99,235,0.04) 35%, transparent 65%)`,
+          width: 520, height: 520, borderRadius: '50%',
+          background: 'radial-gradient(circle, rgba(37,99,235,0.65) 0%, transparent 70%)',
+          filter: 'blur(60px)',
+          transform: 'translate(-260px,-260px)',
+          willChange: 'transform',
+          zIndex: 30,
+          mixBlendMode: 'screen',
         }}
       />
 
