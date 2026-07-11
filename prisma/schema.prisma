@@ -103,6 +103,18 @@ model UserToken {
   @@unique([userId, provider])
 }
 
+model ContactSubmission {
+  id          String   @id @default(cuid())
+  name        String
+  email       String
+  company     String?
+  phone       String?
+  teamSize    String?
+  inquiryType String
+  message     String   @db.Text
+  createdAt   DateTime @default(now())
+}
+
 model BlogPost {
   id             String    @id @default(cuid())
   title          String

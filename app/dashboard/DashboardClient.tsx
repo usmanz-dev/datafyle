@@ -15,6 +15,7 @@ import {
   PieChart, Pie,
 } from 'recharts'
 import { UploadZone } from '@/components/UploadZone'
+import { BatchUploadZone } from '@/components/BatchUploadZone'
 import { ReportButton } from '@/components/ReportButton'
 import { DocumentDetail, type DocRow } from '@/components/DocumentDetail'
 import { UpgradeModal } from '@/components/UpgradeModal'
@@ -99,6 +100,7 @@ export function DashboardClient({
   const [exporting, setExporting] = useState(false)
   const [sheetsExporting, setSheetsExporting] = useState(false)
   const [upgradeModal, setUpgradeModal] = useState<{ feature: string; requiredPlan: string } | null>(null)
+  const [batchMode, setBatchMode]       = useState(false)
 
   const searchParams = useSearchParams()
   const nextRouter   = useNextRouter()
@@ -349,16 +351,55 @@ export function DashboardClient({
                 <p className="text-xs text-slate-400">PDF, Word, Excel, CSV, Images, XML, TXT — up to 25 MB</p>
               </div>
             </div>
-            {atLimit && (
-              <span className="text-xs font-semibold text-red-500 bg-red-50 px-3 py-1 rounded-full">Limit reached</span>
-            )}
+            <div className="flex items-center gap-2">
+              {/* Single / Batch toggle — Pro+ only */}
+              {hasFeature(user.plan, 'batch') ? (
+                <div className="flex items-center bg-slate-100 rounded-xl p-1 gap-0.5">
+                  <button
+                    onClick={() => setBatchMode(false)}
+                    className={`px-3 py-1.5 text-xs font-semibold rounded-lg transition-all ${
+                      !batchMode ? 'bg-white text-slate-800 shadow-sm' : 'text-slate-400 hover:text-slate-600'
+                    }`}
+                  >
+                    Single
+                  </button>
+                  <button
+                    onClick={() => setBatchMode(true)}
+                    className={`px-3 py-1.5 text-xs font-semibold rounded-lg transition-all ${
+                      batchMode ? 'bg-white text-slate-800 shadow-sm' : 'text-slate-400 hover:text-slate-600'
+                    }`}
+                  >
+                    Batch
+                  </button>
+                </div>
+              ) : (
+                <button
+                  onClick={() => setUpgradeModal({ feature: 'Batch Upload', requiredPlan: 'professional' })}
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold bg-violet-50 text-violet-600 border border-violet-100 rounded-xl hover:bg-violet-100 transition-colors"
+                >
+                  <Zap size={11} />
+                  Batch Upload
+                </button>
+              )}
+              {atLimit && (
+                <span className="text-xs font-semibold text-red-500 bg-red-50 px-3 py-1 rounded-full">Limit reached</span>
+              )}
+            </div>
           </div>
           <div className="p-5">
-            <UploadZone
-              atLimit={atLimit}
-              onUploadComplete={() => fetchDocs()}
-              onUpgradePlan={() => setUpgradeModal({ feature: 'Document uploads', requiredPlan: user.plan === 'free' ? 'starter' : user.plan })}
-            />
+            {batchMode && hasFeature(user.plan, 'batch') ? (
+              <BatchUploadZone
+                atLimit={atLimit}
+                onBatchComplete={fetchDocs}
+                onUpgradePlan={() => setUpgradeModal({ feature: 'Document uploads', requiredPlan: user.plan === 'free' ? 'starter' : user.plan })}
+              />
+            ) : (
+              <UploadZone
+                atLimit={atLimit}
+                onUploadComplete={() => fetchDocs()}
+                onUpgradePlan={() => setUpgradeModal({ feature: 'Document uploads', requiredPlan: user.plan === 'free' ? 'starter' : user.plan })}
+              />
+            )}
           </div>
         </div>
 

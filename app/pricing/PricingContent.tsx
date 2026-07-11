@@ -69,7 +69,7 @@ const PLANS = [
     seats: '50 seats',
     popular: false,
     accentClass: 'bg-linear-to-r from-amber-400 to-orange-400',
-    features: ['Everything in Business', 'Dedicated support', '50 team seats', 'Custom onboarding'],
+    features: ['Everything in Business', 'Priority support (1-hr SLA)', '50 team seats', 'Custom onboarding'],
     btnVariant: 'gold-solid',
     btnLabel: 'Contact Sales',
   },
@@ -86,8 +86,8 @@ const FEATURES_TABLE = [
   { label: 'Google Sheets',      icon: FileSpreadsheet, free: false,   starter: false,    pro: true,    biz: true,     ent: true },
   { label: 'Smart Memory (AI)',  icon: Brain,           free: false,   starter: false,    pro: true,    biz: true,     ent: true },
   { label: 'Batch Upload',       icon: Upload,          free: false,   starter: false,    pro: true,    biz: true,     ent: true },
-  { label: 'Priority Support',   icon: Shield,          free: false,   starter: false,    pro: false,   biz: true,     ent: true },
-  { label: 'Dedicated Support',  icon: Users,           free: false,   starter: false,    pro: false,   biz: false,    ent: true },
+  { label: 'AI Support Chat',    icon: Shield,          free: true,    starter: true,     pro: true,    biz: true,     ent: true },
+  { label: 'Priority Support',   icon: Users,           free: false,   starter: false,    pro: false,   biz: true,     ent: true },
 ]
 
 const FAQS = [

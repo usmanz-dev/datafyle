@@ -6,7 +6,7 @@ import { usePathname } from 'next/navigation'
 import { UserButton } from '@clerk/nextjs'
 import {
   LayoutDashboard, Upload, Database, FileText,
-  Users, Settings, ChevronLeft, ChevronRight, Lock, X,
+  Users, Settings, ChevronLeft, ChevronRight, Lock, X, HelpCircle,
 } from 'lucide-react'
 
 const NAV = [
@@ -46,9 +46,10 @@ interface Props {
   onToggle: () => void
   mobileOpen: boolean
   onMobileClose: () => void
+  onSupportOpen: () => void
 }
 
-export function Sidebar({ plan, email, collapsed, onToggle, mobileOpen, onMobileClose }: Props) {
+export function Sidebar({ plan, email, collapsed, onToggle, mobileOpen, onMobileClose, onSupportOpen }: Props) {
   const pathname = usePathname()
   const planCls   = PLAN_COLORS[plan as keyof typeof PLAN_COLORS]   ?? PLAN_COLORS.free
   const planLabel = PLAN_LABELS[plan as keyof typeof PLAN_LABELS]   ?? 'FREE'
@@ -136,6 +137,25 @@ export function Sidebar({ plan, email, collapsed, onToggle, mobileOpen, onMobile
           <NavItems />
         </nav>
 
+        {/* Help & Support */}
+        <div className="px-2 pb-2 shrink-0">
+          <button
+            onClick={onSupportOpen}
+            title={collapsed ? 'Help & Support' : undefined}
+            className={`w-full flex items-center gap-3 rounded-xl transition-all duration-150 group relative text-white/70 hover:bg-white/10 hover:text-white ${
+              collapsed ? 'py-3 justify-center' : 'px-3 py-2.5'
+            }`}
+          >
+            <HelpCircle size={18} className="shrink-0" />
+            {!collapsed && <span className="flex-1 text-sm font-medium text-left">Help &amp; Support</span>}
+            {collapsed && (
+              <span className="absolute left-full ml-3 px-2.5 py-1.5 bg-[#1E293B] text-white text-xs rounded-lg whitespace-nowrap opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity shadow-lg z-50">
+                Help &amp; Support
+              </span>
+            )}
+          </button>
+        </div>
+
         {/* User footer */}
         <div className={`border-t border-white/10 shrink-0 ${collapsed ? 'px-2 py-3' : 'px-4 py-4'}`}>
           {collapsed ? (
@@ -192,6 +212,17 @@ export function Sidebar({ plan, email, collapsed, onToggle, mobileOpen, onMobile
         <nav className="flex-1 px-2 py-4 space-y-0.5 overflow-y-auto">
           <NavItems onItemClick={onMobileClose} />
         </nav>
+
+        {/* Help & Support — mobile */}
+        <div className="px-2 pb-2 shrink-0">
+          <button
+            onClick={() => { onSupportOpen(); onMobileClose() }}
+            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all"
+          >
+            <HelpCircle size={18} className="shrink-0" />
+            <span className="text-sm font-medium">Help &amp; Support</span>
+          </button>
+        </div>
 
         {/* User footer */}
         <div className="border-t border-white/10 px-4 py-4 shrink-0">

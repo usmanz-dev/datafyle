@@ -87,7 +87,7 @@ const PLANS = [
   {
     id: 'enterprise', name: 'Enterprise', price: 599, docs: '20,000 docs/month', seats: '50 seats', popular: false, dark: true,
     border: 'border-[#1E293B]', bg: 'bg-[#0F172A]', textColor: 'text-white', subColor: 'text-slate-400',
-    checkColor: 'text-[#2563EB]', features: ['Everything in Business', 'All features included', '50 team seats', 'Dedicated support'],
+    checkColor: 'text-[#2563EB]', features: ['Everything in Business', 'All features included', '50 team seats', 'Priority support (1-hr SLA)'],
     buttonLabel: 'Contact Sales', buttonStyle: 'bg-[#2563EB] text-white hover:bg-blue-600 font-bold', buttonHref: '/pricing',
   },
 ]
@@ -174,6 +174,7 @@ const DESKTOP_NAV = [
   { href: '#features',     label: 'Features' },
   { href: '#calculator',   label: 'Savings Calculator' },
   { href: '#faq',          label: 'FAQ' },
+  { href: '/contact',      label: 'Contact' },
 ]
 
 const MOBILE_NAV = [
@@ -185,6 +186,7 @@ const MOBILE_NAV = [
   { href: '#file-types',   label: 'File Types' },
   { href: '#reviews',      label: 'Reviews' },
   { href: '/pricing',      label: 'Pricing' },
+  { href: '/contact',      label: 'Contact' },
   { href: '#faq',          label: 'FAQ' },
 ]
 
@@ -1206,6 +1208,7 @@ export default function LandingPage() {
               <h4 className="text-white font-semibold mb-5 text-xs uppercase tracking-widest">Company</h4>
               <ul className="space-y-3">
                 <li><Link href="/blog" className="text-slate-400 hover:text-white text-sm transition-colors">Blog</Link></li>
+                <li><Link href="/contact" className="text-slate-400 hover:text-white text-sm transition-colors">Contact Us</Link></li>
                 <li><Link href="/privacy" className="text-slate-400 hover:text-white text-sm transition-colors">Privacy Policy</Link></li>
                 <li><Link href="/terms" className="text-slate-400 hover:text-white text-sm transition-colors">Terms of Service</Link></li>
               </ul>
@@ -1237,6 +1240,8 @@ export default function LandingPage() {
               <Link href="/terms" className="text-slate-500 text-xs hover:text-white transition-colors">Terms</Link>
               <span className="text-slate-700">·</span>
               <Link href="/blog" className="text-slate-500 text-xs hover:text-white transition-colors">Blog</Link>
+              <span className="text-slate-700">·</span>
+              <Link href="/contact" className="text-slate-500 text-xs hover:text-white transition-colors">Contact</Link>
             </div>
           </div>
         </div>

@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import Image from 'next/image'
 import { Menu } from 'lucide-react'
 import { Sidebar } from './Sidebar'
+import { SupportModal } from './SupportModal'
 
 interface Props {
   plan: string
@@ -12,8 +13,9 @@ interface Props {
 }
 
 export function DashboardShell({ plan, email, children }: Props) {
-  const [collapsed, setCollapsed] = useState(false)
-  const [mobileOpen, setMobileOpen] = useState(false)
+  const [collapsed, setCollapsed]     = useState(false)
+  const [mobileOpen, setMobileOpen]   = useState(false)
+  const [supportOpen, setSupportOpen] = useState(false)
 
   useEffect(() => {
     const saved = localStorage.getItem('sidebar-collapsed')
@@ -62,6 +64,14 @@ export function DashboardShell({ plan, email, children }: Props) {
         email={email}
         mobileOpen={mobileOpen}
         onMobileClose={() => setMobileOpen(false)}
+        onSupportOpen={() => setSupportOpen(true)}
+      />
+
+      <SupportModal
+        isOpen={supportOpen}
+        onClose={() => setSupportOpen(false)}
+        plan={plan}
+        email={email}
       />
 
       <main
