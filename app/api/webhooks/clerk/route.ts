@@ -1,9 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { Webhook } from 'svix'
 import { prisma } from '@/lib/prisma'
-import { Resend } from 'resend'
-
-const resend = new Resend(process.env.RESEND_API_KEY)
+import { sendWelcomeFreeEmail } from '@/lib/emails'
 
 interface ClerkUserCreatedEvent {
   type: string
@@ -11,7 +9,7 @@ interface ClerkUserCreatedEvent {
     id: string
     email_addresses: Array<{ email_address: string }>
     first_name: string | null
-    last_name: string | null
+    last_name:  string | null
   }
 }
 
@@ -21,7 +19,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Missing webhook secret' }, { status: 400 })
   }
 
-  const svixId = req.headers.get('svix-id')
+  const svixId        = req.headers.get('svix-id')
   const svixTimestamp = req.headers.get('svix-timestamp')
   const svixSignature = req.headers.get('svix-signature')
 
@@ -35,7 +33,7 @@ export async function POST(req: NextRequest) {
   try {
     const wh = new Webhook(secret)
     event = wh.verify(body, {
-      'svix-id': svixId,
+      'svix-id':        svixId,
       'svix-timestamp': svixTimestamp,
       'svix-signature': svixSignature,
     }) as ClerkUserCreatedEvent
@@ -55,25 +53,16 @@ export async function POST(req: NextRequest) {
     }
 
     const nameParts = [first_name, last_name].filter(Boolean)
-    const name = nameParts.length > 0 ? nameParts.join(' ') : null
+    const name      = nameParts.length > 0 ? nameParts.join(' ') : null
 
     await prisma.user.create({
-      data: {
-        clerkId,
-        email,
-        name,
-        plan: 'free',
-        docsLimit: 10,
-        docsUsed: 0,
-      },
+      data: { clerkId, email, name, plan: 'free', docsLimit: 10, docsUsed: 0 },
     })
 
-    await resend.emails.send({
-      from: process.env.RESEND_FROM_EMAIL ?? 'noreply@datafyle.com',
-      to: email,
-      subject: 'Welcome to Datafyle!',
-      text: 'You have 10 free documents to try. Upload your first invoice at datafyle.com/dashboard',
-    })
+    // Fire-and-forget — don't block webhook response on email
+    sendWelcomeFreeEmail(email, first_name).catch((e) =>
+      console.error('Failed to send welcome email:', e)
+    )
 
     return NextResponse.json({ success: true })
   } catch (error) {

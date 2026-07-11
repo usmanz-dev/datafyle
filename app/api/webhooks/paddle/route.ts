@@ -125,7 +125,7 @@ export async function POST(req: NextRequest) {
       })
 
       // Send welcome email (fire-and-forget — don't block webhook response)
-      sendWelcomePaidEmail(user.email, planName).catch((e) =>
+      sendWelcomePaidEmail(user.email, planName, user.name).catch((e) =>
         console.error('Failed to send welcome email:', e)
       )
     }
@@ -157,7 +157,7 @@ export async function POST(req: NextRequest) {
           data: { status: 'cancelled' },
         })
 
-        sendCancellationEmail(sub.user.email, previousPlan).catch((e) =>
+        sendCancellationEmail(sub.user.email, previousPlan, sub.user.name).catch((e) =>
           console.error('Failed to send cancellation email:', e)
         )
       }

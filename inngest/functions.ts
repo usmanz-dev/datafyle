@@ -1,9 +1,9 @@
 import { inngest } from './client'
 import { prisma } from '@/lib/prisma'
 import { processDocument } from '@/lib/processDocument'
-import { Resend } from 'resend'
+import { sendBatchStartedEmail } from '@/lib/emails'
 
-// ─── Monthly docs reset ───────────────────────────────────────────────────────
+// ── Monthly docs reset ────────────────────────────────────────────────────────
 export const monthlyDocsResetFn = inngest.createFunction(
   {
     id: 'monthly-docs-reset',
@@ -15,8 +15,7 @@ export const monthlyDocsResetFn = inngest.createFunction(
   }
 )
 
-const resend = new Resend(process.env.RESEND_API_KEY)
-
+// ── Process single document ───────────────────────────────────────────────────
 export const processDocumentFn = inngest.createFunction(
   {
     id: 'process-single-document',
@@ -30,6 +29,7 @@ export const processDocumentFn = inngest.createFunction(
   }
 )
 
+// ── Process batch documents ───────────────────────────────────────────────────
 export const processBatchFn = inngest.createFunction(
   {
     id: 'process-batch-documents',
@@ -38,6 +38,7 @@ export const processBatchFn = inngest.createFunction(
   async ({ event, step }) => {
     const { documentIds, userId } = event.data as { documentIds: string[]; userId: string }
 
+    // Fan out individual processing events
     for (const documentId of documentIds) {
       await step.sendEvent('trigger-' + documentId, {
         name: 'doc/process',
@@ -45,20 +46,12 @@ export const processBatchFn = inngest.createFunction(
       })
     }
 
+    // Send "batch started" email (fire-and-forget)
     const user = await prisma.user.findFirst({ where: { clerkId: userId } })
     if (user) {
-      await resend.emails.send({
-        from: process.env.RESEND_FROM_EMAIL ?? 'noreply@datafyle.com',
-        to: user.email,
-        subject: `Batch queued — ${documentIds.length} document${documentIds.length !== 1 ? 's' : ''}`,
-        text: [
-          `Your batch of ${documentIds.length} document${documentIds.length !== 1 ? 's' : ''} has been queued for processing.`,
-          ``,
-          `Each document will be processed individually. You will receive an alert for any anomalies detected.`,
-          ``,
-          `View results: https://datafyle.com/dashboard`,
-        ].join('\n'),
-      })
+      sendBatchStartedEmail(user.email, documentIds.length, user.name).catch((e) =>
+        console.error('Failed to send batch started email:', e)
+      )
     }
 
     return { queued: documentIds.length }

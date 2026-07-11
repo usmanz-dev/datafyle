@@ -2,9 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { auth } from '@clerk/nextjs/server'
 import { z } from 'zod'
 import { prisma } from '@/lib/prisma'
-import { Resend } from 'resend'
-
-const resend = new Resend(process.env.RESEND_API_KEY)
+import { sendTeamInviteEmail } from '@/lib/emails'
 
 const SEAT_LIMITS: Record<string, number> = {
   free: 1, starter: 2, professional: 5, business: 15, enterprise: 50,
@@ -92,48 +90,13 @@ export async function POST(req: NextRequest) {
       },
     })
 
-    // Send invite email
-    const inviteUrl = `https://datafyle.com/team/accept?memberId=${member.id}`
-    const teamName = team.name
+    // Send invite email (fire-and-forget — invite record already created)
+    const inviteUrl   = `https://datafyle.com/team/accept?memberId=${member.id}`
     const inviterName = user.name ?? user.email
 
-    try {
-      await resend.emails.send({
-        from: process.env.RESEND_FROM_EMAIL ?? 'noreply@datafyle.com',
-        to: email,
-        subject: `You've been invited to join ${teamName} on Datafyle`,
-        html: `
-          <div style="font-family: Inter, -apple-system, sans-serif; max-width: 600px; margin: 0 auto; padding: 40px 20px; color: #1E293B;">
-            <div style="text-align: center; margin-bottom: 32px;">
-              <div style="display: inline-flex; align-items: center; justify-content: center; background: #2563EB; color: white; width: 44px; height: 44px; border-radius: 50%; font-weight: 700; font-size: 13px; letter-spacing: -0.5px;">DF</div>
-              <p style="margin: 12px 0 0; font-size: 18px; font-weight: 700; color: #1E293B;">Datafyle</p>
-            </div>
-            <div style="background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 12px; padding: 32px; margin-bottom: 24px;">
-              <h1 style="font-size: 22px; font-weight: 700; margin: 0 0 12px;">You've been invited!</h1>
-              <p style="font-size: 15px; line-height: 1.6; color: #475569; margin: 0 0 24px;">
-                <strong>${inviterName}</strong> has invited you to join <strong>${teamName}</strong> on Datafyle — AI-powered document processing for accounting teams.
-              </p>
-              <div style="text-align: center;">
-                <a href="${inviteUrl}" style="display: inline-block; background: #2563EB; color: white; padding: 14px 36px; border-radius: 8px; text-decoration: none; font-weight: 600; font-size: 15px;">
-                  Accept Invitation
-                </a>
-              </div>
-            </div>
-            <p style="font-size: 13px; color: #94A3B8; text-align: center; margin: 0;">
-              If you didn't expect this invitation, you can safely ignore this email.<br />
-              This invite link expires in 7 days.
-            </p>
-            <hr style="border: none; border-top: 1px solid #E2E8F0; margin: 24px 0;" />
-            <p style="font-size: 12px; color: #CBD5E1; text-align: center; margin: 0;">
-              Datafyle · AI Document Processing · datafyle.com
-            </p>
-          </div>
-        `,
-      })
-    } catch (emailErr) {
-      console.error('Failed to send invite email:', emailErr)
-      // Invite is created — don't fail the request if email fails
-    }
+    sendTeamInviteEmail(email, inviterName, team.name, role, inviteUrl).catch((e) =>
+      console.error('Failed to send invite email:', e)
+    )
 
     return NextResponse.json({ success: true, memberId: member.id })
   } catch (error) {
