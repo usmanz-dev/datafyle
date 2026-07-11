@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { Webhook } from 'svix'
 import { prisma } from '@/lib/prisma'
-import { sendWelcomeFreeEmail } from '@/lib/emails'
+import { sendWelcomeFreeEmail, sendNewUserAdminAlert } from '@/lib/emails'
 
 interface ClerkUserCreatedEvent {
   type: string
@@ -59,9 +59,12 @@ export async function POST(req: NextRequest) {
       data: { clerkId, email, name, plan: 'free', docsLimit: 10, docsUsed: 0 },
     })
 
-    // Fire-and-forget — don't block webhook response on email
+    // Fire-and-forget — don't block webhook response on emails
     sendWelcomeFreeEmail(email, first_name).catch((e) =>
       console.error('Failed to send welcome email:', e)
+    )
+    sendNewUserAdminAlert(email, name).catch((e) =>
+      console.error('Failed to send admin alert:', e)
     )
 
     return NextResponse.json({ success: true })

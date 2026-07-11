@@ -449,3 +449,58 @@ export async function sendCancellationEmail(to: string, previousPlan: string, na
     html,
   })
 }
+
+// ── 7. Admin — New User Signup Alert ─────────────────────────────────────────
+
+export async function sendNewUserAdminAlert(userEmail: string, userName: string | null) {
+  const adminEmail = process.env.ADMIN_EMAIL
+  if (!adminEmail) return
+
+  const name    = userName ?? '(no name)'
+  const now     = new Date().toLocaleString('en-US', { dateStyle: 'medium', timeStyle: 'short' })
+
+  await resend.emails.send({
+    from:    FROM,
+    to:      adminEmail,
+    replyTo: userEmail,
+    subject: `🆕 New signup: ${name} — Datafyle`,
+    html: wrap(`
+      <h2 style="margin:0 0 8px;font-size:22px;font-weight:800;color:#1E293B;font-family:Inter,-apple-system,sans-serif;">New User Signed Up</h2>
+      <p style="margin:0 0 24px;font-size:15px;color:#64748B;line-height:1.7;font-family:Inter,-apple-system,sans-serif;">
+        A new user just created a free account on Datafyle.
+      </p>
+
+      <table width="100%" cellpadding="0" cellspacing="0" border="0" role="presentation"
+        style="background-color:#F8FAFC;border:1px solid #E2E8F0;border-radius:10px;margin-bottom:28px;">
+        <tr><td style="padding:24px 28px;">
+          <table width="100%" cellpadding="0" cellspacing="0" border="0">
+            <tr>
+              <td style="padding:8px 0;border-bottom:1px solid #F1F5F9;font-size:13px;color:#64748B;width:100px;font-family:Inter,-apple-system,sans-serif;">Name</td>
+              <td style="padding:8px 0;border-bottom:1px solid #F1F5F9;font-size:14px;font-weight:600;color:#1E293B;font-family:Inter,-apple-system,sans-serif;">${name}</td>
+            </tr>
+            <tr>
+              <td style="padding:8px 0;border-bottom:1px solid #F1F5F9;font-size:13px;color:#64748B;font-family:Inter,-apple-system,sans-serif;">Email</td>
+              <td style="padding:8px 0;border-bottom:1px solid #F1F5F9;font-size:14px;color:#2563EB;font-family:Inter,-apple-system,sans-serif;">
+                <a href="mailto:${userEmail}" style="color:#2563EB;text-decoration:none;">${userEmail}</a>
+              </td>
+            </tr>
+            <tr>
+              <td style="padding:8px 0;border-bottom:1px solid #F1F5F9;font-size:13px;color:#64748B;font-family:Inter,-apple-system,sans-serif;">Plan</td>
+              <td style="padding:8px 0;border-bottom:1px solid #F1F5F9;font-size:14px;font-weight:600;color:#1E293B;font-family:Inter,-apple-system,sans-serif;">Free (10 docs/month)</td>
+            </tr>
+            <tr>
+              <td style="padding:8px 0;font-size:13px;color:#64748B;font-family:Inter,-apple-system,sans-serif;">Signed up</td>
+              <td style="padding:8px 0;font-size:14px;color:#1E293B;font-family:Inter,-apple-system,sans-serif;">${now}</td>
+            </tr>
+          </table>
+        </td></tr>
+      </table>
+
+      ${btn('View in Admin Panel', `${SITE}/admin/users`, '#1E293B')}
+
+      <p style="margin:20px 0 0;font-size:12px;color:#94A3B8;font-family:Inter,-apple-system,sans-serif;">
+        Reply to this email to reach ${name} directly.
+      </p>
+    `, `New signup: ${name} (${userEmail})`)
+  })
+}
