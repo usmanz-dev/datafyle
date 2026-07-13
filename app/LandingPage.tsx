@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
-import { motion, useInView, AnimatePresence } from 'framer-motion'
+import { LazyMotion, domAnimation, m, useInView, AnimatePresence } from 'framer-motion'
 import {
   Menu, X, Brain,
   FileText, FileSpreadsheet, Image as LucideImage, Code, AlignLeft,
@@ -263,10 +263,10 @@ function Navbar() {
       {/* Mobile full-screen menu */}
       <AnimatePresence>
         {menuOpen && (
-          <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} transition={{ duration: 0.2 }}
+          <m.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} transition={{ duration: 0.2 }}
             className="fixed inset-0 z-40 bg-white flex flex-col pt-16 overflow-y-auto">
             <div className="flex flex-col flex-1 px-6 py-8 gap-1">
-              <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-3 px-3">Sections</p>
+              <p className="text-[10px] font-bold text-slate-600 uppercase tracking-widest mb-3 px-3">Sections</p>
               {MOBILE_NAV.map(({ href, label }) => (
                 <a
                   key={href}
@@ -287,7 +287,7 @@ function Navbar() {
                 </Link>
               </div>
             </div>
-          </motion.div>
+          </m.div>
         )}
       </AnimatePresence>
     </>
@@ -354,6 +354,7 @@ export default function LandingPage() {
   const fadeUp = { hidden: { opacity: 0, y: 30 }, visible: { opacity: 1, y: 0 } }
 
   return (
+    <LazyMotion features={domAnimation}>
     <div className="min-h-screen bg-white overflow-x-hidden">
       {/* Global mouse-tracking blob — mix-blend-mode:screen makes it visible on
           dark sections (hero, how-it-works, calculator, cta) and invisible on light ones */}
@@ -380,11 +381,10 @@ export default function LandingPage() {
           style={{ background: 'radial-gradient(ellipse 100% 75% at 50% -5%, rgba(37,99,235,0.65) 0%, rgba(37,99,235,0.18) 55%, transparent 78%)' }} />
         <canvas ref={canvasRef} className="absolute inset-0 w-full h-full pointer-events-none z-0" />
         <div className="relative z-10 max-w-4xl mx-auto w-full pt-24 pb-20">
-          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1, duration: 0.5 }}
-            className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-white/10 bg-white/5 text-xs text-slate-400 mb-8">
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-white/10 bg-white/5 text-xs text-slate-400 mb-8">
             <span className="w-1.5 h-1.5 rounded-full bg-[#22C55E] animate-pulse shrink-0" />
             Trusted by 50+ accounting firms worldwide
-          </motion.div>
+          </div>
           <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold leading-tight mb-6">
             <span className="text-white">Your bookkeeper costs </span>
             <span style={{ background: 'linear-gradient(135deg, #93c5fd 0%, #3b82f6 40%, #2563EB 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>$2,500/month.</span>
@@ -392,24 +392,22 @@ export default function LandingPage() {
             <span className="text-white"> Datafyle costs </span>
             <span style={{ background: 'linear-gradient(135deg, #93c5fd 0%, #3b82f6 40%, #2563EB 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>$49.</span>
           </h1>
-          <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.38, duration: 0.6 }}
-            className="text-base sm:text-lg text-slate-400 mb-10 max-w-2xl mx-auto leading-relaxed">
+          <p className="text-base sm:text-lg text-slate-400 mb-10 max-w-2xl mx-auto leading-relaxed">
             Stop wasting hours on manual data entry. Upload any invoice, receipt, or statement —
             PDF, Word, image, or CSV — and let AI extract every field and line-item in under 10 seconds.
             Your data, clean and ready in Excel or Google Sheets.
-          </motion.p>
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.52, duration: 0.5 }}
-            className="flex flex-col sm:flex-row items-center justify-center gap-4">
+          </p>
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <Link href="/sign-up" className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-[#2563EB] text-white text-base font-bold rounded-xl min-h-[56px] w-full sm:w-auto transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_0_36px_rgba(37,99,235,0.55)]">
               Get Started Free <ArrowRight size={18} />
             </Link>
             <a href="/#how-it-works" className="inline-flex items-center justify-center gap-2 px-8 py-4 text-slate-300 hover:text-white text-base font-medium rounded-xl border border-white/10 hover:border-white/25 min-h-[56px] w-full sm:w-auto transition-all duration-300 hover:bg-white/5">
               Watch Demo
             </a>
-          </motion.div>
-          <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.68, duration: 0.5 }} className="mt-5 text-sm text-slate-500">
+          </div>
+          <p className="mt-5 text-sm text-slate-500">
             No credit card required &bull; Free 10 documents
-          </motion.p>
+          </p>
         </div>
       </section>
 
@@ -470,7 +468,7 @@ export default function LandingPage() {
       <section id="about" className="py-24 px-4 bg-white">
         <div className="max-w-6xl mx-auto">
           <div className="grid lg:grid-cols-2 gap-16 items-center">
-            <motion.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} transition={{ duration: 0.6 }}>
+            <m.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} transition={{ duration: 0.6 }}>
               <span className="inline-flex items-center gap-2 text-xs font-bold text-[#2563EB] bg-[#EFF6FF] px-3 py-1.5 rounded-full uppercase tracking-widest mb-6">
                 About Datafyle
               </span>
@@ -500,9 +498,9 @@ export default function LandingPage() {
               <Link href="/sign-up" className="inline-flex items-center gap-2 px-6 py-3.5 bg-[#2563EB] text-white font-bold rounded-xl hover:bg-blue-700 transition-all text-sm min-h-[48px] hover:-translate-y-0.5 hover:shadow-lg">
                 Try Datafyle Free <ArrowRight size={16} />
               </Link>
-            </motion.div>
+            </m.div>
 
-            <motion.div initial={{ opacity: 0, x: 40 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ duration: 0.7 }} className="relative">
+            <m.div initial={{ opacity: 0, x: 40 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ duration: 0.7 }} className="relative">
               <div className="absolute -inset-4 bg-[#2563EB]/5 rounded-3xl -rotate-1 hidden lg:block" />
               <div className="absolute -inset-4 bg-[#2563EB]/3 rounded-3xl rotate-2 hidden lg:block" />
               <div className="relative rounded-2xl overflow-hidden shadow-2xl border border-[#E2E8F0]">
@@ -520,10 +518,10 @@ export default function LandingPage() {
                 </div>
                 <div>
                   <p className="text-xs font-bold text-[#1E293B] leading-none">97%+ Accuracy</p>
-                  <p className="text-[10px] text-slate-400 mt-0.5">AI-powered extraction</p>
+                  <p className="text-[10px] text-slate-600 mt-0.5">AI-powered extraction</p>
                 </div>
               </div>
-            </motion.div>
+            </m.div>
           </div>
         </div>
       </section>
@@ -531,14 +529,14 @@ export default function LandingPage() {
       {/* ── PROBLEM VS SOLUTION ─────────────────────────────────────────────── */}
       <section id="comparison" className="py-24 px-4 bg-[#F8FAFC]">
         <div className="max-w-5xl mx-auto">
-          <motion.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} transition={{ duration: 0.5 }} className="text-center mb-14">
+          <m.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} transition={{ duration: 0.5 }} className="text-center mb-14">
             <h2 className="text-3xl sm:text-4xl font-bold text-[#1E293B] mb-3">The Old Way vs The Datafyle Way</h2>
             <p className="text-slate-500 text-base">Same documents. Completely different experience.</p>
-          </motion.div>
+          </m.div>
 
           <div className="grid md:grid-cols-2 gap-0 rounded-2xl overflow-hidden shadow-lg border border-[#E2E8F0]">
             {/* Old Way */}
-            <motion.div initial={{ opacity: 0, x: -30 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }}
+            <m.div initial={{ opacity: 0, x: -30 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }}
               className="bg-white p-10 border-r border-[#E2E8F0]">
               <div className="flex items-center gap-3 mb-8">
                 <div className="w-10 h-10 rounded-xl bg-red-50 flex items-center justify-center">
@@ -568,10 +566,10 @@ export default function LandingPage() {
                   </li>
                 ))}
               </ul>
-            </motion.div>
+            </m.div>
 
             {/* Datafyle Way */}
-            <motion.div initial={{ opacity: 0, x: 30 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }}
+            <m.div initial={{ opacity: 0, x: 30 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }}
               className="bg-[#EFF6FF] p-10 relative overflow-hidden">
               <div className="absolute top-0 right-0 w-32 h-32 bg-[#2563EB]/10 rounded-full -translate-y-8 translate-x-8 pointer-events-none" />
               <div className="flex items-center gap-3 mb-8">
@@ -602,7 +600,7 @@ export default function LandingPage() {
                   </li>
                 ))}
               </ul>
-            </motion.div>
+            </m.div>
           </div>
         </div>
       </section>
@@ -612,13 +610,13 @@ export default function LandingPage() {
         <div className="absolute inset-0 pointer-events-none" style={{ background: 'radial-gradient(ellipse 80% 60% at 50% 50%, rgba(37,99,235,0.22) 0%, transparent 70%)' }} />
         <div className="absolute inset-0 pointer-events-none" style={{ backgroundImage: 'radial-gradient(circle, rgba(255,255,255,0.07) 1px, transparent 1px)', backgroundSize: '28px 28px' }} />
         <div className="max-w-5xl mx-auto relative">
-          <motion.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} transition={{ duration: 0.5 }} className="text-center mb-16">
+          <m.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} transition={{ duration: 0.5 }} className="text-center mb-16">
             <span className="inline-flex items-center gap-2 text-xs font-bold text-[#2563EB] bg-[#2563EB]/10 border border-[#2563EB]/20 px-3 py-1.5 rounded-full uppercase tracking-widest mb-5">
               How It Works
             </span>
             <h2 className="text-3xl sm:text-4xl font-bold text-white mb-3">Three Steps. That&apos;s It.</h2>
             <p className="text-slate-400 text-base">From upload to Excel in under 10 seconds.</p>
-          </motion.div>
+          </m.div>
 
           <div className="grid md:grid-cols-3 gap-6 relative">
 
@@ -628,26 +626,26 @@ export default function LandingPage() {
               { icon: Bot,             num: '02', title: 'AI Reads Everything',    desc: 'Claude AI extracts vendor, amount, date, and every line item — in under 10 seconds flat.', delay: 0.15 },
               { icon: FileSpreadsheet, num: '03', title: 'Get Clean Data',         desc: 'Download your structured Excel file or sync directly to Google Sheets — ready to use instantly.', delay: 0.3 },
             ].map((step) => (
-              <motion.div key={step.num} initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6, delay: step.delay }}
+              <m.div key={step.num} initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6, delay: step.delay }}
                 className="relative bg-white/5 border border-white/10 rounded-2xl p-8 hover:bg-white/8 hover:border-[#2563EB]/40 transition-all group">
                 {/* Icon (left) + Step number badge (right) */}
                 <div className="flex items-center justify-between mb-7">
-                  <motion.div
+                  <m.div
                     animate={{ y: [0, -5, 0] }}
                     transition={{ repeat: Infinity, duration: 3, delay: step.delay, ease: 'easeInOut' }}
                     className="w-12 h-12 bg-[#2563EB]/15 rounded-2xl flex items-center justify-center shrink-0">
                     <step.icon size={22} className="text-[#3B82F6]" />
-                  </motion.div>
-                  <motion.div
+                  </m.div>
+                  <m.div
                     animate={{ scale: [1, 1.1, 1], boxShadow: ['0 0 0 0 rgba(37,99,235,0)', '0 0 0 8px rgba(37,99,235,0.18)', '0 0 0 0 rgba(37,99,235,0)'] }}
                     transition={{ repeat: Infinity, duration: 2.5, delay: step.delay }}
                     className="w-10 h-10 rounded-xl bg-[#2563EB] flex items-center justify-center text-white text-xs font-black shrink-0">
                     {step.num}
-                  </motion.div>
+                  </m.div>
                 </div>
                 <h3 className="font-bold text-white text-base mb-3">{step.title}</h3>
                 <p className="text-sm text-slate-400 leading-relaxed">{step.desc}</p>
-              </motion.div>
+              </m.div>
             ))}
           </div>
         </div>
@@ -656,7 +654,7 @@ export default function LandingPage() {
       {/* ── FEATURES ────────────────────────────────────────────────────────── */}
       <section id="features" className="py-24 px-4 bg-[#F8FAFC]">
         <div className="max-w-6xl mx-auto">
-          <motion.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} transition={{ duration: 0.5 }} className="text-center mb-16">
+          <m.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} transition={{ duration: 0.5 }} className="text-center mb-16">
             <span className="inline-flex items-center gap-2 text-xs font-bold text-[#2563EB] bg-[#EFF6FF] px-3 py-1.5 rounded-full uppercase tracking-widest mb-5">
               Features
             </span>
@@ -667,11 +665,11 @@ export default function LandingPage() {
               </span>
             </h2>
             <p className="text-slate-500 text-base max-w-xl mx-auto">Purpose-built for accounting firms — not a generic document tool.</p>
-          </motion.div>
+          </m.div>
 
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {FEATURES.map((f, i) => (
-              <motion.div
+              <m.div
                 key={f.title}
                 initial={{ opacity: 0, y: 28 }}
                 whileInView={{ opacity: 1, y: 0 }}
@@ -702,7 +700,7 @@ export default function LandingPage() {
 
                 {/* Animated bottom accent line on hover */}
                 <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-linear-to-r from-[#2563EB] to-[#4F46E5] scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left" />
-              </motion.div>
+              </m.div>
             ))}
           </div>
         </div>
@@ -712,7 +710,7 @@ export default function LandingPage() {
       <section className="py-24 px-4 bg-white border-y border-[#E2E8F0]">
         <div className="max-w-5xl mx-auto">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
-            <motion.div initial={{ opacity: 0, x: -30 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }}>
+            <m.div initial={{ opacity: 0, x: -30 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }}>
               <span className="inline-flex items-center gap-2 text-xs font-bold text-[#2563EB] bg-[#EFF6FF] px-3 py-1.5 rounded-full uppercase tracking-widest mb-5">
                 See the Output
               </span>
@@ -731,8 +729,8 @@ export default function LandingPage() {
                   </li>
                 ))}
               </ul>
-            </motion.div>
-            <motion.div initial={{ opacity: 0, x: 30 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }}
+            </m.div>
+            <m.div initial={{ opacity: 0, x: 30 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }}
               className="rounded-2xl overflow-hidden shadow-xl border border-[#E2E8F0]">
               <Image
                 src="/images/ai-bookkeeping-automation-software.webp"
@@ -741,7 +739,7 @@ export default function LandingPage() {
                 height={450}
                 className="w-full object-cover"
               />
-            </motion.div>
+            </m.div>
           </div>
         </div>
       </section>
@@ -760,7 +758,7 @@ export default function LandingPage() {
         <div className="relative z-10 max-w-6xl mx-auto">
 
           {/* Header */}
-          <motion.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} transition={{ duration: 0.5 }} className="text-center mb-14">
+          <m.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} transition={{ duration: 0.5 }} className="text-center mb-14">
             <span className="inline-flex items-center gap-2 text-xs font-bold text-[#2563EB] bg-[#2563EB]/10 border border-[#2563EB]/20 px-3 py-1.5 rounded-full uppercase tracking-widest mb-5">
               Savings Calculator
             </span>
@@ -768,12 +766,12 @@ export default function LandingPage() {
               See Exactly How Much You&apos;ll Save
             </h2>
             <p className="text-slate-400 text-base">Enter your numbers. Get your savings instantly.</p>
-          </motion.div>
+          </m.div>
 
           <div className="grid lg:grid-cols-[1fr,500px] gap-10 items-center">
 
             {/* Left — social proof */}
-            <motion.div initial={{ opacity: 0, x: -30 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }}>
+            <m.div initial={{ opacity: 0, x: -30 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }}>
               <p className="text-slate-300 text-lg leading-relaxed mb-10">
                 Accounting firms that switch to Datafyle stop paying $2,400+ every month for manual data entry work — and get those hours back for actual client work.
               </p>
@@ -797,10 +795,10 @@ export default function LandingPage() {
                 </div>
                 <span>Joined by 12+ firms this month</span>
               </div>
-            </motion.div>
+            </m.div>
 
             {/* Right — Calculator card */}
-            <motion.div initial={{ opacity: 0, x: 30 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }}
+            <m.div initial={{ opacity: 0, x: 30 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }}
               className="bg-white rounded-2xl shadow-2xl overflow-hidden">
 
               {/* Card header */}
@@ -848,15 +846,15 @@ export default function LandingPage() {
                 <div className="grid grid-cols-3 gap-2 sm:gap-3 mb-6">
                   <div className="bg-[#F8FAFC] rounded-lg sm:rounded-xl p-2 sm:p-4 text-center border border-[#E2E8F0]">
                     <div className="text-sm sm:text-xl font-black text-[#2563EB] tabular-nums">${monthlySaving.toLocaleString()}</div>
-                    <div className="text-[9px] sm:text-xs text-slate-400 font-semibold mt-1 uppercase tracking-wide">Saved/month</div>
+                    <div className="text-[9px] sm:text-xs text-slate-600 font-semibold mt-1 uppercase tracking-wide">Saved/month</div>
                   </div>
                   <div className="bg-[#F8FAFC] rounded-lg sm:rounded-xl p-2 sm:p-4 text-center border border-[#E2E8F0]">
                     <div className="text-sm sm:text-xl font-black text-[#2563EB] tabular-nums">${yearlySaving.toLocaleString()}</div>
-                    <div className="text-[9px] sm:text-xs text-slate-400 font-semibold mt-1 uppercase tracking-wide">Saved/year</div>
+                    <div className="text-[9px] sm:text-xs text-slate-600 font-semibold mt-1 uppercase tracking-wide">Saved/year</div>
                   </div>
                   <div className="bg-[#F8FAFC] rounded-lg sm:rounded-xl p-2 sm:p-4 text-center border border-[#E2E8F0]">
                     <div className="text-sm sm:text-xl font-black text-[#2563EB] tabular-nums">{hoursSavedPerWeek}h</div>
-                    <div className="text-[9px] sm:text-xs text-slate-400 font-semibold mt-1 uppercase tracking-wide">Freed/week</div>
+                    <div className="text-[9px] sm:text-xs text-slate-600 font-semibold mt-1 uppercase tracking-wide">Freed/week</div>
                   </div>
                 </div>
 
@@ -868,7 +866,7 @@ export default function LandingPage() {
 
                 <p className="text-center text-xs text-slate-400 mt-3">No credit card required · Cancel anytime</p>
               </div>
-            </motion.div>
+            </m.div>
           </div>
         </div>
       </section>
@@ -876,14 +874,14 @@ export default function LandingPage() {
       {/* ── PRICING ─────────────────────────────────────────────────────────── */}
       <section id="pricing" className="py-24 px-4 bg-[#F8FAFC]">
         <div className="max-w-7xl mx-auto">
-          <motion.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} transition={{ duration: 0.5 }} className="text-center mb-14">
+          <m.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} transition={{ duration: 0.5 }} className="text-center mb-14">
             <h2 className="text-3xl sm:text-4xl font-bold text-[#1E293B] mb-3">Start Free, Upgrade When Ready</h2>
             <p className="text-slate-500 text-base">No contracts. No hidden fees. Cancel anytime.</p>
-          </motion.div>
+          </m.div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-5 gap-4 items-start">
             {PLANS.map((plan, i) => (
-              <motion.div key={plan.id} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.4, delay: i * 0.07 }}
+              <m.div key={plan.id} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.4, delay: i * 0.07 }}
                 className={`relative flex flex-col rounded-2xl border-2 p-7 transition-all ${plan.border} ${plan.bg} ${plan.popular ? 'shadow-2xl ring-4 ring-[#2563EB]/20 xl:-translate-y-3 xl:scale-[1.02]' : 'shadow-sm hover:shadow-md'}`}>
                 {plan.popular && (
                   <div className="absolute -top-4 left-1/2 -translate-x-1/2">
@@ -893,7 +891,7 @@ export default function LandingPage() {
                   </div>
                 )}
                 <div className={`mb-6 ${plan.popular ? 'mt-3' : ''}`}>
-                  <p className={`text-xs font-black uppercase tracking-widest mb-2 ${plan.popular ? 'text-blue-200' : 'text-slate-400'}`}>{plan.name}</p>
+                  <p className={`text-xs font-black uppercase tracking-widest mb-2 ${plan.dark ? 'text-slate-300' : plan.popular ? 'text-[#1e40af]' : 'text-slate-600'}`}>{plan.name}</p>
                   <div className="flex items-end gap-1">
                     <span className={`text-4xl font-black ${plan.textColor}`}>{plan.price === 0 ? 'Free' : `$${plan.price}`}</span>
                     {plan.price > 0 && <span className={`text-sm mb-1.5 ${plan.subColor}`}>/mo</span>}
@@ -912,11 +910,11 @@ export default function LandingPage() {
                 <Link href={plan.buttonHref} className={`inline-flex items-center justify-center w-full py-3.5 rounded-xl font-bold text-sm transition-all min-h-[48px] ${plan.buttonStyle}`}>
                   {plan.buttonLabel}
                 </Link>
-              </motion.div>
+              </m.div>
             ))}
           </div>
 
-          <p className="text-center text-sm text-slate-400 mt-8">
+          <p className="text-center text-sm text-slate-600 mt-8">
             +$19/month per extra seat ·{' '}
             <Link href="/pricing" className="text-[#2563EB] hover:underline font-medium">See full plan comparison →</Link>
           </p>
@@ -926,34 +924,34 @@ export default function LandingPage() {
       {/* ── FILE TYPES ──────────────────────────────────────────────────────── */}
       <section id="file-types" className="py-24 px-4 bg-[#F8FAFC]">
         <div className="max-w-5xl mx-auto">
-          <motion.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} transition={{ duration: 0.5 }} className="text-center mb-14">
+          <m.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} transition={{ duration: 0.5 }} className="text-center mb-14">
             <span className="inline-flex items-center gap-2 text-xs font-bold text-[#2563EB] bg-[#EFF6FF] border border-[#2563EB]/20 px-3 py-1.5 rounded-full uppercase tracking-widest mb-5">
               Supported Formats
             </span>
             <h2 className="text-3xl sm:text-4xl font-bold text-[#1E293B] mb-3">Works With All Your Files</h2>
             <p className="text-slate-500 text-base max-w-xl mx-auto">Upload any document format — PDF, Word, Excel, CSV, images, and more. Datafyle handles it automatically, no conversion needed.</p>
-          </motion.div>
+          </m.div>
 
           <div className="grid grid-cols-4 sm:grid-cols-8 gap-4 mb-16">
             {FILE_TYPES.map((ft, i) => (
-              <motion.div key={ft.label} initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.4, delay: i * 0.06 }}
+              <m.div key={ft.label} initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.4, delay: i * 0.06 }}
                 className="flex flex-col items-center gap-2.5">
-                <motion.div
+                <m.div
                   animate={{ y: [0, -8, 0] }}
                   transition={{ repeat: Infinity, duration: 2.8, delay: i * 0.25, ease: 'easeInOut' }}
                   className={`w-16 h-16 rounded-xl ${ft.bg} border ${ft.border} flex items-center justify-center shadow-sm`}>
                   <ft.icon size={30} className={ft.color} />
-                </motion.div>
+                </m.div>
                 <span className="text-xs font-bold text-[#1E293B]">{ft.label}</span>
                 <div className="w-4 h-4 rounded-full bg-[#EFF6FF] flex items-center justify-center">
                   <Check size={10} className="text-[#2563EB]" strokeWidth={3} />
                 </div>
-              </motion.div>
+              </m.div>
             ))}
           </div>
 
           {/* Second webp image as a visual below file types */}
-          <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }}
+          <m.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }}
             className="rounded-2xl overflow-hidden shadow-lg border border-[#E2E8F0]">
             <Image
               src="/images/automated-document-extraction-tool.webp"
@@ -963,7 +961,7 @@ export default function LandingPage() {
               className="w-full object-cover"
             />
             
-          </motion.div>
+          </m.div>
         </div>
       </section>
 
@@ -972,7 +970,7 @@ export default function LandingPage() {
         <div className="max-w-6xl mx-auto">
 
           {/* Header */}
-          <motion.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} transition={{ duration: 0.5 }} className="text-center mb-14">
+          <m.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} transition={{ duration: 0.5 }} className="text-center mb-14">
             <h2 className="text-3xl sm:text-4xl font-bold text-[#1E293B] mb-4">What Our Customers Actually Say</h2>
 
             {/* Aggregate rating */}
@@ -981,7 +979,7 @@ export default function LandingPage() {
                 {Array(5).fill(null).map((_, j) => <Star key={j} size={18} className="text-[#F59E0B] fill-[#F59E0B]" />)}
               </div>
               <span className="font-bold text-[#1E293B] text-base">4.9</span>
-              <span className="text-slate-400 text-sm">· Based on 40+ verified reviews</span>
+              <span className="text-slate-600 text-sm">· Based on 40+ verified reviews</span>
             </div>
 
             {/* Platform badges */}
@@ -997,12 +995,12 @@ export default function LandingPage() {
                 </span>
               ))}
             </div>
-          </motion.div>
+          </m.div>
 
           {/* Review cards — 2×2 grid */}
           <div className="grid md:grid-cols-2 gap-6">
             {REVIEWS.map((r, i) => (
-              <motion.div
+              <m.div
                 key={r.name}
                 initial={{ opacity: 0, y: 24 }}
                 whileInView={{ opacity: 1, y: 0 }}
@@ -1044,36 +1042,36 @@ export default function LandingPage() {
                           <Check size={9} className="text-white" strokeWidth={3} />
                         </div>
                       </div>
-                      <p className="text-xs text-slate-400">{r.title} · {r.company}</p>
-                      <p className="text-xs text-slate-300">{r.location}</p>
+                      <p className="text-xs text-slate-600">{r.title} · {r.company}</p>
+                      <p className="text-xs text-slate-500">{r.location}</p>
                     </div>
                   </div>
-                  <span className="text-[11px] text-slate-300 font-medium shrink-0">{r.date}</span>
+                  <span className="text-[11px] text-slate-500 font-medium shrink-0">{r.date}</span>
                 </div>
-              </motion.div>
+              </m.div>
             ))}
           </div>
 
           {/* Bottom trust note */}
-          <motion.p
+          <m.p
             initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }} transition={{ duration: 0.5, delay: 0.3 }}
-            className="text-center text-sm text-slate-400 mt-10"
+            className="text-center text-sm text-slate-600 mt-10"
           >
             All reviews are from verified customers on third-party platforms. No incentives were offered.
-          </motion.p>
+          </m.p>
         </div>
       </section>
 
       {/* ── FAQ ─────────────────────────────────────────────────────────────── */}
       <section id="faq" className="py-24 px-4 bg-white">
         <div className="max-w-2xl mx-auto">
-          <motion.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} transition={{ duration: 0.5 }} className="text-center mb-12">
+          <m.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} transition={{ duration: 0.5 }} className="text-center mb-12">
             <h2 className="text-3xl sm:text-4xl font-bold text-[#1E293B] mb-3">Frequently Asked Questions</h2>
             <p className="text-slate-500 text-base">Everything you need to know before getting started.</p>
-          </motion.div>
+          </m.div>
           <div className="space-y-2">
             {FAQS.map((faq, i) => (
-              <motion.div key={i} initial={{ opacity: 0, y: 10 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.4, delay: i * 0.07 }}
+              <m.div key={i} initial={{ opacity: 0, y: 10 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.4, delay: i * 0.07 }}
                 className={`rounded-xl border overflow-hidden transition-all ${openFaq === i ? 'border-[#2563EB]/30 shadow-sm' : 'border-[#E2E8F0]'}`}>
                 <button onClick={() => setOpenFaq(openFaq === i ? null : i)}
                   className={`w-full flex items-center justify-between px-6 py-4.5 text-left transition-colors ${openFaq === i ? 'bg-[#EFF6FF]' : 'bg-white hover:bg-[#F8FAFC]'}`}>
@@ -1083,21 +1081,21 @@ export default function LandingPage() {
                     </span>
                     <span className={`font-semibold text-sm pr-4 ${openFaq === i ? 'text-[#2563EB]' : 'text-[#1E293B]'}`}>{faq.q}</span>
                   </div>
-                  <div className={`w-6 h-6 rounded-full flex items-center justify-center shrink-0 transition-colors ${openFaq === i ? 'bg-[#2563EB] text-white' : 'bg-slate-100 text-slate-400'}`}>
+                  <div className={`w-6 h-6 rounded-full flex items-center justify-center shrink-0 transition-colors ${openFaq === i ? 'bg-[#2563EB] text-white' : 'bg-slate-100 text-slate-600'}`}>
                     {openFaq === i ? <Minus size={12} strokeWidth={3} /> : <Plus size={12} strokeWidth={3} />}
                   </div>
                 </button>
                 <AnimatePresence>
                   {openFaq === i && (
-                    <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.25, ease: 'easeInOut' }}
+                    <m.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.25, ease: 'easeInOut' }}
                       className="overflow-hidden">
                       <div className="px-6 pb-5 pt-1 ml-10">
                         <p className="text-sm text-slate-600 leading-relaxed">{faq.a}</p>
                       </div>
-                    </motion.div>
+                    </m.div>
                   )}
                 </AnimatePresence>
-              </motion.div>
+              </m.div>
             ))}
           </div>
         </div>
@@ -1109,7 +1107,7 @@ export default function LandingPage() {
         <div className="absolute inset-0 pointer-events-none" style={{ background: 'radial-gradient(ellipse 80% 60% at 50% 50%, rgba(37,99,235,0.25) 0%, transparent 70%)' }} />
         {/* Dot grid */}
         <div className="absolute inset-0 pointer-events-none" style={{ backgroundImage: 'radial-gradient(circle, rgba(255,255,255,0.07) 1px, transparent 1px)', backgroundSize: '28px 28px' }} />
-        <motion.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} transition={{ duration: 0.5 }} className="relative z-10 max-w-2xl mx-auto text-center">
+        <m.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} transition={{ duration: 0.5 }} className="relative z-10 max-w-2xl mx-auto text-center">
           <h2 className="text-3xl sm:text-4xl font-bold text-white mb-4">Stop Wasting 8 Hours a Day on Data Entry</h2>
           <p className="text-slate-400 mb-8 text-lg">Join 50+ accounting firms already saving time with Datafyle</p>
           <Link href="/sign-up" className="inline-flex items-center gap-2 px-8 py-4 bg-[#2563EB] text-white text-lg font-bold rounded-xl hover:bg-blue-600 transition-all shadow-lg hover:-translate-y-0.5 min-h-[56px]">
@@ -1117,7 +1115,7 @@ export default function LandingPage() {
             <ArrowRight size={20} />
           </Link>
           <p className="mt-4 text-sm text-slate-500">No credit card • Free 10 documents • Setup in 3 minutes</p>
-        </motion.div>
+        </m.div>
       </section>
 
       </main>
@@ -1290,5 +1288,6 @@ export default function LandingPage() {
         }) }}
       />
     </div>
+    </LazyMotion>
   )
 }
