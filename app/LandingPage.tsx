@@ -307,16 +307,26 @@ export default function LandingPage() {
   const rectRef      = useRef<DOMRect | null>(null)
 
   useEffect(() => {
+    // Skip ALL canvas/blob setup on mobile — no mouse, no rAF, no forced reflow
+    if (!window.matchMedia('(hover: hover) and (pointer: fine)').matches) return
+
     const canvas = canvasRef.current
     if (!canvas) return
     const ctx = canvas.getContext('2d')
     if (!ctx) return
-    const resize = () => { canvas.width = canvas.offsetWidth; canvas.height = canvas.offsetHeight; rectRef.current = canvas.getBoundingClientRect() }
+
+    const resize = () => {
+      canvas.width = canvas.offsetWidth
+      canvas.height = canvas.offsetHeight
+      rectRef.current = canvas.getBoundingClientRect()
+    }
     resize()
+
     const onMove = (e: MouseEvent) => {
       mouseRef.current = { x: e.clientX, y: e.clientY }
       if (blobRef.current) blobRef.current.style.transform = `translate(${e.clientX - 260}px, ${e.clientY - 260}px)`
     }
+
     const draw = () => {
       const w = canvas.offsetWidth; const h = canvas.offsetHeight
       ctx.clearRect(0, 0, w, h)
@@ -335,11 +345,15 @@ export default function LandingPage() {
       }
       animRef.current = requestAnimationFrame(draw)
     }
-    // Only run canvas rAF on devices with a real pointer (desktop) — skip on touch/mobile to save CPU
-    if (window.matchMedia('(hover: hover) and (pointer: fine)').matches) draw()
+    draw()
+
     window.addEventListener('mousemove', onMove, { passive: true })
     window.addEventListener('resize', resize, { passive: true })
-    return () => { window.removeEventListener('mousemove', onMove); window.removeEventListener('resize', resize); if (animRef.current !== undefined) cancelAnimationFrame(animRef.current) }
+    return () => {
+      window.removeEventListener('mousemove', onMove)
+      window.removeEventListener('resize', resize)
+      if (animRef.current !== undefined) cancelAnimationFrame(animRef.current)
+    }
   }, [])
 
   let calcPlan = 'Starter'; let calcPrice = 49
@@ -509,6 +523,7 @@ export default function LandingPage() {
                   alt="Datafyle AI invoice data extraction"
                   width={700}
                   height={500}
+                  sizes="(max-width: 1024px) 100vw, 50vw"
                   className="w-full object-cover"
                 />
               </div>
@@ -737,6 +752,7 @@ export default function LandingPage() {
                 alt="AI bookkeeping automation software output"
                 width={700}
                 height={450}
+                sizes="(max-width: 1024px) 100vw, 50vw"
                 className="w-full object-cover"
               />
             </m.div>
@@ -958,6 +974,7 @@ export default function LandingPage() {
               alt="Automated Document Extraction Tool"
               width={1200}
               height={400}
+              sizes="100vw"
               className="w-full object-cover"
             />
             
