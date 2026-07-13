@@ -1,33 +1,127 @@
+'use client'
+
 import Link from 'next/link'
-import { ArrowRight, FileX } from 'lucide-react'
+import { ArrowRight, Home, LayoutDashboard } from 'lucide-react'
+import { LazyMotion, domAnimation, m } from 'framer-motion'
 
 export default function NotFound() {
   return (
-    <div className="min-h-screen bg-white flex items-center justify-center px-4">
-      <div className="text-center max-w-md mx-auto">
-        <div className="w-20 h-20 bg-[#EFF6FF] rounded-2xl flex items-center justify-center mx-auto mb-6">
-          <FileX size={40} className="text-[#2563EB]" />
-        </div>
-        <h1 className="text-6xl font-black text-[#1E293B] mb-2">404</h1>
-        <h2 className="text-xl font-bold text-[#1E293B] mb-3">Page not found</h2>
-        <p className="text-slate-500 text-base mb-8 leading-relaxed">
-          The page you&apos;re looking for doesn&apos;t exist or has been moved.
-        </p>
-        <div className="flex flex-col sm:flex-row gap-3 justify-center">
-          <Link
-            href="/"
-            className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-[#2563EB] text-white font-bold rounded-xl hover:bg-blue-700 transition-all min-h-[48px]"
+    <LazyMotion features={domAnimation}>
+      <div className="min-h-screen bg-black flex items-center justify-center px-4 relative overflow-hidden">
+
+        {/* Blue radial glow — same as hero */}
+        <div
+          className="absolute inset-0 pointer-events-none"
+          style={{
+            background:
+              'radial-gradient(ellipse 80% 60% at 50% 40%, rgba(37,99,235,0.45) 0%, rgba(37,99,235,0.12) 55%, transparent 78%)',
+          }}
+        />
+
+        {/* Static dot grid — CSS only, no canvas */}
+        <div
+          className="absolute inset-0 pointer-events-none"
+          style={{
+            backgroundImage:
+              'radial-gradient(circle, rgba(255,255,255,0.07) 1px, transparent 1px)',
+            backgroundSize: '28px 28px',
+          }}
+        />
+
+        {/* Floating blue orb */}
+        <m.div
+          animate={{ y: [0, -18, 0], opacity: [0.35, 0.6, 0.35] }}
+          transition={{ duration: 5, repeat: Infinity, ease: 'easeInOut' }}
+          className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-80 h-80 rounded-full pointer-events-none"
+          style={{
+            background:
+              'radial-gradient(circle, rgba(37,99,235,0.35) 0%, transparent 70%)',
+            filter: 'blur(40px)',
+          }}
+        />
+
+        {/* Content */}
+        <div className="relative z-10 text-center max-w-lg mx-auto">
+
+          {/* 404 number */}
+          <m.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, ease: 'easeOut' }}
           >
-            Go Home <ArrowRight size={16} />
-          </Link>
-          <Link
-            href="/dashboard"
-            className="inline-flex items-center justify-center gap-2 px-6 py-3 border border-[#E2E8F0] text-[#1E293B] font-medium rounded-xl hover:bg-[#F8FAFC] transition-all min-h-[48px]"
+            <span
+              className="text-[9rem] sm:text-[12rem] font-black leading-none select-none"
+              style={{
+                background:
+                  'linear-gradient(135deg, #93c5fd 0%, #3b82f6 40%, #2563EB 100%)',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+                backgroundClip: 'text',
+              }}
+            >
+              404
+            </span>
+          </m.div>
+
+          {/* Divider line */}
+          <m.div
+            initial={{ scaleX: 0 }}
+            animate={{ scaleX: 1 }}
+            transition={{ duration: 0.5, delay: 0.3 }}
+            className="h-px bg-gradient-to-r from-transparent via-blue-500/50 to-transparent mb-8"
+          />
+
+          {/* Text */}
+          <m.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.4 }}
           >
-            Dashboard
-          </Link>
+            <h1 className="text-2xl sm:text-3xl font-bold text-white mb-3">
+              Page not found
+            </h1>
+            <p className="text-slate-400 text-base leading-relaxed mb-10">
+              The page you&apos;re looking for doesn&apos;t exist or has been moved.
+              <br className="hidden sm:block" />
+              Let&apos;s get you back on track.
+            </p>
+          </m.div>
+
+          {/* Buttons */}
+          <m.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.55 }}
+            className="flex flex-col sm:flex-row items-center justify-center gap-4"
+          >
+            <Link
+              href="/"
+              className="inline-flex items-center justify-center gap-2 px-7 py-3.5 bg-[#2563EB] text-white font-bold rounded-xl min-h-[52px] w-full sm:w-auto transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_0_32px_rgba(37,99,235,0.55)] hover:bg-blue-600"
+            >
+              <Home size={17} />
+              Go Home
+            </Link>
+            <Link
+              href="/dashboard"
+              className="inline-flex items-center justify-center gap-2 px-7 py-3.5 text-slate-300 hover:text-white font-medium rounded-xl border border-white/10 hover:border-white/25 min-h-[52px] w-full sm:w-auto transition-all duration-300 hover:bg-white/5"
+            >
+              <LayoutDashboard size={17} />
+              Dashboard
+              <ArrowRight size={15} />
+            </Link>
+          </m.div>
+
+          {/* Bottom note */}
+          <m.p
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.75, duration: 0.5 }}
+            className="mt-10 text-xs text-slate-600"
+          >
+            datafyle.com — AI Document Processing
+          </m.p>
         </div>
       </div>
-    </div>
+    </LazyMotion>
   )
 }
