@@ -7,6 +7,9 @@ const nextConfig: NextConfig = {
     NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL: '/dashboard',
     NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL: '/dashboard',
   },
+  images: {
+    formats: ['image/avif', 'image/webp'],
+  },
   serverExternalPackages: [
     "pdfjs-dist",
     "@react-pdf/renderer",

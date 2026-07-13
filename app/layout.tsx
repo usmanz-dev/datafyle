@@ -59,6 +59,12 @@ export default function RootLayout({
   return (
     <ClerkProvider>
       <html lang="en" className={inter.className}>
+        <head>
+          <link rel="preconnect" href="https://clerk.accounts.dev" />
+          <link rel="preconnect" href="https://img.clerk.com" />
+          <link rel="dns-prefetch" href="https://clerk.accounts.dev" />
+          <link rel="dns-prefetch" href="https://challenges.cloudflare.com" />
+        </head>
         <body className="min-h-full flex flex-col">
           {children}
           <Toaster position="top-right" richColors />

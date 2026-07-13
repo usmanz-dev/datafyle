@@ -335,7 +335,8 @@ export default function LandingPage() {
       }
       animRef.current = requestAnimationFrame(draw)
     }
-    draw()
+    // Only run canvas rAF on devices with a real pointer (desktop) — skip on touch/mobile to save CPU
+    if (window.matchMedia('(hover: hover) and (pointer: fine)').matches) draw()
     window.addEventListener('mousemove', onMove, { passive: true })
     window.addEventListener('resize', resize, { passive: true })
     return () => { window.removeEventListener('mousemove', onMove); window.removeEventListener('resize', resize); if (animRef.current !== undefined) cancelAnimationFrame(animRef.current) }
@@ -372,6 +373,7 @@ export default function LandingPage() {
 
       <Navbar />
 
+      <main>
       {/* ── HERO (unchanged) ─────────────────────────────────────────────────── */}
       <section className="relative min-h-[92vh] flex items-center justify-center px-4 text-center bg-black overflow-hidden">
         <div className="absolute top-0 left-0 right-0 h-175 pointer-events-none"
@@ -383,14 +385,13 @@ export default function LandingPage() {
             <span className="w-1.5 h-1.5 rounded-full bg-[#22C55E] animate-pulse shrink-0" />
             Trusted by 50+ accounting firms worldwide
           </motion.div>
-          <motion.h1 initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2, duration: 0.65 }}
-            className="text-4xl sm:text-5xl lg:text-6xl font-bold leading-tight mb-6">
+          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold leading-tight mb-6">
             <span className="text-white">Your bookkeeper costs </span>
             <span style={{ background: 'linear-gradient(135deg, #93c5fd 0%, #3b82f6 40%, #2563EB 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>$2,500/month.</span>
             <br className="hidden sm:block" />
             <span className="text-white"> Datafyle costs </span>
             <span style={{ background: 'linear-gradient(135deg, #93c5fd 0%, #3b82f6 40%, #2563EB 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>$49.</span>
-          </motion.h1>
+          </h1>
           <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.38, duration: 0.6 }}
             className="text-base sm:text-lg text-slate-400 mb-10 max-w-2xl mx-auto leading-relaxed">
             Stop wasting hours on manual data entry. Upload any invoice, receipt, or statement —
@@ -812,10 +813,11 @@ export default function LandingPage() {
                 {/* Inputs */}
                 <div className="space-y-4 mb-7">
                   <div>
-                    <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Monthly staff / bookkeeper cost</label>
+                    <label htmlFor="calc-staff-cost" className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-2">Monthly staff / bookkeeper cost</label>
                     <div className="relative">
                       <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[#2563EB] font-black text-sm">$</span>
                       <input
+                        id="calc-staff-cost"
                         type="number" value={staffCost}
                         onChange={(e) => setStaffCost(Number(e.target.value) || 0)}
                         className="w-full pl-9 pr-4 py-3.5 border-2 border-[#E2E8F0] rounded-xl text-[#1E293B] font-bold text-base focus:outline-none focus:border-[#2563EB] transition-colors min-h-[52px]"
@@ -823,8 +825,9 @@ export default function LandingPage() {
                     </div>
                   </div>
                   <div>
-                    <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Documents processed per month</label>
+                    <label htmlFor="calc-docs" className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-2">Documents processed per month</label>
                     <input
+                      id="calc-docs"
                       type="number" value={docs}
                       onChange={(e) => setDocs(Number(e.target.value) || 0)}
                       className="w-full px-4 py-3.5 border-2 border-[#E2E8F0] rounded-xl text-[#1E293B] font-bold text-base focus:outline-none focus:border-[#2563EB] transition-colors min-h-[52px]"
@@ -1117,6 +1120,8 @@ export default function LandingPage() {
         </motion.div>
       </section>
 
+      </main>
+
       {/* ── FOOTER ──────────────────────────────────────────────────────────── */}
       <footer className="relative bg-black overflow-hidden pt-20 pb-10 px-4">
 
@@ -1191,7 +1196,7 @@ export default function LandingPage() {
 
             {/* Product */}
             <div>
-              <h4 className="text-white font-semibold mb-5 text-xs uppercase tracking-widest">Product</h4>
+              <h3 className="text-white font-semibold mb-5 text-xs uppercase tracking-widest">Product</h3>
               <ul className="space-y-3">
                 <li><a href="#about" className="text-slate-400 hover:text-white text-sm transition-colors">About Us</a></li>
                 <li><a href="#how-it-works" className="text-slate-400 hover:text-white text-sm transition-colors">How It Works</a></li>
@@ -1205,7 +1210,7 @@ export default function LandingPage() {
 
             {/* Company */}
             <div>
-              <h4 className="text-white font-semibold mb-5 text-xs uppercase tracking-widest">Company</h4>
+              <h3 className="text-white font-semibold mb-5 text-xs uppercase tracking-widest">Company</h3>
               <ul className="space-y-3">
                 <li><Link href="/blog" className="text-slate-400 hover:text-white text-sm transition-colors">Blog</Link></li>
                 <li><Link href="/contact" className="text-slate-400 hover:text-white text-sm transition-colors">Contact Us</Link></li>
@@ -1216,7 +1221,7 @@ export default function LandingPage() {
 
             {/* Get Started */}
             <div>
-              <h4 className="text-white font-semibold mb-5 text-xs uppercase tracking-widest">Get Started</h4>
+              <h3 className="text-white font-semibold mb-5 text-xs uppercase tracking-widest">Get Started</h3>
               <ul className="space-y-3">
                 <li><Link href="/sign-up" className="text-slate-400 hover:text-white text-sm transition-colors">Create Free Account</Link></li>
                 <li><Link href="/sign-in" className="text-slate-400 hover:text-white text-sm transition-colors">Sign In</Link></li>
