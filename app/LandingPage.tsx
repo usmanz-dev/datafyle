@@ -225,16 +225,26 @@ function Navbar() {
 
           {/* Desktop nav links */}
           <div className="hidden lg:flex items-center gap-1 flex-1">
-            {DESKTOP_NAV.map(({ href, label }) => (
-              <a
-                key={href}
-                href={href}
-                onClick={(e) => handleNavClick(e, href)}
-                className={`px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${scrolled ? 'text-[#1E293B] hover:text-[#2563EB] hover:bg-[#EFF6FF]' : 'text-white/80 hover:text-white hover:bg-white/10'}`}
-              >
-                {label}
-              </a>
-            ))}
+            {DESKTOP_NAV.map(({ href, label }) =>
+              href.startsWith('/') ? (
+                <Link
+                  key={href}
+                  href={href}
+                  className={`px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${scrolled ? 'text-[#1E293B] hover:text-[#2563EB] hover:bg-[#EFF6FF]' : 'text-white/80 hover:text-white hover:bg-white/10'}`}
+                >
+                  {label}
+                </Link>
+              ) : (
+                <a
+                  key={href}
+                  href={href}
+                  onClick={(e) => handleNavClick(e, href)}
+                  className={`px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${scrolled ? 'text-[#1E293B] hover:text-[#2563EB] hover:bg-[#EFF6FF]' : 'text-white/80 hover:text-white hover:bg-white/10'}`}
+                >
+                  {label}
+                </a>
+              )
+            )}
             <Link
               href="/pricing"
               className={`ml-1 px-4 py-2 rounded-lg text-sm font-bold border-2 transition-all duration-200 ${
@@ -267,17 +277,29 @@ function Navbar() {
             className="fixed inset-0 z-40 bg-white flex flex-col pt-16 overflow-y-auto">
             <div className="flex flex-col flex-1 px-6 py-8 gap-1">
               <p className="text-[10px] font-bold text-slate-600 uppercase tracking-widest mb-3 px-3">Sections</p>
-              {MOBILE_NAV.map(({ href, label }) => (
-                <a
-                  key={href}
-                  href={href}
-                  onClick={(e) => handleNavClick(e, href)}
-                  className="flex items-center gap-3 px-3 py-3.5 rounded-xl text-base font-semibold text-[#1E293B] hover:bg-[#EFF6FF] hover:text-[#2563EB] transition-all"
-                >
-                  <span className="w-1.5 h-1.5 rounded-full bg-[#2563EB] shrink-0" />
-                  {label}
-                </a>
-              ))}
+              {MOBILE_NAV.map(({ href, label }) =>
+                href.startsWith('/') ? (
+                  <Link
+                    key={href}
+                    href={href}
+                    onClick={() => setMenuOpen(false)}
+                    className="flex items-center gap-3 px-3 py-3.5 rounded-xl text-base font-semibold text-[#1E293B] hover:bg-[#EFF6FF] hover:text-[#2563EB] transition-all"
+                  >
+                    <span className="w-1.5 h-1.5 rounded-full bg-[#2563EB] shrink-0" />
+                    {label}
+                  </Link>
+                ) : (
+                  <a
+                    key={href}
+                    href={href}
+                    onClick={(e) => handleNavClick(e, href)}
+                    className="flex items-center gap-3 px-3 py-3.5 rounded-xl text-base font-semibold text-[#1E293B] hover:bg-[#EFF6FF] hover:text-[#2563EB] transition-all"
+                  >
+                    <span className="w-1.5 h-1.5 rounded-full bg-[#2563EB] shrink-0" />
+                    {label}
+                  </a>
+                )
+              )}
               <div className="mt-6 pt-6 border-t border-[#E2E8F0] flex flex-col gap-3">
                 <Link href="/sign-in" onClick={() => setMenuOpen(false)} className="flex items-center justify-center py-3.5 rounded-xl text-base font-semibold text-[#1E293B] border-2 border-[#E2E8F0] hover:border-[#2563EB] hover:text-[#2563EB] transition-all">
                   Login

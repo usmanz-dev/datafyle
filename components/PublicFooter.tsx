@@ -124,6 +124,7 @@ export function PublicFooter() {
               <h4 className="text-white font-semibold mb-5 text-xs uppercase tracking-widest">Company</h4>
               <ul className="space-y-3">
                 <li><Link href="/blog"    className="text-slate-400 hover:text-white text-sm transition-colors">Blog</Link></li>
+                <li><Link href="/contact" className="text-slate-400 hover:text-white text-sm transition-colors">Contact Us</Link></li>
                 <li><Link href="/privacy" className="text-slate-400 hover:text-white text-sm transition-colors">Privacy Policy</Link></li>
                 <li><Link href="/terms"   className="text-slate-400 hover:text-white text-sm transition-colors">Terms of Service</Link></li>
               </ul>

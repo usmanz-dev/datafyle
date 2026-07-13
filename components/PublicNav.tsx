@@ -12,6 +12,7 @@ const DESKTOP_NAV = [
   { href: '/#features',     label: 'Features' },
   { href: '/#calculator',   label: 'Savings Calculator' },
   { href: '/#faq',          label: 'FAQ' },
+  { href: '/contact',       label: 'Contact' },
 ]
 
 const MOBILE_NAV = [
@@ -21,6 +22,7 @@ const MOBILE_NAV = [
   { href: '/#calculator',   label: 'Savings Calculator' },
   { href: '/#file-types',   label: 'File Types' },
   { href: '/pricing',       label: 'Pricing' },
+  { href: '/contact',       label: 'Contact' },
   { href: '/#faq',          label: 'FAQ' },
 ]
 
