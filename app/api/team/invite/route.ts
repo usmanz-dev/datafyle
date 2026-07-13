@@ -90,15 +90,21 @@ export async function POST(req: NextRequest) {
       },
     })
 
-    // Send invite email (fire-and-forget — invite record already created)
-    const inviteUrl   = `https://datafyle.com/team/accept?memberId=${member.id}`
+    // Send invite email
+    const inviteUrl   = `${process.env.NEXT_PUBLIC_APP_URL ?? 'https://datafyle.com'}/team/accept?memberId=${member.id}`
     const inviterName = user.name ?? user.email
 
-    sendTeamInviteEmail(email, inviterName, team.name, role, inviteUrl).catch((e) =>
-      console.error('Failed to send invite email:', e)
-    )
+    let emailSent  = false
+    let emailError: string | null = null
+    try {
+      await sendTeamInviteEmail(email, inviterName, team.name, role, inviteUrl)
+      emailSent = true
+    } catch (e) {
+      emailError = e instanceof Error ? e.message : String(e)
+      console.error('Team invite email failed:', emailError)
+    }
 
-    return NextResponse.json({ success: true, memberId: member.id })
+    return NextResponse.json({ success: true, memberId: member.id, emailSent, emailError })
   } catch (error) {
     console.error('Team invite error:', error)
     return NextResponse.json({ error: 'Failed to send invite' }, { status: 500 })

@@ -64,7 +64,14 @@ export function TeamClient({ team, members: initial, currentUserId, seatLimit, p
         })
         return
       }
-      setStatus({ type: 'success', msg: `Invitation sent to ${email.trim()}` })
+      if (data.emailSent === false) {
+        setStatus({
+          type: 'error',
+          msg: `Invite record created but email delivery failed. Check Resend domain verification. Error: ${data.emailError ?? 'unknown'}`,
+        })
+      } else {
+        setStatus({ type: 'success', msg: `Invitation sent to ${email.trim()}` })
+      }
       setMembers((prev) => [
         ...prev,
         {
