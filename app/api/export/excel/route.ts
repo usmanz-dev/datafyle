@@ -16,6 +16,7 @@ interface ExtractedData {
   currency?: { value?: string | null }
   taxAmount?: { value?: number | null }
   documentType?: string
+  keyFields?: Record<string, unknown>
   lineItems?: {
     description?: string
     quantity?: number
@@ -102,6 +103,18 @@ export async function POST(req: NextRequest) {
       })
     }
 
+    // ── Collect all unique keyFields keys across every document ──────────────
+    const allKeyFieldKeys: string[] = []
+    const seenKeys = new Set<string>()
+    for (const doc of docs) {
+      const data = doc.extractedData as ExtractedData | null
+      if (data?.keyFields && typeof data.keyFields === 'object') {
+        for (const k of Object.keys(data.keyFields)) {
+          if (!seenKeys.has(k)) { seenKeys.add(k); allKeyFieldKeys.push(k) }
+        }
+      }
+    }
+
     // ── Sheet 1: Summary ─────────────────────────────────────────────────────
     const ws1 = wb.addWorksheet('Summary')
     ws1.columns = [
@@ -114,6 +127,8 @@ export async function POST(req: NextRequest) {
       { key: 'amount',         header: 'Amount',          width: 14 },
       { key: 'currency',       header: 'Currency',        width: 10 },
       { key: 'tax',            header: 'Tax',             width: 12 },
+      // Dynamic extra fields (Bill To, Phone, Email, etc.)
+      ...allKeyFieldKeys.map((k) => ({ key: `kf_${k}`, header: k, width: 22 })),
       { key: 'confidence',     header: 'Confidence %',    width: 14 },
       { key: 'anomaly',        header: 'Anomaly',         width: 12 },
       { key: 'dateProcessed',  header: 'Date Processed',  width: 18 },
@@ -123,6 +138,15 @@ export async function POST(req: NextRequest) {
     docs.forEach((doc, i) => {
       const data = doc.extractedData as ExtractedData | null
       const anomaly = doc.anomalyData as AnomalyData | null
+      const keyFields = (data?.keyFields ?? {}) as Record<string, unknown>
+
+      // Build dynamic keyField values — "-" when field absent in this doc
+      const extraCells: Record<string, string> = {}
+      for (const k of allKeyFieldKeys) {
+        const val = keyFields[k]
+        extraCells[`kf_${k}`] = val != null && val !== '' ? String(val) : '-'
+      }
+
       const row = ws1.addRow({
         fileName:      doc.fileName,
         docType:       data?.documentType ?? '',
@@ -133,6 +157,7 @@ export async function POST(req: NextRequest) {
         amount:        data?.totalAmount?.value ?? '',
         currency:      data?.currency?.value ?? '',
         tax:           data?.taxAmount?.value ?? '',
+        ...extraCells,
         confidence:    doc.confidenceScore ?? '',
         anomaly:       anomaly?.isAnomaly ? anomaly.severity ?? 'Yes' : 'No',
         dateProcessed: new Date(doc.createdAt).toLocaleDateString('en-US'),

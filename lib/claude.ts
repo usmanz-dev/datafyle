@@ -25,10 +25,15 @@ No explanation. No markdown. Just pure JSON parseable by JSON.parse().`
   "currency": { "value": "string or null", "confidence": 0 },
   "taxAmount": { "value": 0, "confidence": 0 },
   "lineItems": [{ "description": "", "quantity": 0, "unitPrice": 0, "total": 0 }],
-  "keyFields": {},
+  "keyFields": { "Bill To": "string", "Phone": "string", "Email": "string" },
   "summary": "one sentence description",
   "overallConfidence": 0
-}`
+}
+
+CRITICAL RULE for keyFields: Capture EVERY field in the document that is not already in the structure above.
+Examples of what to put in keyFields: Bill To, Ship To, Phone, Email, Address, Payment Method, Payment Terms, PO Number, Account Number, Reference, Notes, Remit To, Contact, Website, Bank Details, IBAN, etc.
+Use the exact label from the document as the key. Value must be a plain string.
+If a field exists in the document, it MUST appear in keyFields. Never leave keyFields empty if the document has extra fields.`
 
   try {
     const response = await anthropic.messages.create({
