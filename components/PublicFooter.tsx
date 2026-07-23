@@ -127,6 +127,7 @@ export function PublicFooter() {
                 <li><Link href="/contact" className="text-slate-400 hover:text-white text-sm transition-colors">Contact Us</Link></li>
                 <li><Link href="/privacy" className="text-slate-400 hover:text-white text-sm transition-colors">Privacy Policy</Link></li>
                 <li><Link href="/terms"   className="text-slate-400 hover:text-white text-sm transition-colors">Terms of Service</Link></li>
+                <li><Link href="/refund"  className="text-slate-400 hover:text-white text-sm transition-colors">Refund Policy</Link></li>
               </ul>
             </div>
 
@@ -154,6 +155,8 @@ export function PublicFooter() {
               <Link href="/privacy" className="text-slate-500 text-xs hover:text-white transition-colors">Privacy</Link>
               <span className="text-slate-700">·</span>
               <Link href="/terms"   className="text-slate-500 text-xs hover:text-white transition-colors">Terms</Link>
+              <span className="text-slate-700">·</span>
+              <Link href="/refund"  className="text-slate-500 text-xs hover:text-white transition-colors">Refund</Link>
               <span className="text-slate-700">·</span>
               <Link href="/blog"    className="text-slate-500 text-xs hover:text-white transition-colors">Blog</Link>
             </div>
