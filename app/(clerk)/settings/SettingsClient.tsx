@@ -1,10 +1,11 @@
 'use client'
 
+import { useState } from 'react'
 import Link from 'next/link'
 import { UserButton } from '@clerk/nextjs'
 import {
   CreditCard, FileText, ArrowRight, CheckCircle2,
-  Calendar, TrendingUp, Mail,
+  Calendar, TrendingUp, Mail, ExternalLink, Loader2,
 } from 'lucide-react'
 import { PLAN_NAMES } from '@/lib/plans'
 
@@ -51,6 +52,27 @@ export function SettingsClient({
   profile, plan, docsUsed, docsLimit, totalDocsProcessed,
   paidAt, cancelledAt, renewsAt,
 }: Props) {
+  const [portalLoading, setPortalLoading] = useState(false)
+  const [portalError, setPortalError] = useState<string | null>(null)
+
+  async function handleManageSubscription() {
+    setPortalLoading(true)
+    setPortalError(null)
+    try {
+      const res = await fetch('/api/payments/portal', { method: 'POST' })
+      const data = await res.json() as { url?: string; error?: string }
+      if (!res.ok || !data.url) {
+        setPortalError(data.error ?? 'Could not open billing portal. Please contact support.')
+        return
+      }
+      window.location.href = data.url
+    } catch {
+      setPortalError('Network error. Please try again.')
+    } finally {
+      setPortalLoading(false)
+    }
+  }
+
   const usagePct = docsLimit > 0 ? Math.round((docsUsed / docsLimit) * 100) : 0
   const barColor  = usagePct >= 90 ? '#EF4444' : usagePct >= 75 ? '#F59E0B' : '#2563EB'
   const isPaid    = plan !== 'free'
@@ -175,6 +197,30 @@ export function SettingsClient({
         {/* ── Cancel / support ─────────────────────────────────────────────── */}
         <section className="bg-white rounded-lg border border-[#E2E8F0] shadow-sm p-5">
           <h2 className="text-sm font-semibold text-[#1E293B] mb-3">Support &amp; Billing</h2>
+
+          {isPaid && (
+            <div className="mb-4">
+              <p className="text-sm text-slate-500 mb-2">
+                Update your payment method, change your plan, or cancel — all from the Paddle billing portal.
+              </p>
+              <button
+                onClick={handleManageSubscription}
+                disabled={portalLoading}
+                className="flex items-center gap-2 px-4 py-2.5 bg-[#1E293B] text-white text-sm font-medium rounded-lg hover:bg-slate-700 transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
+              >
+                {portalLoading ? (
+                  <Loader2 size={15} className="animate-spin" />
+                ) : (
+                  <ExternalLink size={15} />
+                )}
+                {portalLoading ? 'Opening portal…' : 'Manage Subscription'}
+              </button>
+              {portalError && (
+                <p className="mt-2 text-xs text-red-500">{portalError}</p>
+              )}
+            </div>
+          )}
+
           <div className="flex items-start gap-2 text-sm text-slate-500">
             <Mail size={15} className="text-slate-400 shrink-0 mt-0.5" />
             <span>

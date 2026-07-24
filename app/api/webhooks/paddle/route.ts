@@ -112,12 +112,14 @@ export async function POST(req: NextRequest) {
         create: {
           userId: user.id,
           paddleSubId,
+          paddleCustomerId: data.customer_id ?? null,
           plan: planName,
           status: 'active',
           renewsAt,
         },
         update: {
           paddleSubId,
+          paddleCustomerId: data.customer_id ?? undefined,
           plan: planName,
           status: 'active',
           renewsAt,

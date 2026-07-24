@@ -59,14 +59,15 @@ model VendorPattern {
 }
 
 model Subscription {
-  id          String    @id @default(cuid())
-  userId      String    @unique
-  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  paddleSubId String
-  plan        String
-  status      String
-  renewsAt    DateTime?
-  createdAt   DateTime  @default(now())
+  id                String    @id @default(cuid())
+  userId            String    @unique
+  user              User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  paddleSubId       String
+  paddleCustomerId  String?
+  plan              String
+  status            String
+  renewsAt          DateTime?
+  createdAt         DateTime  @default(now())
 }
 
 model Team {
