@@ -1,9 +1,9 @@
 export const PLAN_IDS: Record<string, string> = {
-  starter:      'pri_REPLACE_WITH_STARTER_ID',
-  professional: 'pri_REPLACE_WITH_PRO_ID',
-  business:     'pri_REPLACE_WITH_BIZ_ID',
-  enterprise:   'pri_REPLACE_WITH_ENT_ID',
-  extraSeat:    'pri_REPLACE_WITH_SEAT_ID',
+  starter:      'pri_01kxjyxfgme743wde3gjxgf8a6',
+  professional: 'pri_01kxmw368f46g8c5ta83sqfkwq',
+  business:     'pri_01kxmwbk42tas6qfn3rq4mkbm9',
+  enterprise:   'pri_01kxmwrq59wz6173k73rh70qbp',
+  extraSeat:    '',
 }
 
 export const PLAN_DOCS: Record<string, number> = {
