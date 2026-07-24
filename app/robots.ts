@@ -6,7 +6,14 @@ export default function robots(): MetadataRoute.Robots {
       {
         userAgent: '*',
         allow: '/',
-        disallow: ['/dashboard/', '/admin/', '/api/', '/settings/'],
+        disallow: [
+          '/dashboard',
+          '/settings',
+          '/admin',
+          '/api/',
+          '/sign-in',
+          '/sign-up',
+        ],
       },
     ],
     sitemap: 'https://datafyle.com/sitemap.xml',
