@@ -41,6 +41,8 @@ export function UploadZone({ onUploadComplete, atLimit, onUpgradePlan }: Props) 
   const [items, setItems] = useState<FileItem[]>([])
   const [busy, setBusy] = useState(false)
   const [downloading, setDownloading] = useState<Set<string>>(new Set())
+  const [sheetsLoading, setSheetsLoading] = useState<Set<string>>(new Set())
+  const [copiedSheet, setCopiedSheet] = useState<Set<string>>(new Set())
   const [sessionIds, setSessionIds] = useState<string[]>([])
   const [exportingSession, setExportingSession] = useState(false)
 
@@ -67,6 +69,31 @@ export function UploadZone({ onUploadComplete, atLimit, onUpgradePlan }: Props) 
       URL.revokeObjectURL(a.href)
     } finally {
       setExportingSession(false)
+    }
+  }
+
+  async function exportToSheets(item: FileItem) {
+    if (!item.documentId) return
+    setSheetsLoading((prev) => new Set([...prev, item.id]))
+    try {
+      const res = await fetch('/api/export/sheets', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ documentIds: [item.documentId] }),
+      })
+      const data = await res.json() as { error?: string; spreadsheetUrl?: string }
+      if (data.error === 'not_connected') {
+        window.location.href = '/api/auth/google'
+        return
+      }
+      if (!res.ok || !data.spreadsheetUrl) return
+      await navigator.clipboard.writeText(data.spreadsheetUrl)
+      setCopiedSheet((prev) => new Set([...prev, item.id]))
+      setTimeout(() => {
+        setCopiedSheet((prev) => { const n = new Set(prev); n.delete(item.id); return n })
+      }, 2500)
+    } finally {
+      setSheetsLoading((prev) => { const n = new Set(prev); n.delete(item.id); return n })
     }
   }
 
@@ -292,21 +319,45 @@ export function UploadZone({ onUploadComplete, atLimit, onUpgradePlan }: Props) 
                     </div>
                   )}
 
-                  {/* Download button — appears when done */}
+                  {/* Download buttons — appear when done */}
                   {item.status === 'done' && item.documentId && (
-                    <button
-                      onClick={() => downloadFile(item)}
-                      disabled={downloading.has(item.id)}
-                      className="mt-2.5 inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold bg-[#2563EB] text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-60 shadow-sm"
-                    >
-                      {downloading.has(item.id)
-                        ? <Loader2 size={12} className="animate-spin" />
-                        : <Download size={12} />}
-                      {downloading.has(item.id) ? 'Preparing...' : 'Download Excel'}
-                      {!downloading.has(item.id) && (
-                        <FileSpreadsheet size={12} className="text-green-300" />
-                      )}
-                    </button>
+                    <div className="mt-2.5 flex flex-wrap gap-2">
+                      {/* Excel */}
+                      <button
+                        onClick={() => downloadFile(item)}
+                        disabled={downloading.has(item.id)}
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold bg-[#2563EB] text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-60 shadow-sm"
+                      >
+                        {downloading.has(item.id)
+                          ? <Loader2 size={12} className="animate-spin" />
+                          : <Download size={12} />}
+                        {downloading.has(item.id) ? 'Preparing...' : 'Download Excel'}
+                        {!downloading.has(item.id) && (
+                          <FileSpreadsheet size={12} className="text-green-300" />
+                        )}
+                      </button>
+
+                      {/* Google Sheet */}
+                      <button
+                        onClick={() => exportToSheets(item)}
+                        disabled={sheetsLoading.has(item.id)}
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold bg-white border border-[#E2E8F0] text-slate-700 rounded-lg hover:bg-slate-50 transition-colors disabled:opacity-60 shadow-sm"
+                      >
+                        {sheetsLoading.has(item.id) ? (
+                          <Loader2 size={12} className="animate-spin text-green-600" />
+                        ) : (
+                          <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
+                            <rect width="24" height="24" rx="4" fill="#34A853" />
+                            <path d="M5 7h14M5 12h14M5 17h14" stroke="white" strokeWidth="2.5" strokeLinecap="round" />
+                          </svg>
+                        )}
+                        {sheetsLoading.has(item.id)
+                          ? 'Creating...'
+                          : copiedSheet.has(item.id)
+                          ? '✓ Link Copied!'
+                          : 'Google Sheet'}
+                      </button>
+                    </div>
                   )}
                 </div>
 
