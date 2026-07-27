@@ -134,6 +134,22 @@ export function DashboardClient({
       url.searchParams.delete('sheets')
       nextRouter.replace(url.pathname + (url.search || ''))
     }
+
+    // Auto-trigger checkout if user signed up from pricing page
+    const pendingPlan = localStorage.getItem('pendingPlan')
+    if (pendingPlan) {
+      localStorage.removeItem('pendingPlan')
+      fetch('/api/payments/checkout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ plan: pendingPlan }),
+      })
+        .then((r) => r.json())
+        .then((data: { checkoutUrl?: string; error?: string }) => {
+          if (data.checkoutUrl) window.location.href = data.checkoutUrl
+        })
+        .catch(() => {})
+    }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 

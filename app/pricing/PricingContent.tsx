@@ -185,8 +185,12 @@ export function PricingContent() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ plan }),
       })
+      if (res.status === 401) {
+        localStorage.setItem('pendingPlan', plan)
+        window.location.href = `/sign-up`
+        return
+      }
       const data = await res.json() as { checkoutUrl?: string; error?: string }
-      if (res.status === 401) { window.location.href = `/sign-up?redirect=/pricing`; return }
       if (!res.ok) { alert(data.error ?? 'Failed to start checkout. Please try again.'); return }
       window.location.href = data.checkoutUrl!
     } catch {
