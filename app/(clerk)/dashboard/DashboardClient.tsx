@@ -266,13 +266,9 @@ export function DashboardClient({
     try {
       const ids = selected.size > 0 ? [...selected] : docs.map((d) => d.id)
       const res = await fetch('/api/export/sheets', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ documentIds: ids }) })
-      const data = await res.json()
-      if (data.error === 'not_connected') {
-        window.location.href = '/api/auth/google'
-        return
-      }
+      const data = await res.json() as { error?: string; spreadsheetUrl?: string }
       if (!res.ok) { toast.error(data.error ?? 'Google Sheets export failed'); return }
-      window.open(data.spreadsheetUrl, '_blank')
+      if (data.spreadsheetUrl) window.open(data.spreadsheetUrl, '_blank')
     } catch { toast.error('Google Sheets export failed.') }
     finally { setSheetsExporting(false) }
   }

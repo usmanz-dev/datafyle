@@ -82,11 +82,8 @@ export function UploadZone({ onUploadComplete, atLimit, onUpgradePlan }: Props) 
         body: JSON.stringify({ documentIds: [item.documentId] }),
       })
       const data = await res.json() as { error?: string; spreadsheetUrl?: string }
-      if (data.error === 'not_connected') {
-        window.location.href = '/api/auth/google'
-        return
-      }
       if (!res.ok || !data.spreadsheetUrl) return
+      window.open(data.spreadsheetUrl, '_blank')
       await navigator.clipboard.writeText(data.spreadsheetUrl)
       setCopiedSheet((prev) => new Set([...prev, item.id]))
       setTimeout(() => {
