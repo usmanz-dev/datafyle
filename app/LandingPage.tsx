@@ -110,7 +110,7 @@ const REVIEWS = [
     company: 'Thompson & Partners CPA',
     location: 'London, UK',
     initials: 'SM',
-    grad: 'from-[#2563EB] to-[#4F46E5]',
+    avatarBg: '#475569',
     platform: 'Capterra',
     platformColor: 'bg-orange-50 text-orange-600 border-orange-200',
     date: 'Nov 2025',
@@ -123,7 +123,7 @@ const REVIEWS = [
     company: 'O\'Brien Accounting Ltd',
     location: 'Dublin, Ireland',
     initials: 'JO',
-    grad: 'from-[#2563EB] to-[#06B6D4]',
+    avatarBg: '#0D9488',
     platform: 'G2',
     platformColor: 'bg-red-50 text-red-600 border-red-200',
     date: 'Oct 2025',
@@ -136,7 +136,7 @@ const REVIEWS = [
     company: 'Pacific Rim Advisory',
     location: 'Sydney, Australia',
     initials: 'MC',
-    grad: 'from-[#7C3AED] to-[#2563EB]',
+    avatarBg: '#4F46E5',
     platform: 'Trustpilot',
     platformColor: 'bg-green-50 text-green-700 border-green-200',
     date: 'Dec 2025',
@@ -149,7 +149,7 @@ const REVIEWS = [
     company: 'Walsh & Co Bookkeeping',
     location: 'Chicago, US',
     initials: 'RW',
-    grad: 'from-[#0F172A] to-[#2563EB]',
+    avatarBg: '#B45309',
     platform: 'Capterra',
     platformColor: 'bg-orange-50 text-orange-600 border-orange-200',
     date: 'Jan 2026',
@@ -1067,25 +1067,25 @@ export default function LandingPage() {
                 <div className="h-px bg-[#F1F5F9] mb-5" />
 
                 {/* Author row */}
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    {/* Gradient avatar */}
-                    <div className={`w-10 h-10 rounded-full bg-linear-to-br ${r.grad} flex items-center justify-center text-white text-xs font-black shrink-0`}>
-                      {r.initials}
-                    </div>
-                    <div>
-                      <div className="flex items-center gap-1.5">
-                        <p className="font-bold text-[#1E293B] text-sm">{r.name}</p>
-                        {/* Verified tick */}
-                        <div className="w-4 h-4 rounded-full bg-[#2563EB] flex items-center justify-center shrink-0">
-                          <Check size={9} className="text-white" strokeWidth={3} />
-                        </div>
-                      </div>
-                      <p className="text-xs text-slate-600">{r.title} · {r.company}</p>
-                      <p className="text-xs text-slate-500">{r.location}</p>
-                    </div>
+                <div className="flex items-center gap-3">
+                  {/* Flat monogram avatar */}
+                  <div
+                    className="w-11 h-11 rounded-full flex items-center justify-center text-white text-sm font-bold shrink-0 select-none"
+                    style={{ backgroundColor: r.avatarBg, letterSpacing: '0.05em' }}
+                  >
+                    {r.initials}
                   </div>
-                  <span className="text-[11px] text-slate-500 font-medium shrink-0">{r.date}</span>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-1.5 flex-wrap">
+                      <p className="font-semibold text-[#1E293B] text-sm">{r.name}</p>
+                      <span className="inline-flex items-center gap-1 text-[10px] font-medium text-[#2563EB] bg-[#EFF6FF] px-1.5 py-0.5 rounded-full border border-[#2563EB]/20">
+                        <Check size={8} strokeWidth={3} />
+                        Verified
+                      </span>
+                    </div>
+                    <p className="text-xs text-slate-500 truncate">{r.title}, {r.company}</p>
+                    <p className="text-[11px] text-slate-400">{r.location} · {r.date}</p>
+                  </div>
                 </div>
               </m.div>
             ))}
