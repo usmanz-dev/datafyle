@@ -11,8 +11,18 @@ export default async function DashboardPage() {
   const clerkUser = await currentUser()
   const firstName = clerkUser?.firstName ?? null
 
-  const user = await prisma.user.findUnique({ where: { clerkId: userId } })
-  if (!user) redirect('/sign-in')
+  let user = await prisma.user.findUnique({ where: { clerkId: userId } })
+
+  if (!user) {
+    // Clerk webhook may not have fired yet — create user now as fallback
+    const email = clerkUser?.emailAddresses?.[0]?.emailAddress ?? ''
+    const name = [clerkUser?.firstName, clerkUser?.lastName].filter(Boolean).join(' ') || null
+    user = await prisma.user.upsert({
+      where: { clerkId: userId },
+      update: {},
+      create: { clerkId: userId, email, name, plan: 'free', docsLimit: 10, docsUsed: 0 },
+    })
+  }
 
   // Admin users go straight to admin dashboard
   if (user.email === process.env.ADMIN_EMAIL) redirect('/admin')

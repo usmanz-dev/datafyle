@@ -55,8 +55,10 @@ export async function POST(req: NextRequest) {
     const nameParts = [first_name, last_name].filter(Boolean)
     const name      = nameParts.length > 0 ? nameParts.join(' ') : null
 
-    await prisma.user.create({
-      data: { clerkId, email, name, plan: 'free', docsLimit: 10, docsUsed: 0 },
+    await prisma.user.upsert({
+      where: { clerkId },
+      update: {},
+      create: { clerkId, email, name, plan: 'free', docsLimit: 10, docsUsed: 0 },
     })
 
     // Fire-and-forget — don't block webhook response on emails
