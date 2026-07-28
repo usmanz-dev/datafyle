@@ -167,6 +167,10 @@ export function DashboardClient({
 
   async function handlePendingCheckout() {
     if (!pendingUpgrade) return
+    if (!window.Paddle) {
+      toast.error('Payment system not ready. Please refresh and try again.')
+      return
+    }
     setCheckoutLoading(true)
     try {
       const res = await fetch('/api/payments/checkout', {
@@ -174,9 +178,14 @@ export function DashboardClient({
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ plan: pendingUpgrade }),
       })
-      const data = await res.json() as { checkoutUrl?: string; error?: string }
-      if (data.checkoutUrl) {
-        window.location.href = data.checkoutUrl
+      const data = await res.json() as { transactionId?: string; error?: string }
+      if (data.transactionId) {
+        window.Paddle.Checkout.open({
+          transactionId: data.transactionId,
+          settings: {
+            successUrl: `https://www.datafyle.com/dashboard?success=1&plan=${pendingUpgrade}`,
+          },
+        })
       } else {
         toast.error(data.error ?? 'Checkout failed. Please try again.')
       }

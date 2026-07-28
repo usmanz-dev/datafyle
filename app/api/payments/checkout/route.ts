@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { auth, currentUser } from '@clerk/nextjs/server'
 import { prisma } from '@/lib/prisma'
-import { createCheckoutUrl } from '@/lib/paddle'
+import { createTransaction } from '@/lib/paddle'
 import { z } from 'zod'
 
 const schema = z.object({
@@ -42,9 +42,9 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'You are already on this plan' }, { status: 400 })
     }
 
-    const checkoutUrl = await createCheckoutUrl(plan, user.id, email)
+    const transactionId = await createTransaction(plan, user.id, email)
 
-    return NextResponse.json({ checkoutUrl })
+    return NextResponse.json({ transactionId })
   } catch (err) {
     const message = err instanceof Error ? err.message : 'Failed to create checkout'
     console.error('Checkout error:', err)

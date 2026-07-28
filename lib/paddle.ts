@@ -20,7 +20,7 @@ export const PLAN_DISPLAY: Record<string, string> = {
   enterprise:   'Enterprise',
 }
 
-export async function createCheckoutUrl(
+export async function createTransaction(
   plan: string,
   userId: string,
   email: string
@@ -43,9 +43,6 @@ export async function createCheckoutUrl(
       items: [{ price_id: priceId, quantity: 1 }],
       customer: { email },
       custom_data: { userId, plan, userEmail: email },
-      checkout: {
-        success_url: `https://www.datafyle.com/dashboard?success=1&plan=${plan}`,
-      },
     }),
   })
 
@@ -54,9 +51,9 @@ export async function createCheckoutUrl(
     throw new Error((data as { error?: { detail?: string } })?.error?.detail ?? 'Paddle API error')
   }
 
-  const data = await res.json() as { data?: { checkout?: { url?: string } } }
-  const url = data?.data?.checkout?.url
-  if (!url) throw new Error('No checkout URL returned from Paddle')
+  const data = await res.json() as { data?: { id?: string } }
+  const transactionId = data?.data?.id
+  if (!transactionId) throw new Error('No transaction ID returned from Paddle')
 
-  return url
+  return transactionId
 }

@@ -3,6 +3,7 @@ import { Inter } from 'next/font/google'
 import { ClerkProvider } from '@clerk/nextjs'
 import { Toaster } from 'sonner'
 import { NavigationLoader } from '@/components/NavigationLoader'
+import { PaddleInit } from '@/components/PaddleInit'
 import './globals.css'
 
 const inter = Inter({ subsets: ['latin'] })
@@ -64,6 +65,7 @@ export default function RootLayout({
           <NavigationLoader />
           {children}
           <Toaster position="top-right" richColors />
+          <PaddleInit />
         </ClerkProvider>
       </body>
     </html>
