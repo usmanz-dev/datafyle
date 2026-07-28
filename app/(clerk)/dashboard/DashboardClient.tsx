@@ -309,9 +309,16 @@ export function DashboardClient({
     try {
       const ids = selected.size > 0 ? [...selected] : docs.map((d) => d.id)
       const res = await fetch('/api/export/sheets', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ documentIds: ids }) })
-      const data = await res.json() as { error?: string; spreadsheetUrl?: string }
+      const data = await res.json() as { error?: string; spreadsheetUrl?: string; rowCount?: number }
       if (!res.ok) { toast.error(data.error ?? 'Google Sheets export failed'); return }
-      if (data.spreadsheetUrl) window.open(data.spreadsheetUrl, '_blank')
+      if (data.spreadsheetUrl) {
+        await navigator.clipboard.writeText(data.spreadsheetUrl).catch(() => {})
+        toast.success(`Google Sheet created (${data.rowCount ?? 0} rows) — link copied!`, {
+          description: data.spreadsheetUrl,
+          action: { label: 'Open', onClick: () => window.open(data.spreadsheetUrl, '_blank') },
+          duration: 10000,
+        })
+      }
     } catch { toast.error('Google Sheets export failed.') }
     finally { setSheetsExporting(false) }
   }
