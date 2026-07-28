@@ -187,6 +187,7 @@ export function PricingContent() {
       })
       if (res.status === 401) {
         localStorage.setItem('pendingPlan', plan)
+        localStorage.setItem('pendingPlanAt', Date.now().toString())
         window.location.href = `/sign-up`
         return
       }

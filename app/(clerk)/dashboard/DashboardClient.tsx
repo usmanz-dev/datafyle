@@ -135,10 +135,13 @@ export function DashboardClient({
       nextRouter.replace(url.pathname + (url.search || ''))
     }
 
-    // Auto-trigger checkout if user signed up from pricing page
+    // Auto-trigger checkout if user signed up from pricing page (only within 10 minutes)
     const pendingPlan = localStorage.getItem('pendingPlan')
-    if (pendingPlan) {
+    const pendingAt = localStorage.getItem('pendingPlanAt')
+    const isRecent = pendingAt && Date.now() - parseInt(pendingAt) < 10 * 60 * 1000
+    if (pendingPlan && isRecent && user.plan === 'free') {
       localStorage.removeItem('pendingPlan')
+      localStorage.removeItem('pendingPlanAt')
       fetch('/api/payments/checkout', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -149,6 +152,9 @@ export function DashboardClient({
           if (data.checkoutUrl) window.location.href = data.checkoutUrl
         })
         .catch(() => {})
+    } else {
+      localStorage.removeItem('pendingPlan')
+      localStorage.removeItem('pendingPlanAt')
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
