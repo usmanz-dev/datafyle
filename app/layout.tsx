@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
+import { ClerkProvider } from '@clerk/nextjs'
 import { Toaster } from 'sonner'
 import { NavigationLoader } from '@/components/NavigationLoader'
 import './globals.css'
@@ -59,9 +60,11 @@ export default function RootLayout({
   return (
     <html lang="en" className={inter.className}>
       <body className="min-h-full flex flex-col">
-        <NavigationLoader />
-        {children}
-        <Toaster position="top-right" richColors />
+        <ClerkProvider>
+          <NavigationLoader />
+          {children}
+          <Toaster position="top-right" richColors />
+        </ClerkProvider>
       </body>
     </html>
   )
