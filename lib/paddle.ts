@@ -43,7 +43,7 @@ export async function createCheckoutUrl(
       items: [{ price_id: priceId, quantity: 1 }],
       customer: { email },
       custom_data: { userId, plan, userEmail: email },
-      settings: {
+      checkout: {
         success_url: `https://www.datafyle.com/dashboard?success=1&plan=${plan}`,
       },
     }),
