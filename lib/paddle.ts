@@ -44,7 +44,7 @@ export async function createCheckoutUrl(
       customer: { email },
       custom_data: { userId, plan, userEmail: email },
       settings: {
-        success_url: `https://datafyle.com/dashboard?success=1&plan=${plan}`,
+        success_url: `https://www.datafyle.com/dashboard?success=1&plan=${plan}`,
       },
     }),
   })

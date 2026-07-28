@@ -7,6 +7,7 @@ import {
   Check, Minus, ChevronDown, Loader2, Zap, Users, FileSpreadsheet,
   Shield, Brain, Upload,
 } from 'lucide-react'
+import { useAuth } from '@clerk/nextjs'
 import { PublicNav } from '@/components/PublicNav'
 import { PublicFooter } from '@/components/PublicFooter'
 import { MouseBlobClient } from '@/components/MouseBlobClient'
@@ -123,6 +124,7 @@ function PlanButton({ variant, onClick, loading, href, label }: {
 // ─── Main Component ───────────────────────────────────────────────────────────
 
 export function PricingContent() {
+  const { isSignedIn } = useAuth()
   const [annual, setAnnual] = useState(false)
   const [loading, setLoading] = useState<string | null>(null)
   const [openFaq, setOpenFaq] = useState<number | null>(null)
@@ -178,6 +180,14 @@ export function PricingContent() {
   }, [])
 
   async function handleCheckout(plan: string) {
+    // Not logged in — save plan and redirect to sign-up
+    if (!isSignedIn) {
+      localStorage.setItem('pendingPlan', plan)
+      localStorage.setItem('pendingPlanAt', Date.now().toString())
+      window.location.href = '/sign-up'
+      return
+    }
+
     setLoading(plan)
     try {
       const res = await fetch('/api/payments/checkout', {
@@ -185,17 +195,18 @@ export function PricingContent() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ plan }),
       })
-      if (res.status === 401) {
-        localStorage.setItem('pendingPlan', plan)
-        localStorage.setItem('pendingPlanAt', Date.now().toString())
-        window.location.href = `/sign-up`
+      const data = await res.json() as { checkoutUrl?: string; error?: string }
+      if (!res.ok) {
+        alert(data.error ?? 'Failed to start checkout. Please try again.')
         return
       }
-      const data = await res.json() as { checkoutUrl?: string; error?: string }
-      if (!res.ok) { alert(data.error ?? 'Failed to start checkout. Please try again.'); return }
-      window.location.href = data.checkoutUrl!
+      if (!data.checkoutUrl) {
+        alert('No checkout URL returned. Please try again.')
+        return
+      }
+      window.location.href = data.checkoutUrl
     } catch {
-      alert('Checkout failed. Please try again.')
+      alert('Checkout failed. Please check your connection and try again.')
     } finally {
       setLoading(null)
     }
