@@ -101,6 +101,8 @@ export function DashboardClient({
   const [sheetsExporting, setSheetsExporting] = useState(false)
   const [upgradeModal, setUpgradeModal] = useState<{ feature: string; requiredPlan: string } | null>(null)
   const [batchMode, setBatchMode]       = useState(false)
+  const [pendingUpgrade, setPendingUpgrade] = useState<string | null>(null)
+  const [checkoutLoading, setCheckoutLoading] = useState(false)
 
   const searchParams = useSearchParams()
   const nextRouter   = useNextRouter()
@@ -135,27 +137,15 @@ export function DashboardClient({
       nextRouter.replace(url.pathname + (url.search || ''))
     }
 
-    // Auto-trigger checkout if user signed up from pricing page (only within 10 minutes)
+    // Show upgrade banner if user came from pricing page
     const pendingPlan = localStorage.getItem('pendingPlan')
     const pendingAt = localStorage.getItem('pendingPlanAt')
     const isRecent = pendingAt && Date.now() - parseInt(pendingAt) < 10 * 60 * 1000
     if (pendingPlan && isRecent && user.plan === 'free') {
-      localStorage.removeItem('pendingPlan')
-      localStorage.removeItem('pendingPlanAt')
-      fetch('/api/payments/checkout', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ plan: pendingPlan }),
-      })
-        .then((r) => r.json())
-        .then((data: { checkoutUrl?: string; error?: string }) => {
-          if (data.checkoutUrl) window.location.href = data.checkoutUrl
-        })
-        .catch(() => {})
-    } else {
-      localStorage.removeItem('pendingPlan')
-      localStorage.removeItem('pendingPlanAt')
+      setPendingUpgrade(pendingPlan)
     }
+    localStorage.removeItem('pendingPlan')
+    localStorage.removeItem('pendingPlanAt')
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
@@ -174,6 +164,28 @@ export function DashboardClient({
     const id = setInterval(fetchDocs, 3000)
     return () => clearInterval(id)
   }, [docs, fetchDocs])
+
+  async function handlePendingCheckout() {
+    if (!pendingUpgrade) return
+    setCheckoutLoading(true)
+    try {
+      const res = await fetch('/api/payments/checkout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ plan: pendingUpgrade }),
+      })
+      const data = await res.json() as { checkoutUrl?: string; error?: string }
+      if (data.checkoutUrl) {
+        window.location.href = data.checkoutUrl
+      } else {
+        toast.error(data.error ?? 'Checkout failed. Please try again.')
+      }
+    } catch {
+      toast.error('Checkout failed. Please try again.')
+    } finally {
+      setCheckoutLoading(false)
+    }
+  }
 
   // ── Computed ───────────────────────────────────────────────────────────────
   const usagePct  = user.docsLimit > 0 ? Math.round((user.docsUsed / user.docsLimit) * 100) : 0
@@ -299,6 +311,36 @@ export function DashboardClient({
 
   return (
     <div className="min-h-screen bg-slate-50">
+
+      {/* ── Pending upgrade banner ──────────────────────────────────────────── */}
+      {pendingUpgrade && (
+        <div className="bg-[#2563EB] text-white px-4 py-3">
+          <div className="max-w-7xl mx-auto flex items-center justify-between gap-4 flex-wrap">
+            <div className="flex items-center gap-2.5">
+              <Zap size={16} className="shrink-0" />
+              <span className="text-sm font-medium">
+                Complete your upgrade to <span className="font-bold capitalize">{pendingUpgrade}</span> plan
+              </span>
+            </div>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => setPendingUpgrade(null)}
+                className="text-xs text-blue-200 hover:text-white transition-colors"
+              >
+                Dismiss
+              </button>
+              <button
+                onClick={handlePendingCheckout}
+                disabled={checkoutLoading}
+                className="inline-flex items-center gap-1.5 px-4 py-1.5 bg-white text-[#2563EB] text-xs font-bold rounded-lg hover:bg-blue-50 transition-colors disabled:opacity-60"
+              >
+                {checkoutLoading ? <Loader2 size={12} className="animate-spin" /> : null}
+                {checkoutLoading ? 'Loading...' : 'Complete Upgrade →'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* ── Top header bar ──────────────────────────────────────────────────── */}
       <div className="bg-white border-b border-slate-100 sticky top-14 md:top-0 z-20">
