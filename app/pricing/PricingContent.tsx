@@ -181,15 +181,22 @@ export function PricingContent() {
   }, [])
 
   async function handleCheckout(plan: string) {
-    if (!isLoaded) return  // Clerk still initializing — ignore click
+    toast.info(`DEBUG: clicked ${plan} | isLoaded=${isLoaded} | isSignedIn=${isSignedIn}`)
+
+    if (!isLoaded) {
+      toast.error('Still loading, try again in 1 second')
+      return
+    }
 
     if (!isSignedIn) {
+      toast.info('Not signed in → going to sign-up...')
       localStorage.setItem('pendingPlan', plan)
       localStorage.setItem('pendingPlanAt', Date.now().toString())
       window.location.href = '/sign-up'
       return
     }
 
+    toast.info('Signed in → calling checkout API...')
     setLoading(plan)
     try {
       const res = await fetch('/api/payments/checkout', {
@@ -198,6 +205,8 @@ export function PricingContent() {
         body: JSON.stringify({ plan }),
       })
       const data = await res.json() as { checkoutUrl?: string; error?: string }
+      toast.info(`API: status=${res.status} | url=${data.checkoutUrl?.slice(0,40) ?? data.error}`)
+      await new Promise(r => setTimeout(r, 2500))
       if (!res.ok) {
         toast.error(data.error ?? 'Failed to start checkout. Please try again.')
         return
@@ -207,8 +216,8 @@ export function PricingContent() {
         return
       }
       window.location.href = data.checkoutUrl
-    } catch {
-      toast.error('Checkout failed. Please check your connection and try again.')
+    } catch (err) {
+      toast.error(`Error: ${err instanceof Error ? err.message : 'unknown'}`)
     } finally {
       setLoading(null)
     }
