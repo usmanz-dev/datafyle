@@ -55,7 +55,7 @@ export function SupportModal({ isOpen, onClose, plan, email }: Props) {
   }
 
   async function submit() {
-    if (!subject.trim() || !message.trim()) return
+    if (subject.trim().length < 3 || message.trim().length < 10) return
     setStage('sending')
     try {
       const res = await fetch('/api/support', {
@@ -88,7 +88,7 @@ export function SupportModal({ isOpen, onClose, plan, email }: Props) {
 
       {/* Modal */}
       <div className="fixed inset-0 z-[70] flex items-end sm:items-center justify-center p-0 sm:p-4 pointer-events-none">
-        <div className="w-full sm:max-w-lg bg-white sm:rounded-2xl rounded-t-2xl shadow-2xl pointer-events-auto overflow-hidden animate-in slide-in-from-bottom-4 duration-300">
+        <div className="w-full sm:max-w-lg bg-white sm:rounded-2xl rounded-t-2xl shadow-2xl pointer-events-auto overflow-hidden animate-in slide-in-from-bottom-4 duration-300 flex flex-col max-h-[90vh]">
 
           {/* Header */}
           <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100">
@@ -120,7 +120,7 @@ export function SupportModal({ isOpen, onClose, plan, email }: Props) {
           </div>
 
           {/* Body */}
-          <div className="px-6 py-5">
+          <div className="px-6 py-5 overflow-y-auto flex-1">
 
             {/* ── Sent state ──────────────────────────────────────────────────── */}
             {stage === 'sent' && (
@@ -211,6 +211,9 @@ export function SupportModal({ isOpen, onClose, plan, email }: Props) {
                     disabled={stage === 'sending'}
                     className="w-full px-3.5 py-2.5 text-sm bg-white border border-[#E2E8F0] rounded-xl text-[#1E293B] placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-[#2563EB] transition-all disabled:opacity-60"
                   />
+                  {subject.length > 0 && subject.trim().length < 3 && (
+                    <p className="text-[11px] text-red-400 mt-1">At least 3 characters required</p>
+                  )}
                 </div>
 
                 {/* Message */}
@@ -225,13 +228,18 @@ export function SupportModal({ isOpen, onClose, plan, email }: Props) {
                     disabled={stage === 'sending'}
                     className="w-full px-3.5 py-2.5 text-sm bg-white border border-[#E2E8F0] rounded-xl text-[#1E293B] placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-[#2563EB] transition-all resize-none disabled:opacity-60"
                   />
-                  <p className="text-right text-[11px] text-slate-300 mt-1">{message.length}/3000</p>
+                  <div className="flex justify-between mt-1">
+                    {message.length > 0 && message.trim().length < 10
+                      ? <p className="text-[11px] text-red-400">At least 10 characters required</p>
+                      : <span />}
+                    <p className="text-[11px] text-slate-300">{message.length}/3000</p>
+                  </div>
                 </div>
 
                 {/* Submit */}
                 <button
                   onClick={submit}
-                  disabled={!subject.trim() || !message.trim() || stage === 'sending'}
+                  disabled={subject.trim().length < 3 || message.trim().length < 10 || stage === 'sending'}
                   className="w-full inline-flex items-center justify-center gap-2 py-3 bg-[#2563EB] text-white text-sm font-bold rounded-xl hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-sm"
                 >
                   {stage === 'sending'
