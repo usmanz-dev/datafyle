@@ -576,22 +576,7 @@ export function DashboardClient({
                     </button>
                   )}
 
-                  <button
-                    onClick={() => {
-                      if (!hasFeature(user.plan, 'google_sheets')) { setUpgradeModal({ feature: 'Google Sheets Export', requiredPlan: 'professional' }); return }
-                      exportSheets()
-                    }}
-                    disabled={sheetsExporting || !docs.length}
-                    className="inline-flex items-center gap-1.5 px-3 py-2 text-xs font-semibold bg-slate-50 border border-slate-200 text-slate-600 rounded-xl hover:bg-slate-100 transition-colors disabled:opacity-50 min-h-9"
-                  >
-                    {sheetsExporting
-                      ? <Loader2 size={12} className="animate-spin text-green-600" />
-                      : <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><rect width="24" height="24" rx="4" fill="#34A853" /><path d="M5 7h14M5 12h14M5 17h14" stroke="white" strokeWidth="2.5" strokeLinecap="round" /></svg>
-                    }
-                    {!googleConnected
-                      ? 'Connect Google'
-                      : selected.size > 0 ? `Sheets (${selected.size})` : 'Google Sheets'}
-                  </button>
+                  {/* Google Sheets export — temporarily hidden */}
                 </div>
               </div>
             </div>
