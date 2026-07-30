@@ -1,4 +1,4 @@
-import { auth } from '@clerk/nextjs/server'
+import { auth, currentUser } from '@clerk/nextjs/server'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import { prisma } from '@/lib/prisma'
@@ -34,21 +34,32 @@ export default async function AcceptInvitePage({ searchParams }: Props) {
   const { userId } = await auth()
 
   if (userId) {
-    // Find user in DB
-    const user = await prisma.user.findUnique({ where: { clerkId: userId } })
+    const clerkUser = await currentUser()
 
-    if (user) {
-      // Accept the invite
-      await prisma.teamMember.update({
-        where: { id: memberId },
-        data: {
-          userId: user.id,
-          status: 'accepted',
-          joinedAt: new Date(),
-        },
-      })
-      redirect('/dashboard?welcome=team')
-    }
+    // Upsert user in case Clerk webhook hasn't fired yet
+    const user = await prisma.user.upsert({
+      where: { clerkId: userId },
+      update: {},
+      create: {
+        clerkId: userId,
+        email: clerkUser?.emailAddresses?.[0]?.emailAddress ?? member.inviteEmail,
+        name: [clerkUser?.firstName, clerkUser?.lastName].filter(Boolean).join(' ') || null,
+        plan: 'free',
+        docsLimit: 10,
+        docsUsed: 0,
+      },
+    })
+
+    // Accept the invite
+    await prisma.teamMember.update({
+      where: { id: memberId },
+      data: {
+        userId: user.id,
+        status: 'accepted',
+        joinedAt: new Date(),
+      },
+    })
+    redirect('/dashboard?welcome=team')
   }
 
   // Not signed in — show sign in / sign up buttons
