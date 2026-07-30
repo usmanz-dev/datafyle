@@ -27,6 +27,17 @@ export default async function DashboardPage() {
   // Admin users go straight to admin dashboard
   if (user.email === process.env.ADMIN_EMAIL) redirect('/admin')
 
+  // Auto-accept any pending team invites for this user's email
+  const pendingInvite = await prisma.teamMember.findFirst({
+    where: { inviteEmail: user.email, status: 'pending' },
+  })
+  if (pendingInvite) {
+    await prisma.teamMember.update({
+      where: { id: pendingInvite.id },
+      data: { userId: user.id, status: 'accepted', joinedAt: new Date() },
+    })
+  }
+
   const now = new Date()
   const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1)
 
