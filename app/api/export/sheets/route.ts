@@ -136,15 +136,13 @@ export async function POST(req: NextRequest) {
       requestBody: { values: [headers, ...rows] },
     })
 
-    // Share with user as writer (no email notification to avoid spam)
+    // Share via link (anyone with link can edit) — avoids per-user sharing restrictions
     await drive.permissions.create({
       fileId: spreadsheetId,
       requestBody: {
-        type: 'user',
+        type: 'anyone',
         role: 'writer',
-        emailAddress: user.email,
       },
-      sendNotificationEmail: false,
     })
 
     const spreadsheetUrl = `https://docs.google.com/spreadsheets/d/${spreadsheetId}`
