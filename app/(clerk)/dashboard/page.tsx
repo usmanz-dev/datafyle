@@ -30,31 +30,51 @@ export default async function DashboardPage() {
   const now = new Date()
   const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1)
 
-  // Check if user is a team admin (owns a team)
-  const team = await prisma.team.findFirst({
-    where: { ownerId: user.id },
-    include: {
-      members: {
-        where: { status: 'accepted', userId: { not: null } },
-        select: { userId: true, inviteEmail: true, user: { select: { name: true, email: true } } },
+  // Check if user owns a team OR is a member of a team
+  const [ownedTeam, memberTeamRow] = await Promise.all([
+    prisma.team.findFirst({
+      where: { ownerId: user.id },
+      include: {
+        members: {
+          where: { status: 'accepted', userId: { not: null } },
+          select: { userId: true, inviteEmail: true, user: { select: { name: true, email: true } } },
+        },
       },
-    },
-  })
+    }),
+    prisma.teamMember.findFirst({
+      where: { userId: user.id, status: 'accepted' },
+      include: {
+        team: {
+          include: {
+            members: {
+              where: { status: 'accepted', userId: { not: null } },
+              select: { userId: true, inviteEmail: true, user: { select: { name: true, email: true } } },
+            },
+          },
+        },
+      },
+    }),
+  ])
 
-  // Collect all user IDs to fetch docs for
+  const team = ownedTeam ?? memberTeamRow?.team ?? null
+  const isTeamAdmin = !!ownedTeam
+
+  // Team owner's plan determines the shared pool limit
+  const teamOwnerId = team?.ownerId ?? user.id
+  const teamOwnerPlan = team && teamOwnerId !== user.id
+    ? (await prisma.user.findUnique({ where: { id: teamOwnerId }, select: { plan: true } }))?.plan ?? user.plan
+    : user.plan
+
+  // Collect all user IDs in the team (for shared docs count)
   const teamMemberIds = team
     ? team.members.map((m) => m.userId!).filter(Boolean)
     : []
   const allUserIds = [user.id, ...teamMemberIds.filter((id) => id !== user.id)]
 
-  const [thisMonthCount, myMonthCount, anomaliesCount, documents, googleToken] = await Promise.all([
-    // All team docs this month (for stats display)
+  const [thisMonthCount, anomaliesCount, documents, googleToken] = await Promise.all([
+    // All team docs this month = shared pool usage
     prisma.document.count({
       where: { userId: { in: allUserIds }, createdAt: { gte: startOfMonth } },
-    }),
-    // Owner's own docs this month (for personal limit bar)
-    prisma.document.count({
-      where: { userId: user.id, createdAt: { gte: startOfMonth } },
     }),
     prisma.document.count({
       where: {
@@ -85,9 +105,9 @@ export default async function DashboardPage() {
     <DashboardClient
       firstName={firstName}
       user={{
-        plan: user.plan,
-        docsUsed: myMonthCount,
-        docsLimit: getDocsLimit(user.plan),
+        plan: teamOwnerPlan,
+        docsUsed: thisMonthCount,
+        docsLimit: getDocsLimit(teamOwnerPlan),
         totalDocsProcessed: user.totalDocsProcessed,
         id: user.id,
       }}
@@ -109,7 +129,7 @@ export default async function DashboardPage() {
         uploadedByName: d.uploadedByName,
         createdAt: d.createdAt.toISOString(),
       }))}
-      isTeamAdmin={!!team}
+      isTeamAdmin={isTeamAdmin}
       teamMembers={teamMembers}
       currentUserId={user.id}
       googleConnected={!!googleToken}

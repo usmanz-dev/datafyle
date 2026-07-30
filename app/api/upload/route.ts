@@ -22,14 +22,46 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'User not found' }, { status: 401 })
     }
 
-    // Monthly limit: count docs uploaded THIS month only (auto-resets each month)
     const now = new Date()
     const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1)
-    const thisMonthCount = await prisma.document.count({
-      where: { userId: user.id, createdAt: { gte: startOfMonth } },
-    })
-    const effectiveLimit = getDocsLimit(user.plan)
-    if (thisMonthCount >= effectiveLimit) {
+
+    // Check if user is in a team (as owner or member)
+    const [ownedTeam, memberTeam] = await Promise.all([
+      prisma.team.findFirst({ where: { ownerId: user.id } }),
+      prisma.teamMember.findFirst({
+        where: { userId: user.id, status: 'accepted' },
+        include: { team: true },
+      }),
+    ])
+
+    const activeTeam = ownedTeam ?? memberTeam?.team ?? null
+    const ownerId = activeTeam?.ownerId ?? user.id
+
+    let effectiveLimit: number
+    let monthlyCount: number
+
+    if (activeTeam) {
+      // Shared pool — use team owner's plan limit
+      const owner = await prisma.user.findUnique({ where: { id: ownerId }, select: { plan: true } })
+      effectiveLimit = getDocsLimit(owner?.plan ?? user.plan)
+
+      // Count ALL team member docs this month
+      const teamMembers = await prisma.teamMember.findMany({
+        where: { teamId: activeTeam.id, status: 'accepted', userId: { not: null } },
+        select: { userId: true },
+      })
+      const allTeamUserIds = teamMembers.map((m) => m.userId!)
+      monthlyCount = await prisma.document.count({
+        where: { userId: { in: allTeamUserIds }, createdAt: { gte: startOfMonth } },
+      })
+    } else {
+      effectiveLimit = getDocsLimit(user.plan)
+      monthlyCount = await prisma.document.count({
+        where: { userId: user.id, createdAt: { gte: startOfMonth } },
+      })
+    }
+
+    if (monthlyCount >= effectiveLimit) {
       return NextResponse.json({ error: 'limit', upgrade: true }, { status: 403 })
     }
 
