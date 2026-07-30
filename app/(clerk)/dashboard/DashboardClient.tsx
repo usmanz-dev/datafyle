@@ -103,6 +103,7 @@ export function DashboardClient({
   const [batchMode, setBatchMode]       = useState(false)
   const [pendingUpgrade, setPendingUpgrade] = useState<string | null>(null)
   const [checkoutLoading, setCheckoutLoading] = useState(false)
+  const [upgradeBannerDismissed, setUpgradeBannerDismissed] = useState(false)
 
   const searchParams = useSearchParams()
   const nextRouter   = useNextRouter()
@@ -353,6 +354,42 @@ export function DashboardClient({
                 {checkoutLoading ? <Loader2 size={12} className="animate-spin" /> : null}
                 {checkoutLoading ? 'Loading...' : 'Complete Upgrade →'}
               </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ── Free plan upgrade banner ────────────────────────────────────────── */}
+      {user.plan === 'free' && !upgradeBannerDismissed && (
+        <div className="bg-linear-to-r from-[#1E293B] to-[#2563EB] text-white px-4 py-3">
+          <div className="max-w-7xl mx-auto flex items-center justify-between gap-4 flex-wrap">
+            <div className="flex items-center gap-3">
+              <div className="w-7 h-7 rounded-lg bg-white/10 flex items-center justify-center shrink-0">
+                <Zap size={14} className="text-yellow-300" />
+              </div>
+              <div>
+                <p className="text-sm font-semibold">
+                  You&apos;re on the <span className="text-yellow-300">Free plan</span> — limited to {user.docsLimit} docs/month
+                </p>
+                <p className="text-xs text-blue-200 hidden sm:block">
+                  Upgrade to Starter ($49/mo) for 500 docs, anomaly detection, and team features
+                </p>
+              </div>
+            </div>
+            <div className="flex items-center gap-3 shrink-0">
+              <button
+                onClick={() => setUpgradeBannerDismissed(true)}
+                className="text-xs text-blue-300 hover:text-white transition-colors"
+              >
+                Dismiss
+              </button>
+              <a
+                href="/pricing"
+                className="inline-flex items-center gap-1.5 px-4 py-2 bg-white text-[#2563EB] text-xs font-bold rounded-xl hover:bg-blue-50 transition-colors"
+              >
+                <ArrowUpRight size={13} />
+                Upgrade Now
+              </a>
             </div>
           </div>
         </div>
