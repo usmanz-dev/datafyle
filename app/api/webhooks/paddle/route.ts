@@ -2,10 +2,16 @@ import { NextRequest, NextResponse } from 'next/server'
 import crypto from 'crypto'
 import { prisma } from '@/lib/prisma'
 import { sendWelcomePaidEmail, sendCancellationEmail } from '@/lib/emails/paddleEmails'
+import { PLAN_IDS } from '@/lib/paddle'
 
 const PLAN_DOCS: Record<string, number> = {
   starter: 500, professional: 3000, business: 10000, enterprise: 20000,
 }
+
+// Reverse map: priceId -> planName
+const PRICE_TO_PLAN: Record<string, string> = Object.fromEntries(
+  Object.entries(PLAN_IDS).filter(([, v]) => v).map(([plan, priceId]) => [priceId, plan])
+)
 
 function verifyPaddleSignature(rawBody: string, signatureHeader: string, secret: string): boolean {
   try {
@@ -53,6 +59,7 @@ export async function POST(req: NextRequest) {
       id?: string
       status?: string
       customer_id?: string
+      subscription_id?: string | null
       next_billed_at?: string | null
       custom_data?: { userId?: string; plan?: string; userEmail?: string } | null
       scheduled_change?: { action?: string } | null
@@ -70,8 +77,71 @@ export async function POST(req: NextRequest) {
   const customData = data?.custom_data
 
   try {
+    // ── transaction.completed — fires immediately after successful payment ────
+    if (event_type === 'transaction.completed') {
+      // Only handle subscription transactions (not renewals without custom_data check)
+      const priceId = data.items?.[0]?.price?.id ?? ''
+      const planFromPrice = PRICE_TO_PLAN[priceId]
+      const planName = customData?.plan ?? planFromPrice
+
+      if (!planName) {
+        console.log('Paddle transaction.completed: unknown plan, skipping', { priceId, customData })
+        return NextResponse.json({ received: true })
+      }
+
+      let user = null
+      if (customData?.userId) {
+        user = await prisma.user.findUnique({ where: { id: customData.userId } })
+      }
+      if (!user && customData?.userEmail) {
+        user = await prisma.user.findUnique({ where: { email: customData.userEmail } })
+      }
+
+      if (!user) {
+        console.error('Paddle transaction.completed: user not found', { customData })
+        return NextResponse.json({ received: true })
+      }
+
+      const docsLimit = PLAN_DOCS[planName] ?? 500
+
+      await prisma.user.update({
+        where: { id: user.id },
+        data: {
+          plan: planName,
+          paidAt: user.paidAt ?? new Date(),
+          docsLimit,
+          cancelledAt: null,
+        },
+      })
+
+      // Upsert subscription if this transaction belongs to one
+      if (data.subscription_id) {
+        await prisma.subscription.upsert({
+          where: { userId: user.id },
+          create: {
+            userId: user.id,
+            paddleSubId: data.subscription_id,
+            paddleCustomerId: data.customer_id ?? null,
+            plan: planName,
+            status: 'active',
+            renewsAt: null,
+          },
+          update: {
+            paddleSubId: data.subscription_id,
+            paddleCustomerId: data.customer_id ?? undefined,
+            plan: planName,
+            status: 'active',
+          },
+        })
+      }
+
+      sendWelcomePaidEmail(user.email, planName, user.name).catch((e) =>
+        console.error('Failed to send welcome email:', e)
+      )
+    }
+
     // ── subscription.created / subscription.activated ────────────────────────
-    if (event_type === 'subscription.created' || event_type === 'subscription.activated') {
+    else if (event_type === 'subscription.created' || event_type === 'subscription.activated') {
       const planName = customData?.plan ?? 'starter'
       const paddleSubId = data.id ?? ''
       const renewsAt = data.next_billed_at ? new Date(data.next_billed_at) : null
