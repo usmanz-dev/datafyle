@@ -29,6 +29,10 @@ function getGoogleAuth() {
   const raw = process.env.GOOGLE_SERVICE_ACCOUNT_JSON
   if (!raw) throw new Error('GOOGLE_SERVICE_ACCOUNT_JSON not configured')
   const credentials = JSON.parse(raw)
+  // Vercel sometimes escapes newlines in env vars — fix private key
+  if (credentials.private_key) {
+    credentials.private_key = credentials.private_key.replace(/\\n/g, '\n')
+  }
   return new google.auth.GoogleAuth({
     credentials,
     scopes: [
@@ -147,7 +151,8 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ success: true, spreadsheetUrl, rowCount: rows.length })
 
   } catch (error) {
-    console.error('Google Sheets export error:', error)
-    return NextResponse.json({ error: 'Google Sheets export failed' }, { status: 500 })
+    const msg = error instanceof Error ? error.message : String(error)
+    console.error('Google Sheets export error:', msg)
+    return NextResponse.json({ error: `Google Sheets export failed: ${msg}` }, { status: 500 })
   }
 }
