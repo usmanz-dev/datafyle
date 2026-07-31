@@ -40,8 +40,12 @@ const isPublicRoute = createRouteMatcher([
   '/blog/(.*)',
   '/privacy',
   '/terms',
+  '/refund-policy',
+  '/contact',
+  '/team/accept(.*)',
   '/api/webhooks/(.*)',
   '/api/blog/(.*)',
+  '/api/inngest(.*)',
 ])
 
 // ─── Proxy (Next.js 16 renamed middleware → proxy) ────────────────────────────
