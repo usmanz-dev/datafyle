@@ -30,6 +30,7 @@ const SEC: Record<string, string> = {
 // ─── Route matchers ───────────────────────────────────────────────────────────
 const isProtected = createRouteMatcher(['/dashboard(.*)', '/settings(.*)'])
 const isAdmin     = createRouteMatcher(['/admin(.*)'])
+const isAuthPage  = createRouteMatcher(['/sign-in(.*)', '/sign-up(.*)'])
 
 const isPublicRoute = createRouteMatcher([
   '/',
@@ -67,6 +68,14 @@ export default clerkMiddleware(async (auth, req: NextRequest) => {
     )
     Object.entries(SEC).forEach(([k, v]) => res.headers.set(k, v))
     return res
+  }
+
+  // Redirect already-authenticated users away from auth pages to dashboard
+  if (isAuthPage(req)) {
+    const { userId } = await auth()
+    if (userId) {
+      return NextResponse.redirect(new URL('/dashboard', req.url))
+    }
   }
 
   // Protect authenticated routes
