@@ -15,9 +15,9 @@ const isPublicRoute = createRouteMatcher([
   '/api/inngest(.*)',
 ])
 
-export default clerkMiddleware(async (auth, req) => {
+export default clerkMiddleware((auth, req) => {
   if (!isPublicRoute(req)) {
-    await auth.protect()
+    auth.protect()
   }
 })
 
