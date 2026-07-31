@@ -195,6 +195,8 @@ const MOBILE_NAV = [
 function Navbar() {
   const [scrolled, setScrolled] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
+  const { isSignedIn } = useAuth()
+  const ctaHref = isSignedIn ? '/dashboard' : '/sign-up'
 
   useEffect(() => {
     const handler = () => setScrolled(window.scrollY > 10)
