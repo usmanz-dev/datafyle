@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
+import { useAuth } from '@clerk/nextjs'
 import Link from 'next/link'
 import Image from 'next/image'
 import { LazyMotion, domAnimation, m, useInView, AnimatePresence } from 'framer-motion'
@@ -259,7 +260,7 @@ function Navbar() {
 
           <div className="hidden md:flex items-center gap-3 shrink-0">
             <Link href="/sign-in" className={`text-sm font-medium transition-colors duration-300 ${scrolled ? 'text-[#1E293B] hover:text-[#2563EB]' : 'text-white/80 hover:text-white'}`}>Login</Link>
-            <Link href="/sign-up" className="inline-flex items-center gap-1.5 px-5 py-2.5 bg-[#2563EB] text-white text-sm font-semibold rounded-lg hover:bg-blue-700 transition-colors min-h-[44px]">
+            <Link href={ctaHref} className="inline-flex items-center gap-1.5 px-5 py-2.5 bg-[#2563EB] text-white text-sm font-semibold rounded-lg hover:bg-blue-700 transition-colors min-h-[44px]">
               Get Started
             </Link>
           </div>
@@ -304,7 +305,7 @@ function Navbar() {
                 <Link href="/sign-in" onClick={() => setMenuOpen(false)} className="flex items-center justify-center py-3.5 rounded-xl text-base font-semibold text-[#1E293B] border-2 border-[#E2E8F0] hover:border-[#2563EB] hover:text-[#2563EB] transition-all">
                   Login
                 </Link>
-                <Link href="/sign-up" onClick={() => setMenuOpen(false)} className="flex items-center justify-center py-3.5 bg-[#2563EB] text-white text-base font-bold rounded-xl hover:bg-blue-700 transition-colors">
+                <Link href={ctaHref} onClick={() => setMenuOpen(false)} className="flex items-center justify-center py-3.5 bg-[#2563EB] text-white text-base font-bold rounded-xl hover:bg-blue-700 transition-colors">
                   Get Started Free
                 </Link>
               </div>
@@ -318,6 +319,10 @@ function Navbar() {
 
 // ─── Landing Page ─────────────────────────────────────────────────────────────
 export default function LandingPage() {
+  const { isSignedIn } = useAuth()
+  const ctaHref = isSignedIn ? '/dashboard' : '/sign-up'
+  const ctaLabel = isSignedIn ? 'Go to Dashboard' : 'Get Started Free'
+
   const [staffCost, setStaffCost] = useState(2500)
   const [docs, setDocs] = useState(500)
   const [openFaq, setOpenFaq] = useState<number | null>(null)
@@ -434,7 +439,7 @@ export default function LandingPage() {
             Your data, clean and ready in Excel or Google Sheets.
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <Link href="/sign-up" className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-[#2563EB] text-white text-base font-bold rounded-xl min-h-[56px] w-full sm:w-auto transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_0_36px_rgba(37,99,235,0.55)]">
+            <Link href={ctaHref} className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-[#2563EB] text-white text-base font-bold rounded-xl min-h-[56px] w-full sm:w-auto transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_0_36px_rgba(37,99,235,0.55)]">
               Get Started Free <ArrowRight size={18} />
             </Link>
             <a href="/#how-it-works" className="inline-flex items-center justify-center gap-2 px-8 py-4 text-slate-300 hover:text-white text-base font-medium rounded-xl border border-white/10 hover:border-white/25 min-h-[56px] w-full sm:w-auto transition-all duration-300 hover:bg-white/5">
@@ -531,7 +536,7 @@ export default function LandingPage() {
                   </li>
                 ))}
               </ul>
-              <Link href="/sign-up" className="inline-flex items-center gap-2 px-6 py-3.5 bg-[#2563EB] text-white font-bold rounded-xl hover:bg-blue-700 transition-all text-sm min-h-[48px] hover:-translate-y-0.5 hover:shadow-lg">
+              <Link href={ctaHref} className="inline-flex items-center gap-2 px-6 py-3.5 bg-[#2563EB] text-white font-bold rounded-xl hover:bg-blue-700 transition-all text-sm min-h-[48px] hover:-translate-y-0.5 hover:shadow-lg">
                 Try Datafyle Free <ArrowRight size={16} />
               </Link>
             </m.div>
@@ -1149,7 +1154,7 @@ export default function LandingPage() {
         <m.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} transition={{ duration: 0.5 }} className="relative z-10 max-w-2xl mx-auto text-center">
           <h2 className="text-3xl sm:text-4xl font-bold text-white mb-4">Stop Wasting 8 Hours a Day on Data Entry</h2>
           <p className="text-slate-400 mb-8 text-lg">Join 50+ accounting firms already saving time with Datafyle</p>
-          <Link href="/sign-up" className="inline-flex items-center gap-2 px-8 py-4 bg-[#2563EB] text-white text-lg font-bold rounded-xl hover:bg-blue-600 transition-all shadow-lg hover:-translate-y-0.5 min-h-[56px]">
+          <Link href={ctaHref} className="inline-flex items-center gap-2 px-8 py-4 bg-[#2563EB] text-white text-lg font-bold rounded-xl hover:bg-blue-600 transition-all shadow-lg hover:-translate-y-0.5 min-h-[56px]">
             Get Started Now — It&apos;s Free
             <ArrowRight size={20} />
           </Link>
@@ -1261,7 +1266,7 @@ export default function LandingPage() {
             <div>
               <h3 className="text-white font-semibold mb-5 text-xs uppercase tracking-widest">Get Started</h3>
               <ul className="space-y-3">
-                <li><Link href="/sign-up" className="text-slate-400 hover:text-white text-sm transition-colors">Create Free Account</Link></li>
+                <li><Link href={ctaHref} className="text-slate-400 hover:text-white text-sm transition-colors">Create Free Account</Link></li>
                 <li><Link href="/sign-in" className="text-slate-400 hover:text-white text-sm transition-colors">Sign In</Link></li>
                 <li><Link href="/pricing" className="text-slate-400 hover:text-white text-sm transition-colors">View Pricing</Link></li>
                 <li><Link href="/dashboard" className="text-slate-400 hover:text-white text-sm transition-colors">Dashboard</Link></li>
