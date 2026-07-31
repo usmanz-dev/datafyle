@@ -5,6 +5,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Menu, X } from 'lucide-react'
+import { useAuth } from '@clerk/nextjs'
 
 const DESKTOP_NAV = [
   { href: '/#about',        label: 'About' },
@@ -29,6 +30,7 @@ const MOBILE_NAV = [
 export function PublicNav() {
   const [scrolled, setScrolled] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
+  const { isSignedIn } = useAuth()
 
   useEffect(() => {
     const handler = () => setScrolled(window.scrollY > 10)
@@ -94,18 +96,29 @@ export function PublicNav() {
           </div>
 
           <div className="hidden md:flex items-center gap-3 shrink-0">
-            <Link
-              href="/sign-in"
-              className={`text-sm font-medium transition-colors duration-300 ${scrolled ? 'text-[#1E293B] hover:text-[#2563EB]' : 'text-white/80 hover:text-white'}`}
-            >
-              Login
-            </Link>
-            <Link
-              href="/sign-up"
-              className="inline-flex items-center gap-1.5 px-5 py-2.5 bg-[#2563EB] text-white text-sm font-semibold rounded-lg hover:bg-blue-700 transition-colors min-h-11"
-            >
-              Get Started
-            </Link>
+            {isSignedIn ? (
+              <Link
+                href="/dashboard"
+                className="inline-flex items-center gap-1.5 px-5 py-2.5 bg-[#2563EB] text-white text-sm font-semibold rounded-lg hover:bg-blue-700 transition-colors min-h-11"
+              >
+                Go to Dashboard
+              </Link>
+            ) : (
+              <>
+                <Link
+                  href="/sign-in"
+                  className={`text-sm font-medium transition-colors duration-300 ${scrolled ? 'text-[#1E293B] hover:text-[#2563EB]' : 'text-white/80 hover:text-white'}`}
+                >
+                  Login
+                </Link>
+                <Link
+                  href="/sign-up"
+                  className="inline-flex items-center gap-1.5 px-5 py-2.5 bg-[#2563EB] text-white text-sm font-semibold rounded-lg hover:bg-blue-700 transition-colors min-h-11"
+                >
+                  Get Started
+                </Link>
+              </>
+            )}
           </div>
 
           <button
@@ -145,20 +158,32 @@ export function PublicNav() {
                 </Link>
               ))}
               <div className="mt-6 pt-6 border-t border-[#E2E8F0] flex flex-col gap-3">
-                <Link
-                  href="/sign-in"
-                  onClick={() => setMenuOpen(false)}
-                  className="flex items-center justify-center py-3.5 rounded-xl text-base font-semibold text-[#1E293B] border-2 border-[#E2E8F0] hover:border-[#2563EB] hover:text-[#2563EB] transition-all"
-                >
-                  Login
-                </Link>
-                <Link
-                  href="/sign-up"
-                  onClick={() => setMenuOpen(false)}
-                  className="flex items-center justify-center py-3.5 bg-[#2563EB] text-white text-base font-bold rounded-xl hover:bg-blue-700 transition-colors"
-                >
-                  Get Started Free
-                </Link>
+                {isSignedIn ? (
+                  <Link
+                    href="/dashboard"
+                    onClick={() => setMenuOpen(false)}
+                    className="flex items-center justify-center py-3.5 bg-[#2563EB] text-white text-base font-bold rounded-xl hover:bg-blue-700 transition-colors"
+                  >
+                    Go to Dashboard
+                  </Link>
+                ) : (
+                  <>
+                    <Link
+                      href="/sign-in"
+                      onClick={() => setMenuOpen(false)}
+                      className="flex items-center justify-center py-3.5 rounded-xl text-base font-semibold text-[#1E293B] border-2 border-[#E2E8F0] hover:border-[#2563EB] hover:text-[#2563EB] transition-all"
+                    >
+                      Login
+                    </Link>
+                    <Link
+                      href="/sign-up"
+                      onClick={() => setMenuOpen(false)}
+                      className="flex items-center justify-center py-3.5 bg-[#2563EB] text-white text-base font-bold rounded-xl hover:bg-blue-700 transition-colors"
+                    >
+                      Get Started Free
+                    </Link>
+                  </>
+                )}
               </div>
             </div>
           </motion.div>
