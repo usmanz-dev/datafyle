@@ -9,8 +9,8 @@ import {
   Menu, X, Brain,
   FileText, FileSpreadsheet, Image as LucideImage, Code, AlignLeft,
   Check, Star, ArrowRight, TrendingUp,
-  AlertCircle, FolderOpen, Plus, Minus, Bot,
-  Shield, Lock, Server, Globe, EyeOff,
+  AlertCircle, FolderOpen, Bot,
+  Shield, Lock, Server, Globe, EyeOff, ChevronDown,
 } from 'lucide-react'
 
 // ─── Counter hook ─────────────────────────────────────────────────────────────
@@ -54,11 +54,16 @@ function CountStat({ target, format, label, sublabel, icon }: {
 
 // ─── Data ─────────────────────────────────────────────────────────────────────
 const FAQS = [
-  { q: 'Can I cancel anytime?', a: 'Yes, absolutely. Cancel from your account settings at any time. You keep your plan until the billing period ends, then move to Free. No fees, no questions asked.' },
-  { q: 'Is my data secure?', a: 'Documents are encrypted in transit (TLS) and at rest on Cloudflare R2 (enterprise-grade storage). Your data is never shared or used to train AI models.' },
-  { q: 'What happens when I reach my document limit?', a: "You'll see a warning at 90%. At 100% uploads pause until the next billing cycle or you upgrade. All existing documents remain accessible." },
-  { q: 'Can I change plans at any time?', a: 'Yes. Upgrade instantly — new plan activates immediately. Downgrading takes effect at the end of the billing period.' },
-  { q: 'Do you store my documents permanently?', a: 'Documents are stored while your account is active. On account closure, files are deleted within 30 days. You can delete individual files anytime.' },
+  { q: 'How accurate is the AI data extraction?', a: 'Datafyle achieves 97%+ accuracy on standard invoices and receipts. Every extracted field shows a colour-coded confidence score — green (90%+), yellow (70–89%), or red (below 70%) — so you always know exactly where to double-check before exporting to Excel.', cat: 'Features' },
+  { q: 'What file formats does Datafyle support?', a: 'PDF, Word (DOCX/DOC), Excel (XLSX/XLS), CSV, XML, TXT, and images (JPG, PNG) — up to 25MB per file. Every format your clients typically send, with no conversion or reformatting required before upload.', cat: 'Features' },
+  { q: 'How long does it take to process a document?', a: 'Most documents are fully extracted in under 10 seconds. Complex multi-page PDFs may take up to 30 seconds. Batch uploads queue automatically and run in the background — you can keep working while they process.', cat: 'Features' },
+  { q: 'Do I need to set up templates or rules?', a: 'No — zero configuration required. Unlike rules-based tools like DocParser, Datafyle\'s AI automatically understands any document layout, vendor, and field structure. Just upload and it works immediately.', cat: 'Features' },
+  { q: 'Can I cancel anytime?', a: 'Yes, cancel from your account settings at any time. You keep full access until the billing period ends, then automatically move to the Free plan. No cancellation fees, no questions asked.', cat: 'Pricing' },
+  { q: 'Can I change my plan?', a: 'Absolutely. Upgrade instantly — your new limits activate immediately. Downgrading takes effect at the end of the current billing period so you never lose access mid-month.', cat: 'Pricing' },
+  { q: 'What happens when I reach my document limit?', a: "You'll see a warning at 90% usage. At 100%, new uploads pause until the next billing cycle resets your count — or you upgrade. All existing documents and extracted data remain fully accessible. Nothing is deleted.", cat: 'Pricing' },
+  { q: 'Is my data secure?', a: 'Documents are encrypted at rest with AES-256 on Cloudflare R2 enterprise storage, and protected in transit with TLS 1.3. Your data is never shared with third parties, never sold, and never used to train AI models — including Anthropic\'s.', cat: 'Security' },
+  { q: 'Is Datafyle GDPR compliant?', a: 'Yes. We\'re built with GDPR principles — data is processed only for the service you signed up for, stored on enterprise infrastructure, and you can request a full export or deletion at any time by emailing privacy@datafyle.com.', cat: 'Security' },
+  { q: 'Can my whole team use Datafyle together?', a: 'Yes. Starter plans include 2 seats, Professional includes 5, and Business includes 15. Team admins see all uploaded documents; members see only their own. You can add extra seats for $19/month each on any paid plan.', cat: 'Teams' },
 ]
 
 const PLANS = [
@@ -333,6 +338,7 @@ export default function LandingPage() {
   const [staffCost, setStaffCost] = useState(2500)
   const [docs, setDocs] = useState(500)
   const [openFaq, setOpenFaq] = useState<number | null>(null)
+  const [activeCategory, setActiveCategory] = useState('all')
 
   const blobRef      = useRef<HTMLDivElement>(null)
   const canvasRef    = useRef<HTMLCanvasElement>(null)
@@ -1259,41 +1265,121 @@ export default function LandingPage() {
       </section>
 
       {/* ── FAQ ─────────────────────────────────────────────────────────────── */}
-      <section id="faq" className="py-24 px-4 bg-white">
-        <div className="max-w-2xl mx-auto">
-          <m.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} transition={{ duration: 0.5 }} className="text-center mb-12">
+      <section id="faq" className="py-24 px-4 bg-[#F8FAFC]">
+        <div className="max-w-3xl mx-auto">
+
+          {/* Header */}
+          <m.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} transition={{ duration: 0.5 }} className="text-center mb-10">
+            <div className="inline-flex items-center gap-2 px-4 py-2 bg-[#EFF6FF] border border-blue-200 rounded-full text-[#2563EB] text-sm font-semibold mb-5">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#2563EB]" />
+              Got Questions?
+            </div>
             <h2 className="text-3xl sm:text-4xl font-bold text-[#1E293B] mb-3">Frequently Asked Questions</h2>
-            <p className="text-slate-500 text-base">Everything you need to know before getting started.</p>
+            <p className="text-slate-500 text-base">Everything you need to know before switching to Datafyle.</p>
           </m.div>
-          <div className="space-y-2">
-            {FAQS.map((faq, i) => (
-              <m.div key={i} initial={{ opacity: 0, y: 10 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.4, delay: i * 0.07 }}
-                className={`rounded-xl border overflow-hidden transition-all ${openFaq === i ? 'border-[#2563EB]/30 shadow-sm' : 'border-[#E2E8F0]'}`}>
-                <button onClick={() => setOpenFaq(openFaq === i ? null : i)}
-                  className={`w-full flex items-center justify-between px-6 py-4.5 text-left transition-colors ${openFaq === i ? 'bg-[#EFF6FF]' : 'bg-white hover:bg-[#F8FAFC]'}`}>
-                  <div className="flex items-center gap-4 flex-1 min-w-0">
-                    <span className={`text-xs font-black w-6 shrink-0 tabular-nums ${openFaq === i ? 'text-[#2563EB]' : 'text-slate-300'}`}>
-                      {String(i + 1).padStart(2, '0')}
-                    </span>
-                    <span className={`font-semibold text-sm pr-4 ${openFaq === i ? 'text-[#2563EB]' : 'text-[#1E293B]'}`}>{faq.q}</span>
-                  </div>
-                  <div className={`w-6 h-6 rounded-full flex items-center justify-center shrink-0 transition-colors ${openFaq === i ? 'bg-[#2563EB] text-white' : 'bg-slate-100 text-slate-600'}`}>
-                    {openFaq === i ? <Minus size={12} strokeWidth={3} /> : <Plus size={12} strokeWidth={3} />}
-                  </div>
+
+          {/* Category filter pills */}
+          <m.div initial={{ opacity: 0, y: 10 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.4 }}
+            className="flex flex-wrap justify-center gap-2 mb-8">
+            {['All', 'Features', 'Pricing', 'Security', 'Teams'].map((cat) => {
+              const isActive = (cat === 'All' && activeCategory === 'all') || activeCategory === cat
+              return (
+                <button
+                  key={cat}
+                  onClick={() => { setActiveCategory(cat === 'All' ? 'all' : cat); setOpenFaq(null) }}
+                  className={`px-4 py-2 rounded-full text-sm font-semibold transition-all border ${
+                    isActive
+                      ? 'bg-[#2563EB] text-white border-[#2563EB] shadow-sm'
+                      : 'bg-white text-slate-500 border-[#E2E8F0] hover:border-[#2563EB]/50 hover:text-[#2563EB]'
+                  }`}
+                >
+                  {cat}
                 </button>
-                <AnimatePresence>
-                  {openFaq === i && (
-                    <m.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.25, ease: 'easeInOut' }}
-                      className="overflow-hidden">
-                      <div className="px-6 pb-5 pt-1 ml-10">
-                        <p className="text-sm text-slate-600 leading-relaxed">{faq.a}</p>
-                      </div>
-                    </m.div>
-                  )}
-                </AnimatePresence>
-              </m.div>
-            ))}
+              )
+            })}
+          </m.div>
+
+          {/* Accordion */}
+          <div className="space-y-3">
+            {FAQS
+              .filter((f) => activeCategory === 'all' || f.cat === activeCategory)
+              .map((faq, i) => (
+                <m.div
+                  key={`${activeCategory}-${i}`}
+                  initial={{ opacity: 0, y: 8 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.35, delay: i * 0.05 }}
+                  className={`bg-white rounded-xl border overflow-hidden transition-all duration-200 ${
+                    openFaq === i
+                      ? 'border-[#2563EB]/40 shadow-md'
+                      : 'border-[#E2E8F0] shadow-sm hover:border-[#2563EB]/30 hover:shadow-md'
+                  }`}
+                >
+                  <div className="flex">
+                    {/* Left accent bar */}
+                    <div className={`w-1 shrink-0 rounded-l-xl transition-colors duration-200 ${openFaq === i ? 'bg-[#2563EB]' : 'bg-transparent'}`} />
+
+                    <div className="flex-1 min-w-0">
+                      {/* Question row */}
+                      <button
+                        onClick={() => setOpenFaq(openFaq === i ? null : i)}
+                        className="w-full flex items-center justify-between gap-4 px-5 py-5 text-left group"
+                      >
+                        <div className="flex items-start gap-3 flex-1 min-w-0">
+                          <span className={`text-xs font-black tabular-nums mt-0.5 shrink-0 w-5 ${openFaq === i ? 'text-[#2563EB]' : 'text-slate-300'}`}>
+                            {String(i + 1).padStart(2, '0')}
+                          </span>
+                          <span className={`font-semibold text-[15px] leading-snug transition-colors ${openFaq === i ? 'text-[#2563EB]' : 'text-[#1E293B] group-hover:text-[#2563EB]'}`}>
+                            {faq.q}
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-2 shrink-0">
+                          <span className={`hidden sm:block text-[10px] font-bold px-2.5 py-1 rounded-full transition-colors ${
+                            openFaq === i ? 'bg-[#EFF6FF] text-[#2563EB]' : 'bg-slate-100 text-slate-400'
+                          }`}>
+                            {faq.cat}
+                          </span>
+                          <div className={`w-7 h-7 rounded-full flex items-center justify-center shrink-0 transition-all duration-200 ${
+                            openFaq === i ? 'bg-[#2563EB] text-white rotate-180' : 'bg-slate-100 text-slate-500 group-hover:bg-[#EFF6FF] group-hover:text-[#2563EB]'
+                          }`}>
+                            <ChevronDown size={14} strokeWidth={2.5} />
+                          </div>
+                        </div>
+                      </button>
+
+                      {/* Answer */}
+                      <AnimatePresence>
+                        {openFaq === i && (
+                          <m.div
+                            initial={{ height: 0, opacity: 0 }}
+                            animate={{ height: 'auto', opacity: 1 }}
+                            exit={{ height: 0, opacity: 0 }}
+                            transition={{ duration: 0.25, ease: 'easeInOut' }}
+                            className="overflow-hidden"
+                          >
+                            <div className="px-5 pb-5 pl-[52px]">
+                              <p className="text-sm text-slate-600 leading-relaxed">{faq.a}</p>
+                            </div>
+                          </m.div>
+                        )}
+                      </AnimatePresence>
+                    </div>
+                  </div>
+                </m.div>
+              ))}
           </div>
+
+          {/* Bottom contact CTA */}
+          <m.div initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }} transition={{ duration: 0.5, delay: 0.2 }}
+            className="text-center mt-10 pt-8 border-t border-[#E2E8F0]">
+            <p className="text-slate-500 text-sm mb-3">Still have questions we didn&apos;t answer?</p>
+            <Link href="/contact" className="inline-flex items-center gap-2 px-5 py-2.5 bg-white border border-[#E2E8F0] text-[#1E293B] text-sm font-semibold rounded-xl hover:border-[#2563EB] hover:text-[#2563EB] transition-all shadow-sm">
+              Contact our team
+              <ArrowRight size={14} />
+            </Link>
+          </m.div>
+
         </div>
       </section>
 
