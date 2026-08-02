@@ -10,6 +10,7 @@ import {
   FileText, FileSpreadsheet, Image as LucideImage, Code, AlignLeft,
   Check, Star, ArrowRight, TrendingUp,
   AlertCircle, FolderOpen, Plus, Minus, Bot,
+  Shield, Lock, Server, Globe, EyeOff,
 } from 'lucide-react'
 
 // ─── Counter hook ─────────────────────────────────────────────────────────────
@@ -1105,6 +1106,151 @@ export default function LandingPage() {
           >
             All reviews are from verified customers on third-party platforms. No incentives were offered.
           </m.p>
+        </div>
+      </section>
+
+      {/* ── DATA SECURITY & GDPR ─────────────────────────────────────────────── */}
+      <section id="security" className="py-24 px-4 bg-[#F8FAFC]">
+        <div className="max-w-5xl mx-auto">
+          <m.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} transition={{ duration: 0.5 }} className="text-center mb-14">
+            <div className="inline-flex items-center gap-2 px-4 py-2 bg-green-50 border border-green-200 rounded-full text-green-700 text-sm font-semibold mb-6">
+              <span className="w-2 h-2 rounded-full bg-green-500" />
+              Enterprise-Grade Security
+            </div>
+            <h2 className="text-3xl sm:text-4xl font-bold text-[#1E293B] mb-3">Your Financial Data is 100% Safe</h2>
+            <p className="text-slate-500 text-base max-w-xl mx-auto">We protect your documents with bank-level security. Every file, every byte — encrypted, isolated, and never shared.</p>
+          </m.div>
+
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5 mb-12">
+            {[
+              {
+                Icon: Lock,
+                color: 'text-[#2563EB]',
+                bg: 'bg-[#EFF6FF]',
+                title: 'AES-256 Encryption',
+                desc: 'All documents are encrypted at rest using military-grade AES-256. Completely unreadable without your credentials.',
+              },
+              {
+                Icon: Shield,
+                color: 'text-green-600',
+                bg: 'bg-green-50',
+                title: 'TLS 1.3 In Transit',
+                desc: 'Every byte between your browser and our servers is protected by the latest TLS encryption standard — same as your bank.',
+              },
+              {
+                Icon: Server,
+                color: 'text-purple-600',
+                bg: 'bg-purple-50',
+                title: 'Cloudflare R2 Storage',
+                desc: 'Files stored on Cloudflare enterprise infrastructure — the same company protecting millions of businesses globally.',
+              },
+              {
+                Icon: Globe,
+                color: 'text-orange-600',
+                bg: 'bg-orange-50',
+                title: 'GDPR & Privacy Compliant',
+                desc: 'Fully compliant with GDPR (EU & UK), Australian Privacy Act, and US data laws. Your rights are protected.',
+              },
+              {
+                Icon: Brain,
+                color: 'text-rose-600',
+                bg: 'bg-rose-50',
+                title: 'Zero AI Training on Your Data',
+                desc: 'Your documents are never used to train AI models — not ours, not Anthropic\'s. Your data works only for you.',
+              },
+              {
+                Icon: EyeOff,
+                color: 'text-slate-600',
+                bg: 'bg-slate-100',
+                title: 'No Data Selling. Ever.',
+                desc: 'We never sell or share your documents with third parties. Request full deletion at any time — we comply within 30 days.',
+              },
+            ].map(({ Icon, color, bg, title, desc }, i) => (
+              <m.div key={i} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.4, delay: i * 0.07 }}
+                className="bg-white rounded-xl border border-[#E2E8F0] p-6 shadow-sm">
+                <div className={`w-10 h-10 rounded-xl ${bg} flex items-center justify-center mb-4`}>
+                  <Icon size={20} className={color} />
+                </div>
+                <h3 className="text-sm font-bold text-[#1E293B] mb-2">{title}</h3>
+                <p className="text-sm text-slate-500 leading-relaxed">{desc}</p>
+              </m.div>
+            ))}
+          </div>
+
+          <m.div initial={{ opacity: 0, y: 10 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.5 }}
+            className="flex flex-wrap items-center justify-center gap-x-8 gap-y-3 py-5 px-8 bg-white rounded-2xl border border-[#E2E8F0] shadow-sm">
+            {['GDPR Compliant', 'UK GDPR Ready', 'AES-256 Encrypted', 'No Data Selling', 'Deletion on Request'].map((item) => (
+              <span key={item} className="flex items-center gap-2 text-sm font-medium text-[#1E293B]">
+                <Check size={14} className="text-green-500" strokeWidth={3} />
+                {item}
+              </span>
+            ))}
+          </m.div>
+        </div>
+      </section>
+
+      {/* ── DATAFYLE vs DOCPARSER ─────────────────────────────────────────────── */}
+      <section id="vs-docparser" className="py-24 px-4 bg-white">
+        <div className="max-w-4xl mx-auto">
+          <m.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} transition={{ duration: 0.5 }} className="text-center mb-14">
+            <h2 className="text-3xl sm:text-4xl font-bold text-[#1E293B] mb-3">Datafyle vs DocParser</h2>
+            <p className="text-slate-500 text-base max-w-xl mx-auto">Both tools extract data from documents. Here&apos;s why accountants and bookkeepers choose Datafyle.</p>
+          </m.div>
+
+          <m.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.5 }}
+            className="rounded-2xl border border-[#E2E8F0] overflow-hidden shadow-sm">
+
+            {/* Header */}
+            <div className="grid grid-cols-3 bg-[#F8FAFC] border-b border-[#E2E8F0]">
+              <div className="px-6 py-5 text-sm font-semibold text-slate-500">Feature</div>
+              <div className="px-6 py-5 text-center border-l border-[#E2E8F0] bg-[#EFF6FF]">
+                <p className="text-sm font-bold text-[#2563EB]">Datafyle</p>
+                <p className="text-xs text-slate-500 mt-0.5">from $49/mo flat</p>
+              </div>
+              <div className="px-6 py-5 text-center border-l border-[#E2E8F0]">
+                <p className="text-sm font-bold text-slate-500">DocParser</p>
+                <p className="text-xs text-slate-400 mt-0.5">pay-per-document</p>
+              </div>
+            </div>
+
+            {/* Rows */}
+            {[
+              { feature: 'Zero setup — works out of the box', note: 'DocParser requires manual rules per document type', datafyle: true },
+              { feature: 'AI-powered — understands any layout', note: 'DocParser uses pattern-matching rules that break on new vendors', datafyle: true },
+              { feature: 'Built for accountants & bookkeepers', note: 'DocParser is designed for developers, not finance teams', datafyle: true },
+              { feature: 'Flat monthly pricing', note: 'DocParser bills per document — costs spike as volume grows', datafyle: true },
+              { feature: 'Native Excel export (3-sheet format)', note: 'DocParser requires Zapier or API integration for export', datafyle: true },
+              { feature: 'Anomaly & duplicate detection', note: 'Not available on DocParser', datafyle: true },
+              { feature: 'Per-field confidence scoring', note: 'Not available on DocParser', datafyle: true },
+              { feature: 'Vendor memory (learns your vendors)', note: 'Not available on DocParser', datafyle: true },
+            ].map((row, i) => (
+              <div key={i} className={`grid grid-cols-3 border-b border-[#E2E8F0] last:border-0 ${i % 2 === 1 ? 'bg-[#F8FAFC]/60' : 'bg-white'}`}>
+                <div className="px-6 py-4">
+                  <p className="text-sm font-medium text-[#1E293B]">{row.feature}</p>
+                  <p className="text-xs text-slate-400 mt-0.5">{row.note}</p>
+                </div>
+                <div className="px-4 py-4 flex items-center justify-center border-l border-[#E2E8F0] bg-[#EFF6FF]/40">
+                  <div className="w-7 h-7 rounded-full bg-green-100 flex items-center justify-center">
+                    <Check size={14} className="text-green-600" strokeWidth={3} />
+                  </div>
+                </div>
+                <div className="px-4 py-4 flex items-center justify-center border-l border-[#E2E8F0]">
+                  <div className="w-7 h-7 rounded-full bg-red-50 flex items-center justify-center">
+                    <X size={14} className="text-red-400" strokeWidth={3} />
+                  </div>
+                </div>
+              </div>
+            ))}
+          </m.div>
+
+          <m.div initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }} transition={{ duration: 0.5, delay: 0.3 }}
+            className="text-center mt-8">
+            <Link href={ctaHref} className="inline-flex items-center gap-2 px-6 py-3 bg-[#2563EB] text-white text-sm font-bold rounded-xl hover:bg-blue-600 transition-all shadow-md hover:-translate-y-0.5">
+              Try Datafyle Free — No Credit Card Needed
+              <ArrowRight size={16} />
+            </Link>
+            <p className="text-xs text-slate-400 mt-3">Setup takes 3 minutes. No rules. No templates. Just upload and go.</p>
+          </m.div>
         </div>
       </section>
 
