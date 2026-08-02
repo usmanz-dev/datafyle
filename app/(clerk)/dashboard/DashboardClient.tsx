@@ -576,19 +576,7 @@ export function DashboardClient({
                     </button>
                   )}
 
-                  {hasFeature(user.plan, 'google_sheets') ? (
-                    <button onClick={exportSheets} disabled={sheetsExporting || !docs.length}
-                      className="inline-flex items-center gap-1.5 px-3 py-2 text-xs font-semibold bg-slate-50 border border-slate-200 text-slate-600 rounded-xl hover:bg-slate-100 transition-colors disabled:opacity-50 min-h-9">
-                      {sheetsExporting ? <Loader2 size={12} className="animate-spin" /> : <FileSpreadsheet size={12} className="text-[#22C55E]" />}
-                      Sheets
-                    </button>
-                  ) : (
-                    <button onClick={() => setUpgradeModal({ feature: 'Google Sheets Export', requiredPlan: 'professional' })}
-                      className="inline-flex items-center gap-1.5 px-3 py-2 text-xs font-semibold bg-slate-50 border border-slate-200 text-slate-400 rounded-xl hover:bg-slate-100 transition-colors min-h-9">
-                      <FileSpreadsheet size={12} />
-                      Sheets
-                    </button>
-                  )}
+                  {/* Google Sheets export — hidden until service account issue resolved */}
                 </div>
               </div>
             </div>
