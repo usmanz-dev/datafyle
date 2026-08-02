@@ -37,11 +37,20 @@ export const metadata: Metadata = {
     url: 'https://datafyle.com',
     siteName: 'Datafyle',
     type: 'website',
+    images: [
+      {
+        url: 'https://datafyle.com/images/datafyle-ai-invoice-data-extraction.png',
+        width: 1200,
+        height: 630,
+        alt: 'Datafyle — AI Document Processing for Accountants',
+      },
+    ],
   },
   twitter: {
     card: 'summary_large_image',
     title: 'Datafyle AI',
     creator: '@datafyle',
+    images: ['https://datafyle.com/images/datafyle-ai-invoice-data-extraction.png'],
   },
   robots: {
     index: true,
