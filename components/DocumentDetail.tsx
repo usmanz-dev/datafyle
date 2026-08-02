@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
-  X, Download, Copy, Check, Trash2, Loader2,
+  X, Download, Copy, Check, Loader2,
   FileText, FileSpreadsheet, FileCode2, Image as ImageIcon, File,
   Brain, AlertCircle,
 } from 'lucide-react'
@@ -53,7 +53,6 @@ export interface DocRow {
 interface Props {
   doc: DocRow | null
   onClose: () => void
-  onDelete: (id: string) => void
 }
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -83,12 +82,10 @@ function formatDate(iso: string) {
 
 // ─── Component ────────────────────────────────────────────────────────────────
 
-export function DocumentDetail({ doc, onClose, onDelete }: Props) {
+export function DocumentDetail({ doc, onClose }: Props) {
   const [vendorData, setVendorData] = useState<{ invoiceCount: number; avgAmount: number | null } | null>(null)
   const [downloading, setDownloading] = useState(false)
   const [copied, setCopied] = useState(false)
-  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
-  const [deleting, setDeleting] = useState(false)
 
   // Fetch vendor memory when doc opens
   useEffect(() => {
@@ -138,21 +135,7 @@ export function DocumentDetail({ doc, onClose, onDelete }: Props) {
     setTimeout(() => setCopied(false), 2000)
   }
 
-  async function handleDelete() {
-    if (!doc) return
-    setDeleting(true)
-    try {
-      await fetch(`/api/documents/${doc.id}`, { method: 'DELETE' })
-      onDelete(doc.id)
-    } catch {
-      alert('Delete failed. Please try again.')
-    } finally {
-      setDeleting(false)
-      setShowDeleteConfirm(false)
-    }
-  }
-
-  const data = doc?.extractedData as ExtractedData | null
+const data = doc?.extractedData as ExtractedData | null
   const anomalyData = doc?.anomalyData as AnomalyData | null
   const lineItems = data?.lineItems ?? []
   const keyFields = data?.keyFields ?? {}
@@ -338,52 +321,7 @@ export function DocumentDetail({ doc, onClose, onDelete }: Props) {
                 {copied ? <Check size={14} className="text-green-500" /> : <Copy size={14} className="text-slate-400" />}
                 {copied ? 'Copied!' : 'Copy JSON'}
               </button>
-              <button
-                onClick={() => setShowDeleteConfirm(true)}
-                className="ml-auto inline-flex items-center gap-1.5 px-3 py-2 text-sm font-medium text-red-500 hover:bg-red-50 rounded-lg transition-colors"
-              >
-                <Trash2 size={14} />
-                Delete
-              </button>
             </div>
-
-            {/* ── Delete confirmation overlay ──────────────────────────── */}
-            <AnimatePresence>
-              {showDeleteConfirm && (
-                <motion.div
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  className="absolute inset-0 bg-white/90 backdrop-blur-sm flex items-center justify-center z-10 p-6"
-                >
-                  <div className="bg-white border border-[#E2E8F0] rounded-xl shadow-lg p-6 max-w-xs w-full text-center">
-                    <div className="w-12 h-12 bg-red-50 rounded-full flex items-center justify-center mx-auto mb-4">
-                      <Trash2 size={20} className="text-red-500" />
-                    </div>
-                    <h4 className="font-bold text-[#1E293B] mb-2">Delete Document?</h4>
-                    <p className="text-sm text-slate-500 mb-5">
-                      This will permanently delete &quot;{doc.fileName}&quot;. This action cannot be undone.
-                    </p>
-                    <div className="flex gap-3">
-                      <button
-                        onClick={() => setShowDeleteConfirm(false)}
-                        className="flex-1 py-2.5 rounded-lg border border-[#E2E8F0] text-sm font-medium text-[#1E293B] hover:bg-[#F8FAFC] transition-colors"
-                      >
-                        Cancel
-                      </button>
-                      <button
-                        onClick={handleDelete}
-                        disabled={deleting}
-                        className="flex-1 py-2.5 rounded-lg bg-red-500 text-white text-sm font-medium hover:bg-red-600 transition-colors disabled:opacity-60 flex items-center justify-center gap-1.5"
-                      >
-                        {deleting && <Loader2 size={14} className="animate-spin" />}
-                        Delete
-                      </button>
-                    </div>
-                  </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
           </motion.div>
         </>
       )}

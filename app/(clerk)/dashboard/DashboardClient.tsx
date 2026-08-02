@@ -5,7 +5,7 @@ import { useSearchParams, useRouter as useNextRouter } from 'next/navigation'
 import { toast } from 'sonner'
 import {
   FileText, FileSpreadsheet, FileCode2, Image as ImageIcon, File,
-  AlertTriangle, Trash2, Eye, Search, Loader2,
+  AlertTriangle, Eye, Search, Loader2,
   TrendingUp, FileCheck, Zap, BarChart3, ChevronLeft, ChevronRight,
   CheckSquare, Square, Download, Users, Activity, ShieldCheck,
   CloudUpload, Calendar, ArrowUpRight,
@@ -53,7 +53,6 @@ interface Props {
   isTeamAdmin: boolean
   teamMembers: { userId: string; name: string }[]
   currentUserId: string
-  googleConnected: boolean
 }
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -87,7 +86,7 @@ const PAGE_SIZE = 20
 
 export function DashboardClient({
   firstName, user, initialStats, initialDocuments,
-  isTeamAdmin, teamMembers, currentUserId, googleConnected,
+  isTeamAdmin, teamMembers, currentUserId,
 }: Props) {
   const [docs, setDocs] = useState<DocRow[]>(initialDocuments)
   const [search, setSearch] = useState('')
@@ -95,10 +94,8 @@ export function DashboardClient({
   const [page, setPage] = useState(1)
   const [selected, setSelected] = useState<Set<string>>(new Set())
   const [viewDoc, setViewDoc] = useState<DocRow | null>(null)
-  const [deleting, setDeleting] = useState<string | null>(null)
   const [greeting, setGreeting] = useState('Good morning')
   const [exporting, setExporting] = useState(false)
-  const [sheetsExporting, setSheetsExporting] = useState(false)
   const [upgradeModal, setUpgradeModal] = useState<{ feature: string; requiredPlan: string } | null>(null)
   const [batchMode, setBatchMode]       = useState(false)
   const [pendingUpgrade, setPendingUpgrade] = useState<string | null>(null)
@@ -265,17 +262,7 @@ export function DashboardClient({
     setSelected(selected.size === pageDocs.length && pageDocs.length > 0 ? new Set() : new Set(pageDocs.map((d) => d.id)))
   }
 
-  async function deleteDoc(id: string) {
-    if (!confirm('Delete this document?')) return
-    setDeleting(id)
-    try {
-      await fetch(`/api/documents/${id}`, { method: 'DELETE' })
-      setDocs((prev) => prev.filter((d) => d.id !== id))
-      setSelected((prev) => { const n = new Set(prev); n.delete(id); return n })
-    } finally { setDeleting(null) }
-  }
-
-  async function downloadExcel(ids: string[], filename = 'datafyle-export.xlsx') {
+async function downloadExcel(ids: string[], filename = 'datafyle-export.xlsx') {
     const res = await fetch('/api/export/excel', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ documentIds: ids }) })
     if (!res.ok) throw new Error('Export failed')
     const blob = await res.blob()
@@ -305,26 +292,7 @@ export function DashboardClient({
     finally { setExporting(false) }
   }
 
-  async function exportSheets() {
-    setSheetsExporting(true)
-    try {
-      const ids = selected.size > 0 ? [...selected] : docs.map((d) => d.id)
-      const res = await fetch('/api/export/sheets', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ documentIds: ids }) })
-      const data = await res.json() as { error?: string; spreadsheetUrl?: string; rowCount?: number }
-      if (!res.ok) { toast.error(data.error ?? 'Google Sheets export failed'); return }
-      if (data.spreadsheetUrl) {
-        await navigator.clipboard.writeText(data.spreadsheetUrl).catch(() => {})
-        toast.success(`Google Sheet created (${data.rowCount ?? 0} rows) — link copied!`, {
-          description: data.spreadsheetUrl,
-          action: { label: 'Open', onClick: () => window.open(data.spreadsheetUrl, '_blank') },
-          duration: 10000,
-        })
-      }
-    } catch { toast.error('Google Sheets export failed.') }
-    finally { setSheetsExporting(false) }
-  }
-
-  // ─────────────────────────────────────────────────────────────────────────
+// ─────────────────────────────────────────────────────────────────────────
 
   return (
     <div className="min-h-screen bg-slate-50">
@@ -713,14 +681,6 @@ export function DashboardClient({
                           >
                             <Eye size={14} />
                           </button>
-                          <button
-                            onClick={() => deleteDoc(doc.id)}
-                            disabled={deleting === doc.id}
-                            title="Delete"
-                            className="p-2 rounded-lg hover:bg-red-50 text-slate-300 hover:text-red-500 transition-colors"
-                          >
-                            {deleting === doc.id ? <Loader2 size={14} className="animate-spin" /> : <Trash2 size={14} />}
-                          </button>
                         </div>
                       </td>
                     </tr>
@@ -878,11 +838,7 @@ export function DashboardClient({
 
       </div>
 
-      <DocumentDetail doc={viewDoc} onClose={() => setViewDoc(null)} onDelete={(id) => {
-        setDocs((p) => p.filter((d) => d.id !== id))
-        setSelected((p) => { const n = new Set(p); n.delete(id); return n })
-        setViewDoc(null)
-      }} />
+      <DocumentDetail doc={viewDoc} onClose={() => setViewDoc(null)} />
 
       <UpgradeModal
         isOpen={upgradeModal !== null}
