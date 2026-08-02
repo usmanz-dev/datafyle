@@ -334,26 +334,7 @@ export function UploadZone({ onUploadComplete, atLimit, onUpgradePlan }: Props) 
                         )}
                       </button>
 
-                      {/* Google Sheet */}
-                      <button
-                        onClick={() => exportToSheets(item)}
-                        disabled={sheetsLoading.has(item.id)}
-                        className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold bg-white border border-[#E2E8F0] text-slate-700 rounded-lg hover:bg-slate-50 transition-colors disabled:opacity-60 shadow-sm"
-                      >
-                        {sheetsLoading.has(item.id) ? (
-                          <Loader2 size={12} className="animate-spin text-green-600" />
-                        ) : (
-                          <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
-                            <rect width="24" height="24" rx="4" fill="#34A853" />
-                            <path d="M5 7h14M5 12h14M5 17h14" stroke="white" strokeWidth="2.5" strokeLinecap="round" />
-                          </svg>
-                        )}
-                        {sheetsLoading.has(item.id)
-                          ? 'Creating...'
-                          : copiedSheet.has(item.id)
-                          ? '✓ Link Copied!'
-                          : 'Google Sheet'}
-                      </button>
+                      {/* Google Sheet — hidden until service account issue resolved */}
                     </div>
                   )}
                 </div>
