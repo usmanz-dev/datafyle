@@ -445,7 +445,7 @@ export default function LandingPage() {
         <div className="relative z-10 max-w-4xl mx-auto w-full pt-24 pb-20">
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-white/10 bg-white/5 text-xs text-slate-400 mb-8">
             <span className="w-1.5 h-1.5 rounded-full bg-[#22C55E] animate-pulse shrink-0" />
-            Trusted by 50+ accounting firms worldwide
+            {t.heroBadge}
           </div>
           <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold leading-tight mb-6">
             <span className="text-white">{t.hero.line1} </span>
@@ -530,23 +530,19 @@ export default function LandingPage() {
           <div className="grid lg:grid-cols-2 gap-16 items-center">
             <m.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} transition={{ duration: 0.6 }}>
               <span className="inline-flex items-center gap-2 text-xs font-bold text-[#2563EB] bg-[#EFF6FF] px-3 py-1.5 rounded-full uppercase tracking-widest mb-6">
-                About Datafyle
+                {t.about.badge}
               </span>
               <h2 className="text-3xl sm:text-4xl font-bold text-[#1E293B] mb-6 leading-tight">
-                Built for accounting teams who are done with manual data entry
+                {t.about.title}
               </h2>
               <p className="text-slate-500 text-base leading-relaxed mb-5">
-                We watched bookkeepers spend entire days typing the same invoice data into spreadsheets — numbers from paper, then into Excel, then into accounting software. Three steps, all manual, all error-prone.
+                {t.about.p1}
               </p>
               <p className="text-slate-500 text-base leading-relaxed mb-8">
-                Datafyle replaces that entire workflow. Upload any document and our AI extracts every field instantly — vendor, amount, date, line items, tax — all captured in under 10 seconds and exported to Excel or Google Sheets.
+                {t.about.p2}
               </p>
               <ul className="space-y-3.5 mb-10">
-                {[
-                  'Trusted by 50+ accounting firms in UK, US & Australia',
-                  'Processes 12,000+ documents every month',
-                  '97%+ AI extraction accuracy across all file types',
-                ].map((item) => (
+                {[t.about.b1, t.about.b2, t.about.b3].map((item) => (
                   <li key={item} className="flex items-start gap-3">
                     <div className="w-5 h-5 rounded-full bg-[#EFF6FF] flex items-center justify-center shrink-0 mt-0.5">
                       <Check size={11} className="text-[#2563EB]" strokeWidth={3} />
@@ -556,7 +552,7 @@ export default function LandingPage() {
                 ))}
               </ul>
               <Link href={ctaHref} className="inline-flex items-center gap-2 px-6 py-3.5 bg-[#2563EB] text-white font-bold rounded-xl hover:bg-blue-700 transition-all text-sm min-h-[48px] hover:-translate-y-0.5 hover:shadow-lg">
-                Try Datafyle Free <ArrowRight size={16} />
+                {t.about.btn} <ArrowRight size={16} />
               </Link>
             </m.div>
 
@@ -578,8 +574,8 @@ export default function LandingPage() {
                   <Check size={16} className="text-[#2563EB]" strokeWidth={3} />
                 </div>
                 <div>
-                  <p className="text-xs font-bold text-[#1E293B] leading-none">97%+ Accuracy</p>
-                  <p className="text-[10px] text-slate-600 mt-0.5">AI-powered extraction</p>
+                  <p className="text-xs font-bold text-[#1E293B] leading-none">{t.about.accuracyLabel}</p>
+                  <p className="text-[10px] text-slate-600 mt-0.5">{t.about.accuracySub}</p>
                 </div>
               </div>
             </m.div>
@@ -609,20 +605,14 @@ export default function LandingPage() {
                 </div>
               </div>
               <ul className="space-y-5">
-                {[
-                  { label: '8 hours/day', sub: 'manually entering invoice data' },
-                  { label: '$2,500/month', sub: 'bookkeeper salary' },
-                  { label: '47 errors/month', sub: 'average manual mistakes' },
-                  { label: 'Data stuck', sub: 'in paper files and email chains' },
-                  { label: 'Work stops', sub: 'when staff are sick or on leave' },
-                ].map((item) => (
-                  <li key={item.label} className="flex items-start gap-4">
+                {t.comparison.oldItems.map((item) => (
+                  <li key={item.l} className="flex items-start gap-4">
                     <div className="w-6 h-6 rounded-full bg-red-50 border border-red-100 flex items-center justify-center shrink-0 mt-0.5">
                       <span className="text-red-500 text-xs font-black">✗</span>
                     </div>
                     <div>
-                      <span className="font-bold text-[#1E293B] text-sm">{item.label}</span>
-                      <span className="text-slate-500 text-sm"> — {item.sub}</span>
+                      <span className="font-bold text-[#1E293B] text-sm">{item.l}</span>
+                      <span className="text-slate-500 text-sm"> — {item.s}</span>
                     </div>
                   </li>
                 ))}
@@ -643,20 +633,14 @@ export default function LandingPage() {
                 </div>
               </div>
               <ul className="space-y-5">
-                {[
-                  { label: '10 seconds', sub: 'per document, any format' },
-                  { label: '$49/month', sub: 'everything included' },
-                  { label: '97%+ accuracy', sub: 'AI extraction, near-zero errors' },
-                  { label: 'Clean Excel data', sub: 'instantly ready for your tools' },
-                  { label: 'Works 24/7', sub: 'never sick, never on leave' },
-                ].map((item) => (
-                  <li key={item.label} className="flex items-start gap-4">
+                {t.comparison.newItems.map((item) => (
+                  <li key={item.l} className="flex items-start gap-4">
                     <div className="w-6 h-6 rounded-full bg-[#2563EB] flex items-center justify-center shrink-0 mt-0.5">
                       <Check size={11} className="text-white" strokeWidth={3} />
                     </div>
                     <div>
-                      <span className="font-bold text-[#1E293B] text-sm">{item.label}</span>
-                      <span className="text-slate-500 text-sm"> — {item.sub}</span>
+                      <span className="font-bold text-[#1E293B] text-sm">{item.l}</span>
+                      <span className="text-slate-500 text-sm"> — {item.s}</span>
                     </div>
                   </li>
                 ))}
@@ -673,19 +657,19 @@ export default function LandingPage() {
         <div className="max-w-5xl mx-auto relative">
           <m.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} transition={{ duration: 0.5 }} className="text-center mb-16">
             <span className="inline-flex items-center gap-2 text-xs font-bold text-[#2563EB] bg-[#2563EB]/10 border border-[#2563EB]/20 px-3 py-1.5 rounded-full uppercase tracking-widest mb-5">
-              How It Works
+              {t.howItWorks.badge}
             </span>
-            <h2 className="text-3xl sm:text-4xl font-bold text-white mb-3">Three Steps. That&apos;s It.</h2>
-            <p className="text-slate-400 text-base">From upload to Excel in under 10 seconds.</p>
+            <h2 className="text-3xl sm:text-4xl font-bold text-white mb-3">{t.howItWorks.heading}</h2>
+            <p className="text-slate-400 text-base">{t.howItWorks.sub}</p>
           </m.div>
 
           <div className="grid md:grid-cols-3 gap-6 relative">
 
 
             {[
-              { icon: FolderOpen,      num: '01', title: 'Upload Your Documents', desc: 'PDF, Word, Excel, CSV, or images — any format up to 25MB. Drag & drop or click to browse.', delay: 0 },
-              { icon: Bot,             num: '02', title: 'AI Reads Everything',    desc: 'Claude AI extracts vendor, amount, date, and every line item — in under 10 seconds flat.', delay: 0.15 },
-              { icon: FileSpreadsheet, num: '03', title: 'Get Clean Data',         desc: 'Download your structured Excel file or sync directly to Google Sheets — ready to use instantly.', delay: 0.3 },
+              { icon: FolderOpen,      num: '01', title: t.howItWorks.s1, desc: t.howItWorks.s1d, delay: 0 },
+              { icon: Bot,             num: '02', title: t.howItWorks.s2, desc: t.howItWorks.s2d, delay: 0.15 },
+              { icon: FileSpreadsheet, num: '03', title: t.howItWorks.s3, desc: t.howItWorks.s3d, delay: 0.3 },
             ].map((step) => (
               <m.div key={step.num} initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6, delay: step.delay }}
                 className="relative bg-white/5 border border-white/10 rounded-2xl p-8 hover:bg-white/8 hover:border-[#2563EB]/40 transition-all group">
@@ -717,15 +701,15 @@ export default function LandingPage() {
         <div className="max-w-6xl mx-auto">
           <m.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} transition={{ duration: 0.5 }} className="text-center mb-16">
             <span className="inline-flex items-center gap-2 text-xs font-bold text-[#2563EB] bg-[#EFF6FF] px-3 py-1.5 rounded-full uppercase tracking-widest mb-5">
-              Features
+              {t.featureSection.badge}
             </span>
             <h2 className="text-3xl sm:text-4xl font-bold text-[#1E293B] mb-3">
-              Everything You Need,{' '}
+              {t.featureSection.title}{' '}
               <span style={{ background: 'linear-gradient(135deg, #2563EB 0%, #4F46E5 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
-                In One Place
+                {t.featureSection.titleGrad}
               </span>
             </h2>
-            <p className="text-slate-500 text-base max-w-xl mx-auto">Purpose-built for accounting firms — not a generic document tool.</p>
+            <p className="text-slate-500 text-base max-w-xl mx-auto">{t.featureSection.sub}</p>
           </m.div>
 
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -750,13 +734,13 @@ export default function LandingPage() {
                 </div>
 
                 {/* Content */}
-                <h3 className="font-bold text-[#1E293B] text-base mb-2.5">{f.title}</h3>
-                <p className="text-sm text-slate-500 leading-relaxed mb-6">{f.desc}</p>
+                <h3 className="font-bold text-[#1E293B] text-base mb-2.5">{t.featureCards[i].title}</h3>
+                <p className="text-sm text-slate-500 leading-relaxed mb-6">{t.featureCards[i].desc}</p>
 
                 {/* Stat pill */}
                 <div className="flex items-center gap-2">
                   <span className="w-1.5 h-1.5 rounded-full bg-[#2563EB] shrink-0" />
-                  <span className="text-xs font-semibold text-[#2563EB]">{f.stat}</span>
+                  <span className="text-xs font-semibold text-[#2563EB]">{t.featureCards[i].stat}</span>
                 </div>
 
                 {/* Animated bottom accent line on hover */}
@@ -773,17 +757,16 @@ export default function LandingPage() {
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <m.div initial={{ opacity: 0, x: -30 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }}>
               <span className="inline-flex items-center gap-2 text-xs font-bold text-[#2563EB] bg-[#EFF6FF] px-3 py-1.5 rounded-full uppercase tracking-widest mb-5">
-                See the Output
+                {t.output.badge}
               </span>
               <h2 className="text-3xl sm:text-4xl font-bold text-[#1E293B] mb-5 leading-snug">
-                Clean, structured Excel data — ready the moment extraction completes
+                {t.output.title}
               </h2>
               <p className="text-slate-500 text-base leading-relaxed mb-6">
-                Every document produces a 3-sheet Excel workbook: a summary row, all line items, and flagged anomalies.
-                No reformatting. No cleanup. Just data you can use immediately.
+                {t.output.desc}
               </p>
               <ul className="space-y-3">
-                {['Summary sheet with one row per document', 'Line items sheet with full detail', 'Anomaly sheet with flagged issues'].map((item) => (
+                {[t.output.b1, t.output.b2, t.output.b3].map((item) => (
                   <li key={item} className="flex items-center gap-3">
                     <Check size={15} className="text-[#2563EB] shrink-0" strokeWidth={2.5} />
                     <span className="text-sm text-slate-600">{item}</span>
@@ -822,12 +805,12 @@ export default function LandingPage() {
           {/* Header */}
           <m.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} transition={{ duration: 0.5 }} className="text-center mb-14">
             <span className="inline-flex items-center gap-2 text-xs font-bold text-[#2563EB] bg-[#2563EB]/10 border border-[#2563EB]/20 px-3 py-1.5 rounded-full uppercase tracking-widest mb-5">
-              Savings Calculator
+              {t.calc.badge}
             </span>
             <h2 className="text-3xl sm:text-4xl font-bold text-white mb-3">
-              See Exactly How Much You&apos;ll Save
+              {t.calc.title}
             </h2>
-            <p className="text-slate-400 text-base">Enter your numbers. Get your savings instantly.</p>
+            <p className="text-slate-400 text-base">{t.calc.sub}</p>
           </m.div>
 
           <div className="grid lg:grid-cols-[1fr,500px] gap-10 items-center">
@@ -835,13 +818,13 @@ export default function LandingPage() {
             {/* Left — social proof */}
             <m.div initial={{ opacity: 0, x: -30 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }}>
               <p className="text-slate-300 text-lg leading-relaxed mb-10">
-                Accounting firms that switch to Datafyle stop paying $2,400+ every month for manual data entry work — and get those hours back for actual client work.
+                {t.calc.social}
               </p>
               <div className="grid grid-cols-3 gap-2 sm:gap-4 mb-10">
                 {[
-                  { value: '50+', label: 'Firms using Datafyle' },
-                  { value: '$28K+',  label: 'Average annual saving' },
-                  { value: '40h',    label: 'Avg hours saved/week' },
+                  { value: t.calc.stat1v, label: t.calc.stat1l },
+                  { value: t.calc.stat2v, label: t.calc.stat2l },
+                  { value: t.calc.stat3v, label: t.calc.stat3l },
                 ].map((s) => (
                   <div key={s.label} className="bg-white/5 border border-white/10 rounded-xl sm:rounded-2xl p-3 sm:p-5 text-center">
                     <div className="text-base sm:text-2xl font-black text-white mb-1">{s.value}</div>
@@ -855,7 +838,7 @@ export default function LandingPage() {
                     <div key={init} className="w-8 h-8 rounded-full bg-[#2563EB] border-2 border-black flex items-center justify-center text-white text-[10px] font-bold">{init}</div>
                   ))}
                 </div>
-                <span>Joined by 12+ firms this month</span>
+                <span>{t.calc.joined}</span>
               </div>
             </m.div>
 
@@ -865,15 +848,15 @@ export default function LandingPage() {
 
               {/* Card header */}
               <div className="bg-[#2563EB] px-7 py-5">
-                <h3 className="text-white font-bold text-base">Your Current Situation</h3>
-                <p className="text-blue-200 text-sm mt-0.5">Fill in your numbers below</p>
+                <h3 className="text-white font-bold text-base">{t.calc.cardTitle}</h3>
+                <p className="text-blue-200 text-sm mt-0.5">{t.calc.cardSub}</p>
               </div>
 
               <div className="p-7">
                 {/* Inputs */}
                 <div className="space-y-4 mb-7">
                   <div>
-                    <label htmlFor="calc-staff-cost" className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-2">Monthly staff / bookkeeper cost</label>
+                    <label htmlFor="calc-staff-cost" className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-2">{t.calc.staffLabel}</label>
                     <div className="relative">
                       <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[#2563EB] font-black text-sm">$</span>
                       <input
@@ -885,7 +868,7 @@ export default function LandingPage() {
                     </div>
                   </div>
                   <div>
-                    <label htmlFor="calc-docs" className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-2">Documents processed per month</label>
+                    <label htmlFor="calc-docs" className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-2">{t.calc.docsLabel}</label>
                     <input
                       id="calc-docs"
                       type="number" value={docs}
@@ -897,7 +880,7 @@ export default function LandingPage() {
 
                 {/* Plan match */}
                 <div className="flex items-center justify-between bg-[#EFF6FF] border border-[#2563EB]/20 rounded-xl px-4 py-3 mb-5">
-                  <span className="text-sm font-semibold text-[#1E293B]">Best plan for you</span>
+                  <span className="text-sm font-semibold text-[#1E293B]">{t.calc.bestPlan}</span>
                   <div className="flex items-center gap-2">
                     <span className="text-sm font-black text-[#2563EB]">{calcPlan}</span>
                     <span className="text-xs bg-[#2563EB] text-white font-bold px-2 py-0.5 rounded-full">${calcPrice}/mo</span>
@@ -908,25 +891,25 @@ export default function LandingPage() {
                 <div className="grid grid-cols-3 gap-2 sm:gap-3 mb-6">
                   <div className="bg-[#F8FAFC] rounded-lg sm:rounded-xl p-2 sm:p-4 text-center border border-[#E2E8F0]">
                     <div className="text-sm sm:text-xl font-black text-[#2563EB] tabular-nums">${monthlySaving.toLocaleString()}</div>
-                    <div className="text-[9px] sm:text-xs text-slate-600 font-semibold mt-1 uppercase tracking-wide">Saved/month</div>
+                    <div className="text-[9px] sm:text-xs text-slate-600 font-semibold mt-1 uppercase tracking-wide">{t.calc.savedMonth}</div>
                   </div>
                   <div className="bg-[#F8FAFC] rounded-lg sm:rounded-xl p-2 sm:p-4 text-center border border-[#E2E8F0]">
                     <div className="text-sm sm:text-xl font-black text-[#2563EB] tabular-nums">${yearlySaving.toLocaleString()}</div>
-                    <div className="text-[9px] sm:text-xs text-slate-600 font-semibold mt-1 uppercase tracking-wide">Saved/year</div>
+                    <div className="text-[9px] sm:text-xs text-slate-600 font-semibold mt-1 uppercase tracking-wide">{t.calc.savedYear}</div>
                   </div>
                   <div className="bg-[#F8FAFC] rounded-lg sm:rounded-xl p-2 sm:p-4 text-center border border-[#E2E8F0]">
                     <div className="text-sm sm:text-xl font-black text-[#2563EB] tabular-nums">{hoursSavedPerWeek}h</div>
-                    <div className="text-[9px] sm:text-xs text-slate-600 font-semibold mt-1 uppercase tracking-wide">Freed/week</div>
+                    <div className="text-[9px] sm:text-xs text-slate-600 font-semibold mt-1 uppercase tracking-wide">{t.calc.freedWeek}</div>
                   </div>
                 </div>
 
                 <Link href="/pricing"
                   className="flex items-center justify-center gap-2 w-full py-4 bg-[#2563EB] text-white font-bold rounded-xl hover:bg-blue-700 transition-all text-sm min-h-[52px] hover:-translate-y-0.5 hover:shadow-lg">
-                  Start Saving ${monthlySaving.toLocaleString()} This Month
+                  {t.calc.ctaPrefix}{monthlySaving.toLocaleString()}{t.calc.ctaSuffix}
                   <ArrowRight size={16} />
                 </Link>
 
-                <p className="text-center text-xs text-slate-400 mt-3">No credit card required · Cancel anytime</p>
+                <p className="text-center text-xs text-slate-400 mt-3">{t.calc.noCard}</p>
               </div>
             </m.div>
           </div>
@@ -937,8 +920,8 @@ export default function LandingPage() {
       <section id="pricing" className="py-24 px-4 bg-[#F8FAFC]">
         <div className="max-w-7xl mx-auto">
           <m.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} transition={{ duration: 0.5 }} className="text-center mb-14">
-            <h2 className="text-3xl sm:text-4xl font-bold text-[#1E293B] mb-3">Start Free, Upgrade When Ready</h2>
-            <p className="text-slate-500 text-base">No contracts. No hidden fees. Cancel anytime.</p>
+            <h2 className="text-3xl sm:text-4xl font-bold text-[#1E293B] mb-3">{t.pricingSection.title}</h2>
+            <p className="text-slate-500 text-base">{t.pricingSection.sub}</p>
           </m.div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-5 gap-4 items-start">
@@ -948,15 +931,15 @@ export default function LandingPage() {
                 {plan.popular && (
                   <div className="absolute -top-4 left-1/2 -translate-x-1/2">
                     <span className="inline-flex items-center gap-1 px-4 py-1.5 bg-white text-[#2563EB] text-xs font-black rounded-full shadow-lg border-2 border-[#2563EB]/20 whitespace-nowrap">
-                      ★ Most Popular
+                      {t.pricingSection.popular}
                     </span>
                   </div>
                 )}
                 <div className={`mb-6 ${plan.popular ? 'mt-3' : ''}`}>
                   <p className={`text-xs font-black uppercase tracking-widest mb-2 ${plan.dark ? 'text-slate-300' : plan.popular ? 'text-[#1e40af]' : 'text-slate-600'}`}>{plan.name}</p>
                   <div className="flex items-end gap-1">
-                    <span className={`text-4xl font-black ${plan.textColor}`}>{plan.price === 0 ? 'Free' : `$${plan.price}`}</span>
-                    {plan.price > 0 && <span className={`text-sm mb-1.5 ${plan.subColor}`}>/mo</span>}
+                    <span className={`text-4xl font-black ${plan.textColor}`}>{plan.price === 0 ? t.pricingSection.free : `$${plan.price}`}</span>
+                    {plan.price > 0 && <span className={`text-sm mb-1.5 ${plan.subColor}`}>{t.pricingSection.perMo}</span>}
                   </div>
                   <p className={`text-xs mt-2 ${plan.subColor}`}>{plan.docs} · {plan.seats}</p>
                 </div>
@@ -977,8 +960,8 @@ export default function LandingPage() {
           </div>
 
           <p className="text-center text-sm text-slate-600 mt-8">
-            +$19/month per extra seat ·{' '}
-            <Link href="/pricing" className="text-[#2563EB] hover:underline font-medium">See full plan comparison →</Link>
+            {t.pricingSection.extraSeat} ·{' '}
+            <Link href="/pricing" className="text-[#2563EB] hover:underline font-medium">{t.pricingSection.fullComparison}</Link>
           </p>
         </div>
       </section>
@@ -988,10 +971,10 @@ export default function LandingPage() {
         <div className="max-w-5xl mx-auto">
           <m.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} transition={{ duration: 0.5 }} className="text-center mb-14">
             <span className="inline-flex items-center gap-2 text-xs font-bold text-[#2563EB] bg-[#EFF6FF] border border-[#2563EB]/20 px-3 py-1.5 rounded-full uppercase tracking-widest mb-5">
-              Supported Formats
+              {t.fileSection.badge}
             </span>
-            <h2 className="text-3xl sm:text-4xl font-bold text-[#1E293B] mb-3">Works With All Your Files</h2>
-            <p className="text-slate-500 text-base max-w-xl mx-auto">Upload any document format — PDF, Word, Excel, CSV, images, and more. Datafyle handles it automatically, no conversion needed.</p>
+            <h2 className="text-3xl sm:text-4xl font-bold text-[#1E293B] mb-3">{t.fileSection.title}</h2>
+            <p className="text-slate-500 text-base max-w-xl mx-auto">{t.fileSection.sub}</p>
           </m.div>
 
           <div className="grid grid-cols-4 sm:grid-cols-8 gap-4 mb-16">
@@ -1034,7 +1017,7 @@ export default function LandingPage() {
 
           {/* Header */}
           <m.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} transition={{ duration: 0.5 }} className="text-center mb-14">
-            <h2 className="text-3xl sm:text-4xl font-bold text-[#1E293B] mb-4">What Our Customers Actually Say</h2>
+            <h2 className="text-3xl sm:text-4xl font-bold text-[#1E293B] mb-4">{t.reviewsSection.title}</h2>
 
             {/* Aggregate rating */}
             <div className="flex items-center justify-center gap-2 mb-5">
@@ -1042,7 +1025,7 @@ export default function LandingPage() {
                 {Array(5).fill(null).map((_, j) => <Star key={j} size={18} className="text-[#F59E0B] fill-[#F59E0B]" />)}
               </div>
               <span className="font-bold text-[#1E293B] text-base">4.9</span>
-              <span className="text-slate-600 text-sm">· Based on 40+ verified reviews</span>
+              <span className="text-slate-600 text-sm">{t.reviewsSection.ratingNote}</span>
             </div>
 
             {/* Platform badges */}
@@ -1104,7 +1087,7 @@ export default function LandingPage() {
                       <p className="font-semibold text-[#1E293B] text-sm">{r.name}</p>
                       <span className="inline-flex items-center gap-1 text-[10px] font-medium text-[#2563EB] bg-[#EFF6FF] px-1.5 py-0.5 rounded-full border border-[#2563EB]/20">
                         <Check size={8} strokeWidth={3} />
-                        Verified
+                        {t.sections.reviewsVerified}
                       </span>
                     </div>
                     <p className="text-xs text-slate-500 truncate">{r.title}, {r.company}</p>
@@ -1120,7 +1103,7 @@ export default function LandingPage() {
             initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }} transition={{ duration: 0.5, delay: 0.3 }}
             className="text-center text-sm text-slate-600 mt-10"
           >
-            All reviews are from verified customers on third-party platforms. No incentives were offered.
+            {t.sections.reviewsNote}
           </m.p>
         </div>
       </section>
@@ -1139,56 +1122,20 @@ export default function LandingPage() {
 
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5 mb-12">
             {[
-              {
-                Icon: Lock,
-                color: 'text-[#2563EB]',
-                bg: 'bg-[#EFF6FF]',
-                title: 'AES-256 Encryption',
-                desc: 'All documents are encrypted at rest using military-grade AES-256. Completely unreadable without your credentials.',
-              },
-              {
-                Icon: Shield,
-                color: 'text-green-600',
-                bg: 'bg-green-50',
-                title: 'TLS 1.3 In Transit',
-                desc: 'Every byte between your browser and our servers is protected by the latest TLS encryption standard — same as your bank.',
-              },
-              {
-                Icon: Server,
-                color: 'text-purple-600',
-                bg: 'bg-purple-50',
-                title: 'Cloudflare R2 Storage',
-                desc: 'Files stored on Cloudflare enterprise infrastructure — the same company protecting millions of businesses globally.',
-              },
-              {
-                Icon: Globe,
-                color: 'text-orange-600',
-                bg: 'bg-orange-50',
-                title: 'GDPR & Privacy Compliant',
-                desc: 'Fully compliant with GDPR (EU & UK), Australian Privacy Act, and US data laws. Your rights are protected.',
-              },
-              {
-                Icon: Brain,
-                color: 'text-rose-600',
-                bg: 'bg-rose-50',
-                title: 'Zero AI Training on Your Data',
-                desc: 'Your documents are never used to train AI models — not ours, not Anthropic\'s. Your data works only for you.',
-              },
-              {
-                Icon: EyeOff,
-                color: 'text-slate-600',
-                bg: 'bg-slate-100',
-                title: 'No Data Selling. Ever.',
-                desc: 'We never sell or share your documents with third parties. Request full deletion at any time — we comply within 30 days.',
-              },
-            ].map(({ Icon, color, bg, title, desc }, i) => (
+              { Icon: Lock,    color: 'text-[#2563EB]', bg: 'bg-[#EFF6FF]' },
+              { Icon: Shield,  color: 'text-green-600',  bg: 'bg-green-50' },
+              { Icon: Server,  color: 'text-purple-600', bg: 'bg-purple-50' },
+              { Icon: Globe,   color: 'text-orange-600', bg: 'bg-orange-50' },
+              { Icon: Brain,   color: 'text-rose-600',   bg: 'bg-rose-50' },
+              { Icon: EyeOff,  color: 'text-slate-600',  bg: 'bg-slate-100' },
+            ].map(({ Icon, color, bg }, i) => (
               <m.div key={i} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.4, delay: i * 0.07 }}
                 className="bg-white rounded-xl border border-[#E2E8F0] p-6 shadow-sm">
                 <div className={`w-10 h-10 rounded-xl ${bg} flex items-center justify-center mb-4`}>
                   <Icon size={20} className={color} />
                 </div>
-                <h3 className="text-sm font-bold text-[#1E293B] mb-2">{title}</h3>
-                <p className="text-sm text-slate-500 leading-relaxed">{desc}</p>
+                <h3 className="text-sm font-bold text-[#1E293B] mb-2">{t.securityCards[i].title}</h3>
+                <p className="text-sm text-slate-500 leading-relaxed">{t.securityCards[i].desc}</p>
               </m.div>
             ))}
           </div>
