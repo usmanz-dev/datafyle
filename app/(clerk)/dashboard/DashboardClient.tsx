@@ -20,6 +20,8 @@ import { ReportButton } from '@/components/ReportButton'
 import { DocumentDetail, type DocRow } from '@/components/DocumentDetail'
 import { UpgradeModal } from '@/components/UpgradeModal'
 import { hasFeature, PLAN_NAMES } from '@/lib/plans'
+import { useLanguage } from '@/lib/i18n/context'
+import { LanguageSwitcher } from '@/components/LanguageSwitcher'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -88,13 +90,13 @@ export function DashboardClient({
   firstName, user, initialStats, initialDocuments,
   isTeamAdmin, teamMembers, currentUserId,
 }: Props) {
+  const { t } = useLanguage()
   const [docs, setDocs] = useState<DocRow[]>(initialDocuments)
   const [search, setSearch] = useState('')
   const [memberFilter, setMemberFilter] = useState<string | null>(null)
   const [page, setPage] = useState(1)
   const [selected, setSelected] = useState<Set<string>>(new Set())
   const [viewDoc, setViewDoc] = useState<DocRow | null>(null)
-  const [greeting, setGreeting] = useState('Good morning')
   const [exporting, setExporting] = useState(false)
   const [upgradeModal, setUpgradeModal] = useState<{ feature: string; requiredPlan: string } | null>(null)
   const [batchMode, setBatchMode]       = useState(false)
@@ -147,10 +149,10 @@ export function DashboardClient({
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  useEffect(() => {
+  const greetingText = useMemo(() => {
     const h = new Date().getHours()
-    setGreeting(h < 12 ? 'Good morning' : h < 17 ? 'Good afternoon' : 'Good evening')
-  }, [])
+    return h < 12 ? t.dashboard.morning : h < 17 ? t.dashboard.afternoon : t.dashboard.evening
+  }, [t])
 
   const fetchDocs = useCallback(async () => {
     const res = await fetch('/api/documents')
@@ -201,11 +203,11 @@ export function DashboardClient({
   const todayLabel = new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })
 
   const stats = [
-    { label: 'Total Processed', value: user.totalDocsProcessed, icon: FileCheck,    accent: '#2563EB', bg: 'bg-blue-50',  trend: null },
-    { label: 'This Month',      value: initialStats.thisMonthCount, icon: TrendingUp, accent: '#8B5CF6', bg: 'bg-violet-50', trend: null },
-    { label: 'Fields Extracted', value: initialStats.fieldsExtracted, icon: Zap,     accent: '#22C55E', bg: 'bg-green-50', trend: null },
+    { label: t.dashboard.totalProcessed, value: user.totalDocsProcessed, icon: FileCheck,    accent: '#2563EB', bg: 'bg-blue-50',  trend: null },
+    { label: t.dashboard.thisMonth,      value: initialStats.thisMonthCount, icon: TrendingUp, accent: '#8B5CF6', bg: 'bg-violet-50', trend: null },
+    { label: t.dashboard.fieldsExtracted, value: initialStats.fieldsExtracted, icon: Zap,     accent: '#22C55E', bg: 'bg-green-50', trend: null },
     {
-      label: 'Anomalies',
+      label: t.dashboard.anomalies,
       value: initialStats.anomaliesCount,
       icon: AlertTriangle,
       accent: initialStats.anomaliesCount > 0 ? '#EF4444' : '#22C55E',
@@ -372,7 +374,7 @@ async function downloadExcel(ids: string[], filename = 'datafyle-export.xlsx') {
             </div>
             <div className="min-w-0">
               <p className="text-sm font-semibold text-slate-800 truncate">
-                {greeting}{firstName ? `, ${firstName}` : ''}
+                {greetingText}{firstName ? `, ${firstName}` : ''}
               </p>
               <p className="text-xs text-slate-400 flex items-center gap-1">
                 <Calendar size={10} />
@@ -393,6 +395,7 @@ async function downloadExcel(ids: string[], filename = 'datafyle-export.xlsx') {
               </div>
             </div>
 
+            <LanguageSwitcher variant="dashboard" />
             <ReportButton
               onLocked={!hasFeature(user.plan, 'monthly_report')
                 ? () => setUpgradeModal({ feature: 'Monthly PDF Report', requiredPlan: 'starter' })
@@ -428,8 +431,8 @@ async function downloadExcel(ids: string[], filename = 'datafyle-export.xlsx') {
                 <CloudUpload size={15} className="text-[#2563EB]" />
               </div>
               <div>
-                <p className="text-sm font-semibold text-slate-800">Upload Documents</p>
-                <p className="text-xs text-slate-400">PDF, Word, Excel, CSV, Images, XML, TXT — up to 25 MB</p>
+                <p className="text-sm font-semibold text-slate-800">{t.dashboard.uploadTitle}</p>
+                <p className="text-xs text-slate-400">{t.dashboard.uploadSub}</p>
               </div>
             </div>
             <div className="flex items-center gap-2">
@@ -442,7 +445,7 @@ async function downloadExcel(ids: string[], filename = 'datafyle-export.xlsx') {
                       !batchMode ? 'bg-white text-slate-800 shadow-sm' : 'text-slate-400 hover:text-slate-600'
                     }`}
                   >
-                    Single
+                    {t.dashboard.singleUpload}
                   </button>
                   <button
                     onClick={() => setBatchMode(true)}
@@ -450,7 +453,7 @@ async function downloadExcel(ids: string[], filename = 'datafyle-export.xlsx') {
                       batchMode ? 'bg-white text-slate-800 shadow-sm' : 'text-slate-400 hover:text-slate-600'
                     }`}
                   >
-                    Batch
+                    {t.dashboard.batchUpload}
                   </button>
                 </div>
               ) : (
@@ -495,7 +498,7 @@ async function downloadExcel(ids: string[], filename = 'datafyle-export.xlsx') {
                   <FileText size={15} className="text-slate-500" />
                 </div>
                 <div>
-                  <p className="text-sm font-semibold text-slate-800">Documents</p>
+                  <p className="text-sm font-semibold text-slate-800">{t.dashboard.myDocuments}</p>
                   <p className="text-xs text-slate-400">{docs.length} total · {docs.filter(d => d.status === 'done').length} extracted</p>
                 </div>
               </div>
@@ -506,7 +509,7 @@ async function downloadExcel(ids: string[], filename = 'datafyle-export.xlsx') {
                   <Search size={13} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
                   <input
                     type="text"
-                    placeholder="Search filename or vendor…"
+                    placeholder={t.dashboard.searchPlaceholder}
                     value={search}
                     onChange={(e) => { setSearch(e.target.value); setPage(1); setSelected(new Set()) }}
                     className="w-full pl-9 pr-3 py-2 text-sm bg-slate-50 border border-slate-200 rounded-xl text-slate-700 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-[#2563EB] transition-all min-h-9"
@@ -534,13 +537,13 @@ async function downloadExcel(ids: string[], filename = 'datafyle-export.xlsx') {
                     <button onClick={exportSelected} disabled={exporting}
                       className="inline-flex items-center gap-1.5 px-3 py-2 text-xs font-semibold bg-[#2563EB] text-white rounded-xl hover:bg-blue-700 transition-colors disabled:opacity-60 min-h-9">
                       {exporting ? <Loader2 size={12} className="animate-spin" /> : <Download size={12} />}
-                      Export {selected.size}
+                      {t.dashboard.exportSelected} {selected.size}
                     </button>
                   ) : (
                     <button onClick={exportAll} disabled={exporting || !docs.length}
                       className="inline-flex items-center gap-1.5 px-3 py-2 text-xs font-semibold bg-slate-50 border border-slate-200 text-slate-600 rounded-xl hover:bg-slate-100 transition-colors disabled:opacity-50 min-h-9">
                       {exporting ? <Loader2 size={12} className="animate-spin" /> : <Download size={12} className="text-[#2563EB]" />}
-                      Export All
+                      {t.dashboard.exportAll}
                     </button>
                   )}
 
@@ -587,7 +590,7 @@ async function downloadExcel(ids: string[], filename = 'datafyle-export.xlsx') {
                           <FileText size={24} className="text-slate-300" />
                         </div>
                         <p className="text-sm text-slate-400 font-medium">
-                          {search ? 'No documents match your search' : 'No documents yet — upload one above'}
+                          {search ? t.dashboard.noDocuments : t.dashboard.noDocumentsSub}
                         </p>
                       </div>
                     </td>
@@ -853,11 +856,12 @@ async function downloadExcel(ids: string[], filename = 'datafyle-export.xlsx') {
 // ─── Status badge ─────────────────────────────────────────────────────────────
 
 function StatusBadge({ status }: { status: string }) {
+  const { t } = useLanguage()
   const cfg = {
-    done:       { dot: 'bg-green-500',  pill: 'bg-green-50 text-green-700',   label: 'Done' },
-    processing: { dot: '',              pill: 'bg-blue-50 text-blue-700',     label: 'Processing' },
-    pending:    { dot: '',              pill: 'bg-slate-100 text-slate-500',  label: 'Pending' },
-    failed:     { dot: 'bg-red-500',    pill: 'bg-red-50 text-red-600',      label: 'Failed' },
+    done:       { dot: 'bg-green-500',  pill: 'bg-green-50 text-green-700',   label: t.dashboard.done },
+    processing: { dot: '',              pill: 'bg-blue-50 text-blue-700',     label: t.dashboard.processing },
+    pending:    { dot: '',              pill: 'bg-slate-100 text-slate-500',  label: t.dashboard.pending },
+    failed:     { dot: 'bg-red-500',    pill: 'bg-red-50 text-red-600',      label: t.dashboard.failed },
   }[status]
 
   if (!cfg) return <span className="text-xs text-slate-400">{status}</span>

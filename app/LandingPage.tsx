@@ -5,6 +5,8 @@ import { useAuth } from '@clerk/nextjs'
 import Link from 'next/link'
 import Image from 'next/image'
 import { LazyMotion, domAnimation, m, useInView, AnimatePresence } from 'framer-motion'
+import { useLanguage } from '@/lib/i18n/context'
+import { LanguageSwitcher } from '@/components/LanguageSwitcher'
 import {
   Menu, X, Brain,
   FileText, FileSpreadsheet, Image as LucideImage, Code, AlignLeft,
@@ -174,32 +176,7 @@ const FEATURES = [
   { icon: FileText,     num: '06', gradient: 'from-[#2563EB] to-[#4F46E5]', title: 'Monthly Reports',    desc: 'Generate a branded PDF report for every client in one click — structured, professional, and ready to send instantly.', stat: '1-click PDF export' },
 ]
 
-// ─── Nav section data ─────────────────────────────────────────────────────────
-const DESKTOP_NAV = [
-  { href: '#about',        label: 'About' },
-  { href: '#how-it-works', label: 'How It Works' },
-  { href: '#features',     label: 'Features' },
-  { href: '#calculator',   label: 'Calculator' },
-  { href: '#security',     label: 'Security' },
-  { href: '#vs-docparser', label: 'vs DocParser' },
-  { href: '#faq',          label: 'FAQ' },
-  { href: '/contact',      label: 'Contact' },
-]
-
-const MOBILE_NAV = [
-  { href: '#about',        label: 'About Us' },
-  { href: '#comparison',   label: 'Why Datafyle' },
-  { href: '#how-it-works', label: 'How It Works' },
-  { href: '#features',     label: 'Features' },
-  { href: '#calculator',   label: 'Savings Calculator' },
-  { href: '#file-types',   label: 'File Types' },
-  { href: '#reviews',      label: 'Reviews' },
-  { href: '#security',     label: 'Data Security' },
-  { href: '#vs-docparser', label: 'vs DocParser' },
-  { href: '/pricing',      label: 'Pricing' },
-  { href: '/contact',      label: 'Contact' },
-  { href: '#faq',          label: 'FAQ' },
-]
+// Nav arrays are computed inside Navbar() using translations
 
 // ─── Navbar ───────────────────────────────────────────────────────────────────
 function Navbar() {
@@ -207,6 +184,33 @@ function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false)
   const { isSignedIn } = useAuth()
   const ctaHref = isSignedIn ? '/dashboard' : '/sign-up'
+  const { t } = useLanguage()
+
+  const desktopNav = [
+    { href: '#about',        label: t.nav.about },
+    { href: '#how-it-works', label: t.nav.howItWorks },
+    { href: '#features',     label: t.nav.features },
+    { href: '#calculator',   label: t.nav.calculator },
+    { href: '#security',     label: t.nav.security },
+    { href: '#vs-docparser', label: t.nav.vsDocParser },
+    { href: '#faq',          label: t.nav.faq },
+    { href: '/contact',      label: t.nav.contact },
+  ]
+
+  const mobileNav = [
+    { href: '#about',        label: t.nav.aboutUs },
+    { href: '#comparison',   label: t.nav.whyDatafyle },
+    { href: '#how-it-works', label: t.nav.howItWorks },
+    { href: '#features',     label: t.nav.features },
+    { href: '#calculator',   label: t.nav.calculator },
+    { href: '#file-types',   label: t.nav.fileTypes },
+    { href: '#reviews',      label: t.nav.reviews },
+    { href: '#security',     label: t.nav.dataSecurity },
+    { href: '#vs-docparser', label: t.nav.vsDocParser },
+    { href: '/pricing',      label: t.nav.pricing },
+    { href: '/contact',      label: t.nav.contact },
+    { href: '#faq',          label: t.nav.faq },
+  ]
 
   useEffect(() => {
     const handler = () => setScrolled(window.scrollY > 10)
@@ -238,7 +242,7 @@ function Navbar() {
 
           {/* Desktop nav links */}
           <div className="hidden lg:flex items-center gap-1 flex-1">
-            {DESKTOP_NAV.map(({ href, label }) =>
+            {desktopNav.map(({ href, label }) =>
               href.startsWith('/') ? (
                 <Link
                   key={href}
@@ -266,14 +270,15 @@ function Navbar() {
                   : 'border-white/50 text-white hover:border-white hover:bg-white/15'
               }`}
             >
-              Pricing
+              {t.nav.pricing}
             </Link>
           </div>
 
           <div className="hidden md:flex items-center gap-3 shrink-0">
-            <Link href="/sign-in" className={`text-sm font-medium transition-colors duration-300 ${scrolled ? 'text-[#1E293B] hover:text-[#2563EB]' : 'text-white/80 hover:text-white'}`}>Login</Link>
+            <LanguageSwitcher variant={scrolled ? 'navbar-light' : 'navbar-dark'} />
+            <Link href="/sign-in" className={`text-sm font-medium transition-colors duration-300 ${scrolled ? 'text-[#1E293B] hover:text-[#2563EB]' : 'text-white/80 hover:text-white'}`}>{t.nav.login}</Link>
             <Link href={ctaHref} className="inline-flex items-center gap-1.5 px-5 py-2.5 bg-[#2563EB] text-white text-sm font-semibold rounded-lg hover:bg-blue-700 transition-colors min-h-[44px]">
-              Get Started
+              {isSignedIn ? t.nav.goToDashboard : t.nav.getStarted}
             </Link>
           </div>
 
@@ -290,7 +295,7 @@ function Navbar() {
             className="fixed inset-0 z-40 bg-white flex flex-col pt-16 overflow-y-auto">
             <div className="flex flex-col flex-1 px-6 py-8 gap-1">
               <p className="text-[10px] font-bold text-slate-600 uppercase tracking-widest mb-3 px-3">Sections</p>
-              {MOBILE_NAV.map(({ href, label }) =>
+              {mobileNav.map(({ href, label }) =>
                 href.startsWith('/') ? (
                   <Link
                     key={href}
@@ -313,12 +318,15 @@ function Navbar() {
                   </a>
                 )
               )}
-              <div className="mt-6 pt-6 border-t border-[#E2E8F0] flex flex-col gap-3">
+              <div className="mt-4 px-3">
+                <LanguageSwitcher variant="navbar-light" />
+              </div>
+              <div className="mt-4 pt-4 border-t border-[#E2E8F0] flex flex-col gap-3">
                 <Link href="/sign-in" onClick={() => setMenuOpen(false)} className="flex items-center justify-center py-3.5 rounded-xl text-base font-semibold text-[#1E293B] border-2 border-[#E2E8F0] hover:border-[#2563EB] hover:text-[#2563EB] transition-all">
-                  Login
+                  {t.nav.login}
                 </Link>
                 <Link href={ctaHref} onClick={() => setMenuOpen(false)} className="flex items-center justify-center py-3.5 bg-[#2563EB] text-white text-base font-bold rounded-xl hover:bg-blue-700 transition-colors">
-                  Get Started Free
+                  {isSignedIn ? t.nav.goToDashboard : t.nav.getStartedFree}
                 </Link>
               </div>
             </div>
@@ -333,7 +341,7 @@ function Navbar() {
 export default function LandingPage() {
   const { isSignedIn } = useAuth()
   const ctaHref = isSignedIn ? '/dashboard' : '/sign-up'
-  const ctaLabel = isSignedIn ? 'Go to Dashboard' : 'Get Started Free'
+  const { t } = useLanguage()
 
   const [staffCost, setStaffCost] = useState(2500)
   const [docs, setDocs] = useState(500)
@@ -440,27 +448,25 @@ export default function LandingPage() {
             Trusted by 50+ accounting firms worldwide
           </div>
           <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold leading-tight mb-6">
-            <span className="text-white">Your bookkeeper costs </span>
-            <span style={{ background: 'linear-gradient(135deg, #93c5fd 0%, #3b82f6 40%, #2563EB 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>$2,500/month.</span>
+            <span className="text-white">{t.hero.line1} </span>
+            <span style={{ background: 'linear-gradient(135deg, #93c5fd 0%, #3b82f6 40%, #2563EB 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>{t.hero.price1}</span>
             <br className="hidden sm:block" />
-            <span className="text-white"> Datafyle costs </span>
-            <span style={{ background: 'linear-gradient(135deg, #93c5fd 0%, #3b82f6 40%, #2563EB 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>$49.</span>
+            <span className="text-white">{t.hero.line2} </span>
+            <span style={{ background: 'linear-gradient(135deg, #93c5fd 0%, #3b82f6 40%, #2563EB 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>{t.hero.price2}</span>
           </h1>
           <p className="text-base sm:text-lg text-slate-400 mb-10 max-w-2xl mx-auto leading-relaxed">
-            Stop wasting hours on manual data entry. Upload any invoice, receipt, or statement —
-            PDF, Word, image, or CSV — and let AI extract every field and line-item in under 10 seconds.
-            Your data, clean and ready in Excel or Google Sheets.
+            {t.hero.sub}
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <Link href={ctaHref} className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-[#2563EB] text-white text-base font-bold rounded-xl min-h-[56px] w-full sm:w-auto transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_0_36px_rgba(37,99,235,0.55)]">
-              Get Started Free <ArrowRight size={18} />
+              {isSignedIn ? t.hero.ctaDash : t.hero.cta} <ArrowRight size={18} />
             </Link>
             <a href="/#how-it-works" className="inline-flex items-center justify-center gap-2 px-8 py-4 text-slate-300 hover:text-white text-base font-medium rounded-xl border border-white/10 hover:border-white/25 min-h-[56px] w-full sm:w-auto transition-all duration-300 hover:bg-white/5">
-              Watch Demo
+              {t.hero.watchDemo}
             </a>
           </div>
           <p className="mt-5 text-sm text-slate-500">
-            No credit card required &bull; Free 10 documents
+            {t.hero.noCreditCard}
           </p>
         </div>
       </section>
@@ -477,15 +483,15 @@ export default function LandingPage() {
         <div className="relative z-10 max-w-5xl mx-auto px-4">
           {/* Eyebrow label */}
           <p className="text-center text-[11px] font-bold text-slate-500 uppercase tracking-[0.2em] mb-10">
-            Trusted by accounting firms across UK, US &amp; Australia
+            {t.trust.eyebrow}
           </p>
 
           <div className="grid grid-cols-2 md:grid-cols-4">
             <CountStat
               target={50}
               format={(n) => `${Math.floor(n)}+`}
-              label="Accounting Firms"
-              sublabel="actively using Datafyle"
+              label={t.trust.firms}
+              sublabel={t.trust.firmsSub}
               icon={
                 <div className="flex items-center gap-1.5">
                   <span className="w-2 h-2 rounded-full bg-[#22C55E] animate-pulse" />
@@ -496,22 +502,22 @@ export default function LandingPage() {
             <CountStat
               target={12}
               format={(n) => `${Math.floor(n)}K+`}
-              label="Documents Processed"
-              sublabel="invoices, receipts & more"
+              label={t.trust.docs}
+              sublabel={t.trust.docsSub}
               icon={<div className="w-6 h-px bg-[#2563EB]" />}
             />
             <CountStat
               target={4.9}
               format={(n) => `${n.toFixed(1)}★`}
-              label="Average Rating"
-              sublabel="across Capterra, G2 & Trustpilot"
+              label={t.trust.rating}
+              sublabel={t.trust.ratingSub}
               icon={<div className="w-6 h-px bg-[#F59E0B]" />}
             />
             <CountStat
               target={99.7}
               format={(n) => `${n.toFixed(1)}%`}
-              label="Platform Uptime"
-              sublabel="SLA-backed reliability"
+              label={t.trust.uptime}
+              sublabel={t.trust.uptimeSub}
               icon={<div className="w-6 h-px bg-[#2563EB]" />}
             />
           </div>
@@ -585,8 +591,8 @@ export default function LandingPage() {
       <section id="comparison" className="py-24 px-4 bg-[#F8FAFC]">
         <div className="max-w-5xl mx-auto">
           <m.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} transition={{ duration: 0.5 }} className="text-center mb-14">
-            <h2 className="text-3xl sm:text-4xl font-bold text-[#1E293B] mb-3">The Old Way vs The Datafyle Way</h2>
-            <p className="text-slate-500 text-base">Same documents. Completely different experience.</p>
+            <h2 className="text-3xl sm:text-4xl font-bold text-[#1E293B] mb-3">{t.comparison.title}</h2>
+            <p className="text-slate-500 text-base">{t.comparison.sub}</p>
           </m.div>
 
           <div className="grid md:grid-cols-2 gap-0 rounded-2xl overflow-hidden shadow-lg border border-[#E2E8F0]">
@@ -598,8 +604,8 @@ export default function LandingPage() {
                   <span className="text-red-500 text-lg font-black">✗</span>
                 </div>
                 <div>
-                  <p className="text-xs font-bold text-red-400 uppercase tracking-widest">Manual Process</p>
-                  <h3 className="text-lg font-bold text-[#1E293B]">The Old Way</h3>
+                  <p className="text-xs font-bold text-red-400 uppercase tracking-widest">{t.comparison.oldBadge}</p>
+                  <h3 className="text-lg font-bold text-[#1E293B]">{t.comparison.oldTitle}</h3>
                 </div>
               </div>
               <ul className="space-y-5">
@@ -632,8 +638,8 @@ export default function LandingPage() {
                   <Check size={18} className="text-white" strokeWidth={3} />
                 </div>
                 <div>
-                  <p className="text-xs font-bold text-[#2563EB] uppercase tracking-widest">AI-Powered</p>
-                  <h3 className="text-lg font-bold text-[#1E293B]">The Datafyle Way</h3>
+                  <p className="text-xs font-bold text-[#2563EB] uppercase tracking-widest">{t.comparison.newBadge}</p>
+                  <h3 className="text-lg font-bold text-[#1E293B]">{t.comparison.newTitle}</h3>
                 </div>
               </div>
               <ul className="space-y-5">
@@ -1125,10 +1131,10 @@ export default function LandingPage() {
           <m.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} transition={{ duration: 0.5 }} className="text-center mb-14">
             <div className="inline-flex items-center gap-2 px-4 py-2 bg-green-50 border border-green-200 rounded-full text-green-700 text-sm font-semibold mb-6">
               <span className="w-2 h-2 rounded-full bg-green-500" />
-              Enterprise-Grade Security
+              {t.sections.securityBadge}
             </div>
-            <h2 className="text-3xl sm:text-4xl font-bold text-[#1E293B] mb-3">Your Financial Data is 100% Safe</h2>
-            <p className="text-slate-500 text-base max-w-xl mx-auto">We protect your documents with bank-level security. Every file, every byte — encrypted, isolated, and never shared.</p>
+            <h2 className="text-3xl sm:text-4xl font-bold text-[#1E293B] mb-3">{t.sections.security}</h2>
+            <p className="text-slate-500 text-base max-w-xl mx-auto">{t.sections.securitySub}</p>
           </m.div>
 
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5 mb-12">
@@ -1189,7 +1195,7 @@ export default function LandingPage() {
 
           <m.div initial={{ opacity: 0, y: 10 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.5 }}
             className="flex flex-wrap items-center justify-center gap-x-8 gap-y-3 py-5 px-8 bg-white rounded-2xl border border-[#E2E8F0] shadow-sm">
-            {['GDPR Compliant', 'UK GDPR Ready', 'AES-256 Encrypted', 'No Data Selling', 'Deletion on Request'].map((item) => (
+            {t.securityTrust.map((item) => (
               <span key={item} className="flex items-center gap-2 text-sm font-medium text-[#1E293B]">
                 <Check size={14} className="text-green-500" strokeWidth={3} />
                 {item}
@@ -1203,8 +1209,8 @@ export default function LandingPage() {
       <section id="vs-docparser" className="py-24 px-4 bg-white">
         <div className="max-w-4xl mx-auto">
           <m.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} transition={{ duration: 0.5 }} className="text-center mb-14">
-            <h2 className="text-3xl sm:text-4xl font-bold text-[#1E293B] mb-3">Datafyle vs DocParser</h2>
-            <p className="text-slate-500 text-base max-w-xl mx-auto">Both tools extract data from documents. Here&apos;s why accountants and bookkeepers choose Datafyle.</p>
+            <h2 className="text-3xl sm:text-4xl font-bold text-[#1E293B] mb-3">{t.sections.vsDocParser}</h2>
+            <p className="text-slate-500 text-base max-w-xl mx-auto">{t.sections.vsDocParserSub}</p>
           </m.div>
 
           <m.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.5 }}
@@ -1272,31 +1278,34 @@ export default function LandingPage() {
           <m.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} transition={{ duration: 0.5 }} className="text-center mb-10">
             <div className="inline-flex items-center gap-2 px-4 py-2 bg-[#EFF6FF] border border-blue-200 rounded-full text-[#2563EB] text-sm font-semibold mb-5">
               <span className="w-1.5 h-1.5 rounded-full bg-[#2563EB]" />
-              Got Questions?
+              {t.faq.badge}
             </div>
-            <h2 className="text-3xl sm:text-4xl font-bold text-[#1E293B] mb-3">Frequently Asked Questions</h2>
-            <p className="text-slate-500 text-base">Everything you need to know before switching to Datafyle.</p>
+            <h2 className="text-3xl sm:text-4xl font-bold text-[#1E293B] mb-3">{t.faq.title}</h2>
+            <p className="text-slate-500 text-base">{t.faq.sub}</p>
           </m.div>
 
           {/* Category filter pills */}
           <m.div initial={{ opacity: 0, y: 10 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.4 }}
             className="flex flex-wrap justify-center gap-2 mb-8">
-            {['All', 'Features', 'Pricing', 'Security', 'Teams'].map((cat) => {
-              const isActive = (cat === 'All' && activeCategory === 'all') || activeCategory === cat
-              return (
-                <button
-                  key={cat}
-                  onClick={() => { setActiveCategory(cat === 'All' ? 'all' : cat); setOpenFaq(null) }}
-                  className={`px-4 py-2 rounded-full text-sm font-semibold transition-all border ${
-                    isActive
-                      ? 'bg-[#2563EB] text-white border-[#2563EB] shadow-sm'
-                      : 'bg-white text-slate-500 border-[#E2E8F0] hover:border-[#2563EB]/50 hover:text-[#2563EB]'
-                  }`}
-                >
-                  {cat}
-                </button>
-              )
-            })}
+            {([
+              { key: 'all', label: t.faq.all },
+              { key: 'Features', label: t.faq.features },
+              { key: 'Pricing', label: t.faq.pricing },
+              { key: 'Security', label: t.faq.security },
+              { key: 'Teams', label: t.faq.teams },
+            ] as const).map(({ key, label }) => (
+              <button
+                key={key}
+                onClick={() => { setActiveCategory(key); setOpenFaq(null) }}
+                className={`px-4 py-2 rounded-full text-sm font-semibold transition-all border ${
+                  activeCategory === key
+                    ? 'bg-[#2563EB] text-white border-[#2563EB] shadow-sm'
+                    : 'bg-white text-slate-500 border-[#E2E8F0] hover:border-[#2563EB]/50 hover:text-[#2563EB]'
+                }`}
+              >
+                {label}
+              </button>
+            ))}
           </m.div>
 
           {/* Accordion */}
@@ -1373,9 +1382,9 @@ export default function LandingPage() {
           {/* Bottom contact CTA */}
           <m.div initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }} transition={{ duration: 0.5, delay: 0.2 }}
             className="text-center mt-10 pt-8 border-t border-[#E2E8F0]">
-            <p className="text-slate-500 text-sm mb-3">Still have questions we didn&apos;t answer?</p>
+            <p className="text-slate-500 text-sm mb-3">{t.faq.contactText}</p>
             <Link href="/contact" className="inline-flex items-center gap-2 px-5 py-2.5 bg-white border border-[#E2E8F0] text-[#1E293B] text-sm font-semibold rounded-xl hover:border-[#2563EB] hover:text-[#2563EB] transition-all shadow-sm">
-              Contact our team
+              {t.faq.contactBtn}
               <ArrowRight size={14} />
             </Link>
           </m.div>
@@ -1390,13 +1399,13 @@ export default function LandingPage() {
         {/* Dot grid */}
         <div className="absolute inset-0 pointer-events-none" style={{ backgroundImage: 'radial-gradient(circle, rgba(255,255,255,0.07) 1px, transparent 1px)', backgroundSize: '28px 28px' }} />
         <m.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} transition={{ duration: 0.5 }} className="relative z-10 max-w-2xl mx-auto text-center">
-          <h2 className="text-3xl sm:text-4xl font-bold text-white mb-4">Stop Wasting 8 Hours a Day on Data Entry</h2>
-          <p className="text-slate-400 mb-8 text-lg">Join 50+ accounting firms already saving time with Datafyle</p>
+          <h2 className="text-3xl sm:text-4xl font-bold text-white mb-4">{t.cta.title}</h2>
+          <p className="text-slate-400 mb-8 text-lg">{t.cta.sub}</p>
           <Link href={ctaHref} className="inline-flex items-center gap-2 px-8 py-4 bg-[#2563EB] text-white text-lg font-bold rounded-xl hover:bg-blue-600 transition-all shadow-lg hover:-translate-y-0.5 min-h-[56px]">
-            Get Started Now — It&apos;s Free
+            {t.cta.btn}
             <ArrowRight size={20} />
           </Link>
-          <p className="mt-4 text-sm text-slate-500">No credit card • Free 10 documents • Setup in 3 minutes</p>
+          <p className="mt-4 text-sm text-slate-500">{t.cta.note}</p>
         </m.div>
       </section>
 

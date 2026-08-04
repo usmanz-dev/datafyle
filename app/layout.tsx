@@ -4,6 +4,7 @@ import { ClerkProvider } from '@clerk/nextjs'
 import { Toaster } from 'sonner'
 import { NavigationLoader } from '@/components/NavigationLoader'
 import { PaddleInit } from '@/components/PaddleInit'
+import { LanguageProvider } from '@/lib/i18n/context'
 import './globals.css'
 
 const inter = Inter({ subsets: ['latin'] })
@@ -71,10 +72,12 @@ export default function RootLayout({
     <html lang="en" className={inter.className}>
       <body className="min-h-full flex flex-col">
         <ClerkProvider>
-          <NavigationLoader />
-          {children}
-          <Toaster position="top-right" richColors />
-          <PaddleInit />
+          <LanguageProvider>
+            <NavigationLoader />
+            {children}
+            <Toaster position="top-right" richColors />
+            <PaddleInit />
+          </LanguageProvider>
         </ClerkProvider>
       </body>
     </html>
