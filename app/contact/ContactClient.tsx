@@ -8,6 +8,7 @@ import {
   Menu, X, Mail, Clock, MapPin, CheckCircle2,
   Loader2, Send, ArrowRight, ChevronDown,
 } from 'lucide-react'
+import { LanguageSwitcher } from '@/components/LanguageSwitcher'
 
 // ─── Navbar ──────────────────────────────────────────────────────────────────
 function Navbar() {
@@ -55,6 +56,7 @@ function Navbar() {
           </div>
 
           <div className="hidden md:flex items-center gap-3 shrink-0">
+            <LanguageSwitcher variant={scrolled || menuOpen ? 'navbar-light' : 'navbar-dark'} />
             <Link href="/sign-in" className={`text-sm font-medium transition-colors ${scrolled ? 'text-[#1E293B] hover:text-[#2563EB]' : 'text-white/80 hover:text-white'}`}>Login</Link>
             <Link href="/sign-up" className="inline-flex items-center gap-1.5 px-5 py-2.5 bg-[#2563EB] text-white text-sm font-semibold rounded-lg hover:bg-blue-700 transition-colors min-h-[44px]">
               Get Started Free

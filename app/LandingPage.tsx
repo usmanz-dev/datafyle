@@ -55,18 +55,6 @@ function CountStat({ target, format, label, sublabel, icon }: {
 }
 
 // ─── Data ─────────────────────────────────────────────────────────────────────
-const FAQS = [
-  { q: 'How accurate is the AI data extraction?', a: 'Datafyle achieves 97%+ accuracy on standard invoices and receipts. Every extracted field shows a colour-coded confidence score — green (90%+), yellow (70–89%), or red (below 70%) — so you always know exactly where to double-check before exporting to Excel.', cat: 'Features' },
-  { q: 'What file formats does Datafyle support?', a: 'PDF, Word (DOCX/DOC), Excel (XLSX/XLS), CSV, XML, TXT, and images (JPG, PNG) — up to 25MB per file. Every format your clients typically send, with no conversion or reformatting required before upload.', cat: 'Features' },
-  { q: 'How long does it take to process a document?', a: 'Most documents are fully extracted in under 10 seconds. Complex multi-page PDFs may take up to 30 seconds. Batch uploads queue automatically and run in the background — you can keep working while they process.', cat: 'Features' },
-  { q: 'Do I need to set up templates or rules?', a: 'No — zero configuration required. Unlike rules-based tools like DocParser, Datafyle\'s AI automatically understands any document layout, vendor, and field structure. Just upload and it works immediately.', cat: 'Features' },
-  { q: 'Can I cancel anytime?', a: 'Yes, cancel from your account settings at any time. You keep full access until the billing period ends, then automatically move to the Free plan. No cancellation fees, no questions asked.', cat: 'Pricing' },
-  { q: 'Can I change my plan?', a: 'Absolutely. Upgrade instantly — your new limits activate immediately. Downgrading takes effect at the end of the current billing period so you never lose access mid-month.', cat: 'Pricing' },
-  { q: 'What happens when I reach my document limit?', a: "You'll see a warning at 90% usage. At 100%, new uploads pause until the next billing cycle resets your count — or you upgrade. All existing documents and extracted data remain fully accessible. Nothing is deleted.", cat: 'Pricing' },
-  { q: 'Is my data secure?', a: 'Documents are encrypted at rest with AES-256 on Cloudflare R2 enterprise storage, and protected in transit with TLS 1.3. Your data is never shared with third parties, never sold, and never used to train AI models — including Anthropic\'s.', cat: 'Security' },
-  { q: 'Is Datafyle GDPR compliant?', a: 'Yes. We\'re built with GDPR principles — data is processed only for the service you signed up for, stored on enterprise infrastructure, and you can request a full export or deletion at any time by emailing privacy@datafyle.com.', cat: 'Security' },
-  { q: 'Can my whole team use Datafyle together?', a: 'Yes. Starter plans include 2 seats, Professional includes 5, and Business includes 15. Team admins see all uploaded documents; members see only their own. You can add extra seats for $19/month each on any paid plan.', cat: 'Teams' },
-]
 
 const PLANS = [
   {
@@ -182,15 +170,20 @@ const FEATURES = [
 function Navbar() {
   const [scrolled, setScrolled] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
+  const [moreOpen, setMoreOpen] = useState(false)
+  const moreRef = useRef<HTMLDivElement>(null)
   const { isSignedIn } = useAuth()
   const ctaHref = isSignedIn ? '/dashboard' : '/sign-up'
   const { t } = useLanguage()
 
-  const desktopNav = [
+  const primaryNav = [
     { href: '#about',        label: t.nav.about },
     { href: '#how-it-works', label: t.nav.howItWorks },
     { href: '#features',     label: t.nav.features },
     { href: '#calculator',   label: t.nav.calculator },
+  ]
+
+  const moreNav = [
     { href: '#security',     label: t.nav.security },
     { href: '#vs-docparser', label: t.nav.vsDocParser },
     { href: '#faq',          label: t.nav.faq },
@@ -218,6 +211,14 @@ function Navbar() {
     return () => window.removeEventListener('scroll', handler)
   }, [])
 
+  useEffect(() => {
+    function onClick(e: MouseEvent) {
+      if (moreRef.current && !moreRef.current.contains(e.target as Node)) setMoreOpen(false)
+    }
+    document.addEventListener('mousedown', onClick)
+    return () => document.removeEventListener('mousedown', onClick)
+  }, [])
+
   function handleNavClick(e: React.MouseEvent<HTMLAnchorElement>, href: string) {
     if (href.startsWith('/')) { setMenuOpen(false); return }
     e.preventDefault()
@@ -241,30 +242,51 @@ function Navbar() {
           </Link>
 
           {/* Desktop nav links */}
-          <div className="hidden lg:flex items-center gap-1 flex-1">
-            {desktopNav.map(({ href, label }) =>
-              href.startsWith('/') ? (
-                <Link
-                  key={href}
-                  href={href}
-                  className={`px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${scrolled ? 'text-[#1E293B] hover:text-[#2563EB] hover:bg-[#EFF6FF]' : 'text-white/80 hover:text-white hover:bg-white/10'}`}
-                >
-                  {label}
-                </Link>
-              ) : (
-                <a
-                  key={href}
-                  href={href}
-                  onClick={(e) => handleNavClick(e, href)}
-                  className={`px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${scrolled ? 'text-[#1E293B] hover:text-[#2563EB] hover:bg-[#EFF6FF]' : 'text-white/80 hover:text-white hover:bg-white/10'}`}
-                >
-                  {label}
-                </a>
-              )
-            )}
+          <div className="hidden lg:flex items-center gap-0.5 flex-1">
+            {primaryNav.map(({ href, label }) => (
+              <a
+                key={href}
+                href={href}
+                onClick={(e) => handleNavClick(e, href)}
+                className={`px-3 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-all duration-200 ${scrolled ? 'text-[#1E293B] hover:text-[#2563EB] hover:bg-[#EFF6FF]' : 'text-white/80 hover:text-white hover:bg-white/10'}`}
+              >
+                {label}
+              </a>
+            ))}
+
+            {/* More dropdown */}
+            <div ref={moreRef} className="relative">
+              <button
+                onClick={() => setMoreOpen((o) => !o)}
+                className={`inline-flex items-center gap-1 px-3 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-all duration-200 ${scrolled ? 'text-[#1E293B] hover:text-[#2563EB] hover:bg-[#EFF6FF]' : 'text-white/80 hover:text-white hover:bg-white/10'}`}
+              >
+                More
+                <ChevronDown size={13} strokeWidth={2.5} className={`transition-transform duration-200 ${moreOpen ? 'rotate-180' : ''}`} />
+              </button>
+              {moreOpen && (
+                <div className="absolute left-0 top-full mt-2 w-44 bg-white rounded-xl border border-[#E2E8F0] shadow-lg z-[200] py-1.5 overflow-hidden">
+                  {moreNav.map(({ href, label }) =>
+                    href.startsWith('/') ? (
+                      <Link key={href} href={href} onClick={() => setMoreOpen(false)}
+                        className="flex items-center gap-2.5 px-4 py-2.5 text-sm text-[#1E293B] hover:bg-[#EFF6FF] hover:text-[#2563EB] transition-colors font-medium">
+                        <span className="w-1 h-1 rounded-full bg-[#2563EB] shrink-0" />
+                        {label}
+                      </Link>
+                    ) : (
+                      <a key={href} href={href} onClick={(e) => { handleNavClick(e, href); setMoreOpen(false) }}
+                        className="flex items-center gap-2.5 px-4 py-2.5 text-sm text-[#1E293B] hover:bg-[#EFF6FF] hover:text-[#2563EB] transition-colors font-medium">
+                        <span className="w-1 h-1 rounded-full bg-[#2563EB] shrink-0" />
+                        {label}
+                      </a>
+                    )
+                  )}
+                </div>
+              )}
+            </div>
+
             <Link
               href="/pricing"
-              className={`ml-1 px-4 py-2 rounded-lg text-sm font-bold border-2 transition-all duration-200 ${
+              className={`ml-1 px-4 py-2 rounded-lg text-sm font-bold border-2 whitespace-nowrap transition-all duration-200 ${
                 scrolled
                   ? 'border-[#2563EB] text-[#2563EB] hover:bg-[#2563EB] hover:text-white'
                   : 'border-white/50 text-white hover:border-white hover:bg-white/15'
@@ -1257,7 +1279,7 @@ export default function LandingPage() {
 
           {/* Accordion */}
           <div className="space-y-3">
-            {FAQS
+            {t.faqs
               .filter((f) => activeCategory === 'all' || f.cat === activeCategory)
               .map((faq, i) => (
                 <m.div
@@ -1384,10 +1406,10 @@ export default function LandingPage() {
                 <span className="font-bold text-[18px] text-white tracking-tight">Data<span className="text-blue-400">fyle</span></span>
               </div>
               <p className="text-slate-400 text-sm leading-relaxed mb-2">
-                AI-powered document processing for accounting and bookkeeping firms.
+                {t.footer.tagline}
               </p>
               <p className="text-slate-500 text-xs leading-relaxed mb-6">
-                Trusted by 50+ firms in UK, US &amp; Australia.
+                {t.footer.trusted}
               </p>
 
               {/* Social icons */}
@@ -1432,60 +1454,60 @@ export default function LandingPage() {
 
             {/* Product */}
             <div>
-              <h3 className="text-white font-semibold mb-5 text-xs uppercase tracking-widest">Product</h3>
+              <h3 className="text-white font-semibold mb-5 text-xs uppercase tracking-widest">{t.footer.colProduct}</h3>
               <ul className="space-y-3">
-                <li><a href="#about" className="text-slate-400 hover:text-white text-sm transition-colors">About Us</a></li>
-                <li><a href="#how-it-works" className="text-slate-400 hover:text-white text-sm transition-colors">How It Works</a></li>
-                <li><a href="#features" className="text-slate-400 hover:text-white text-sm transition-colors">Features</a></li>
-                <li><a href="#calculator" className="text-slate-400 hover:text-white text-sm transition-colors">Savings Calculator</a></li>
-                <li><a href="#file-types" className="text-slate-400 hover:text-white text-sm transition-colors">Supported Files</a></li>
-                <li><Link href="/pricing" className="text-slate-400 hover:text-white text-sm transition-colors">Pricing</Link></li>
-                <li><a href="#faq" className="text-slate-400 hover:text-white text-sm transition-colors">FAQ</a></li>
+                <li><a href="#about" className="text-slate-400 hover:text-white text-sm transition-colors">{t.footer.aboutUs}</a></li>
+                <li><a href="#how-it-works" className="text-slate-400 hover:text-white text-sm transition-colors">{t.footer.howItWorks}</a></li>
+                <li><a href="#features" className="text-slate-400 hover:text-white text-sm transition-colors">{t.footer.features}</a></li>
+                <li><a href="#calculator" className="text-slate-400 hover:text-white text-sm transition-colors">{t.footer.calculator}</a></li>
+                <li><a href="#file-types" className="text-slate-400 hover:text-white text-sm transition-colors">{t.footer.supportedFiles}</a></li>
+                <li><Link href="/pricing" className="text-slate-400 hover:text-white text-sm transition-colors">{t.footer.pricing}</Link></li>
+                <li><a href="#faq" className="text-slate-400 hover:text-white text-sm transition-colors">{t.footer.faq}</a></li>
               </ul>
             </div>
 
             {/* Company */}
             <div>
-              <h3 className="text-white font-semibold mb-5 text-xs uppercase tracking-widest">Company</h3>
+              <h3 className="text-white font-semibold mb-5 text-xs uppercase tracking-widest">{t.footer.colCompany}</h3>
               <ul className="space-y-3">
-                <li><Link href="/blog" className="text-slate-400 hover:text-white text-sm transition-colors">Blog</Link></li>
-                <li><Link href="/contact" className="text-slate-400 hover:text-white text-sm transition-colors">Contact Us</Link></li>
-                <li><Link href="/privacy" className="text-slate-400 hover:text-white text-sm transition-colors">Privacy Policy</Link></li>
-                <li><Link href="/terms" className="text-slate-400 hover:text-white text-sm transition-colors">Terms of Service</Link></li>
-                <li><Link href="/refund" className="text-slate-400 hover:text-white text-sm transition-colors">Refund Policy</Link></li>
+                <li><Link href="/blog" className="text-slate-400 hover:text-white text-sm transition-colors">{t.footer.blog}</Link></li>
+                <li><Link href="/contact" className="text-slate-400 hover:text-white text-sm transition-colors">{t.footer.contactUs}</Link></li>
+                <li><Link href="/privacy" className="text-slate-400 hover:text-white text-sm transition-colors">{t.footer.privacyPolicy}</Link></li>
+                <li><Link href="/terms" className="text-slate-400 hover:text-white text-sm transition-colors">{t.footer.termsService}</Link></li>
+                <li><Link href="/refund" className="text-slate-400 hover:text-white text-sm transition-colors">{t.footer.refundPolicy}</Link></li>
               </ul>
             </div>
 
             {/* Get Started */}
             <div>
-              <h3 className="text-white font-semibold mb-5 text-xs uppercase tracking-widest">Get Started</h3>
+              <h3 className="text-white font-semibold mb-5 text-xs uppercase tracking-widest">{t.footer.colStart}</h3>
               <ul className="space-y-3">
-                <li><Link href={ctaHref} className="text-slate-400 hover:text-white text-sm transition-colors">Create Free Account</Link></li>
-                <li><Link href="/sign-in" className="text-slate-400 hover:text-white text-sm transition-colors">Sign In</Link></li>
-                <li><Link href="/pricing" className="text-slate-400 hover:text-white text-sm transition-colors">View Pricing</Link></li>
-                <li><Link href="/dashboard" className="text-slate-400 hover:text-white text-sm transition-colors">Dashboard</Link></li>
+                <li><Link href={ctaHref} className="text-slate-400 hover:text-white text-sm transition-colors">{t.footer.createAccount}</Link></li>
+                <li><Link href="/sign-in" className="text-slate-400 hover:text-white text-sm transition-colors">{t.footer.signIn}</Link></li>
+                <li><Link href="/pricing" className="text-slate-400 hover:text-white text-sm transition-colors">{t.footer.viewPricing}</Link></li>
+                <li><Link href="/dashboard" className="text-slate-400 hover:text-white text-sm transition-colors">{t.footer.dashboard}</Link></li>
               </ul>
             </div>
           </div>
 
           {/* Divider */}
           <div className="border-t border-white/10 pt-8 flex flex-col sm:flex-row items-center justify-between gap-4">
-            <p className="text-slate-500 text-sm">© 2026 Datafyle. All rights reserved.</p>
+            <p className="text-slate-500 text-sm">{t.footer.copyright}</p>
             <div className="flex items-center gap-4 flex-wrap justify-center">
               <div className="flex items-center gap-1.5">
                 <span className="w-1.5 h-1.5 rounded-full bg-[#22C55E] animate-pulse shrink-0" />
-                <span className="text-slate-500 text-xs">99.7% uptime</span>
+                <span className="text-slate-500 text-xs">{t.footer.uptime}</span>
               </div>
               <span className="text-slate-700 hidden sm:inline">·</span>
-              <Link href="/privacy" className="text-slate-500 text-xs hover:text-white transition-colors">Privacy</Link>
+              <Link href="/privacy" className="text-slate-500 text-xs hover:text-white transition-colors">{t.footer.privacyShort}</Link>
               <span className="text-slate-700">·</span>
-              <Link href="/terms" className="text-slate-500 text-xs hover:text-white transition-colors">Terms</Link>
+              <Link href="/terms" className="text-slate-500 text-xs hover:text-white transition-colors">{t.footer.termsShort}</Link>
               <span className="text-slate-700">·</span>
-              <Link href="/refund" className="text-slate-500 text-xs hover:text-white transition-colors">Refund</Link>
+              <Link href="/refund" className="text-slate-500 text-xs hover:text-white transition-colors">{t.footer.refundShort}</Link>
               <span className="text-slate-700">·</span>
-              <Link href="/blog" className="text-slate-500 text-xs hover:text-white transition-colors">Blog</Link>
+              <Link href="/blog" className="text-slate-500 text-xs hover:text-white transition-colors">{t.footer.blogShort}</Link>
               <span className="text-slate-700">·</span>
-              <Link href="/contact" className="text-slate-500 text-xs hover:text-white transition-colors">Contact</Link>
+              <Link href="/contact" className="text-slate-500 text-xs hover:text-white transition-colors">{t.footer.contactShort}</Link>
             </div>
           </div>
         </div>
@@ -1497,7 +1519,7 @@ export default function LandingPage() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify({
           '@context': 'https://schema.org',
           '@type': 'FAQPage',
-          mainEntity: FAQS.map((faq) => ({
+          mainEntity: t.faqs.map((faq) => ({
             '@type': 'Question',
             name: faq.q,
             acceptedAnswer: { '@type': 'Answer', text: faq.a },

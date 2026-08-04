@@ -6,6 +6,7 @@ import Image from 'next/image'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Menu, X } from 'lucide-react'
 import { useAuth } from '@clerk/nextjs'
+import { LanguageSwitcher } from '@/components/LanguageSwitcher'
 
 const DESKTOP_NAV = [
   { href: '/#about',        label: 'About' },
@@ -96,6 +97,7 @@ export function PublicNav() {
           </div>
 
           <div className="hidden md:flex items-center gap-3 shrink-0">
+            <LanguageSwitcher variant={scrolled || menuOpen ? 'navbar-light' : 'navbar-dark'} />
             {isSignedIn ? (
               <Link
                 href="/dashboard"
