@@ -5,6 +5,7 @@ import { extractWithClaude } from '@/lib/claude'
 import { getVendorPattern, saveVendorPattern } from '@/lib/memory'
 import { detectAnomaly } from '@/lib/anomaly'
 import { sendAnomalyAlert } from '@/lib/emails/anomalyAlert'
+import { hasFeature } from '@/lib/plans'
 
 function extractVendorHint(text: string): string {
   const lines = text.split('\n').filter((l) => l.trim().length > 2)
@@ -39,7 +40,8 @@ export async function processDocument(documentId: string, clerkUserId: string) {
     console.log('[process] parsed — text length:', text.length)
 
     const vendorHint = extractVendorHint(text)
-    const vendorPattern = await getVendorPattern(user.id, vendorHint)
+    const hasSmartMemory = hasFeature(user.plan, 'smart_memory')
+    const vendorPattern = hasSmartMemory ? await getVendorPattern(user.id, vendorHint) : null
 
     console.log('[process] calling Claude...')
     const claudeResult = await extractWithClaude(
@@ -77,7 +79,7 @@ export async function processDocument(documentId: string, clerkUserId: string) {
       },
     })
 
-    if (vendorName) {
+    if (hasSmartMemory && vendorName) {
       await saveVendorPattern(user.id, vendorName, totalAmount)
     }
 

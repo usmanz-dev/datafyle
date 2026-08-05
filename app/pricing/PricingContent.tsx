@@ -88,7 +88,7 @@ const FEATURES_TABLE = [
   { label: 'Google Sheets',      icon: FileSpreadsheet, free: false,   starter: false,    pro: true,    biz: true,     ent: true },
   { label: 'Smart Memory (AI)',  icon: Brain,           free: false,   starter: false,    pro: true,    biz: true,     ent: true },
   { label: 'Batch Upload',       icon: Upload,          free: false,   starter: false,    pro: true,    biz: true,     ent: true },
-  { label: 'AI Support Chat',    icon: Shield,          free: true,    starter: true,     pro: true,    biz: true,     ent: true },
+  { label: 'Email Support',       icon: Shield,          free: true,    starter: true,     pro: true,    biz: true,     ent: true },
   { label: 'Priority Support',   icon: Users,           free: false,   starter: false,    pro: false,   biz: true,     ent: true },
 ]
 
