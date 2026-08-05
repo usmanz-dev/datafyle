@@ -161,7 +161,11 @@ export function PublicNav() {
                   {label}
                 </Link>
               ))}
-              <div className="mt-6 pt-6 border-t border-[#E2E8F0] flex flex-col gap-3">
+              <div className="mt-4 px-3 pb-2">
+                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">Language</p>
+                <LanguageSwitcher variant="navbar-light" />
+              </div>
+              <div className="mt-4 pt-4 border-t border-[#E2E8F0] flex flex-col gap-3">
                 {isSignedIn ? (
                   <Link
                     href="/dashboard"
