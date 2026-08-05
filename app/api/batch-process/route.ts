@@ -1,11 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { auth } from '@clerk/nextjs/server'
 import { z } from 'zod'
-import { processDocument } from '@/lib/processDocument'
-import { sendBatchStartedEmail } from '@/lib/emails'
 import { prisma } from '@/lib/prisma'
-
-export const maxDuration = 300 // 5 min — allows large batches on Vercel Pro
+import { inngest } from '@/inngest/client'
 
 const schema = z.object({
   documentIds: z.array(z.string().min(1)).min(1).max(500),
@@ -25,34 +22,28 @@ export async function POST(req: NextRequest) {
 
     const { documentIds } = body.data
 
-    // Send batch started email (non-blocking)
+    // Verify all documents belong to this user
     const user = await prisma.user.findUnique({ where: { clerkId: userId } })
-    if (user) {
-      sendBatchStartedEmail(user.email, documentIds.length, user.name).catch((e) =>
-        console.error('Failed to send batch email:', e)
-      )
+    if (!user) {
+      return NextResponse.json({ error: 'User not found' }, { status: 401 })
     }
 
-    // Process each document sequentially (same as single upload)
-    const results = { success: 0, failed: 0 }
-    for (const documentId of documentIds) {
-      try {
-        await processDocument(documentId, userId)
-        results.success++
-      } catch (e) {
-        console.error(`Failed to process document ${documentId}:`, e)
-        results.failed++
-      }
-    }
-
-    return NextResponse.json({
-      success: true,
-      total: documentIds.length,
-      processed: results.success,
-      failed: results.failed,
+    const docCount = await prisma.document.count({
+      where: { id: { in: documentIds }, userId: user.id },
     })
+    if (docCount !== documentIds.length) {
+      return NextResponse.json({ error: 'Invalid document IDs' }, { status: 403 })
+    }
+
+    // Queue via Inngest — returns immediately, processes in background
+    await inngest.send({
+      name: 'doc/batch',
+      data: { documentIds, userId },
+    })
+
+    return NextResponse.json({ success: true, queued: documentIds.length })
   } catch (error) {
     console.error('Batch process error:', error)
-    return NextResponse.json({ error: 'Failed to process batch' }, { status: 500 })
+    return NextResponse.json({ error: 'Failed to queue batch' }, { status: 500 })
   }
 }
