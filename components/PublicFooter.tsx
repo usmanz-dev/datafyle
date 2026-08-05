@@ -4,20 +4,23 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { motion } from 'framer-motion'
 import { ArrowRight } from 'lucide-react'
+import { useLanguage } from '@/lib/i18n/context'
 
 const fadeUp = { hidden: { opacity: 0, y: 30 }, visible: { opacity: 1, y: 0 } }
 
 export function PublicFooter() {
+  const { t } = useLanguage()
+  const f = t.footer
+  const c = t.cta
+
   return (
     <>
       {/* ── FINAL CTA ──────────────────────────────────────────────────────────── */}
       <section className="relative py-24 px-4 bg-black overflow-hidden">
-        {/* Blue gradient aura */}
         <div
           className="absolute inset-0 pointer-events-none"
           style={{ background: 'radial-gradient(ellipse 80% 60% at 50% 50%, rgba(37,99,235,0.25) 0%, transparent 70%)' }}
         />
-        {/* Dot grid */}
         <div
           className="absolute inset-0 pointer-events-none"
           style={{ backgroundImage: 'radial-gradient(circle, rgba(255,255,255,0.07) 1px, transparent 1px)', backgroundSize: '28px 28px' }}
@@ -26,27 +29,25 @@ export function PublicFooter() {
           variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} transition={{ duration: 0.5 }}
           className="relative z-10 max-w-2xl mx-auto text-center"
         >
-          <h2 className="text-3xl sm:text-4xl font-bold text-white mb-4">Stop Wasting 8 Hours a Day on Data Entry</h2>
-          <p className="text-slate-400 mb-8 text-lg">Join 50+ accounting firms already saving time with Datafyle</p>
+          <h2 className="text-3xl sm:text-4xl font-bold text-white mb-4">{c.title}</h2>
+          <p className="text-slate-400 mb-8 text-lg">{c.sub}</p>
           <Link
             href="/sign-up"
             className="inline-flex items-center gap-2 px-8 py-4 bg-[#2563EB] text-white text-lg font-bold rounded-xl hover:bg-blue-600 transition-all shadow-lg hover:-translate-y-0.5 min-h-14"
           >
-            Get Started Now — It&apos;s Free
+            {c.btn}
             <ArrowRight size={20} />
           </Link>
-          <p className="mt-4 text-sm text-slate-500">No credit card • Free 10 documents • Setup in 3 minutes</p>
+          <p className="mt-4 text-sm text-slate-500">{c.note}</p>
         </motion.div>
       </section>
 
       {/* ── FOOTER ─────────────────────────────────────────────────────────────── */}
       <footer className="relative bg-black overflow-hidden pt-20 pb-10 px-4">
-        {/* Blue gradient aura at bottom edge */}
         <div
           className="absolute bottom-0 left-0 right-0 pointer-events-none"
           style={{ height: '320px', background: 'radial-gradient(ellipse 100% 70% at 50% 105%, rgba(37,99,235,0.55) 0%, rgba(37,99,235,0.15) 50%, transparent 72%)' }}
         />
-        {/* Dot grid */}
         <div
           className="absolute inset-0 pointer-events-none"
           style={{ backgroundImage: 'radial-gradient(circle, rgba(255,255,255,0.07) 1px, transparent 1px)', backgroundSize: '28px 28px' }}
@@ -63,12 +64,8 @@ export function PublicFooter() {
                 </div>
                 <span className="font-bold text-[18px] text-white tracking-tight">Data<span className="text-blue-400">fyle</span></span>
               </div>
-              <p className="text-slate-400 text-sm leading-relaxed mb-2">
-                AI-powered document processing for accounting and bookkeeping firms.
-              </p>
-              <p className="text-slate-500 text-xs leading-relaxed mb-6">
-                Trusted by 50+ firms in UK, US &amp; Australia.
-              </p>
+              <p className="text-slate-400 text-sm leading-relaxed mb-2">{f.tagline}</p>
+              <p className="text-slate-500 text-xs leading-relaxed mb-6">{f.trusted}</p>
 
               {/* Social icons */}
               <div className="flex items-center gap-2">
@@ -107,58 +104,58 @@ export function PublicFooter() {
 
             {/* Product */}
             <div>
-              <h4 className="text-white font-semibold mb-5 text-xs uppercase tracking-widest">Product</h4>
+              <h4 className="text-white font-semibold mb-5 text-xs uppercase tracking-widest">{f.colProduct}</h4>
               <ul className="space-y-3">
-                <li><Link href="/#about"        className="text-slate-400 hover:text-white text-sm transition-colors">About Us</Link></li>
-                <li><Link href="/#how-it-works" className="text-slate-400 hover:text-white text-sm transition-colors">How It Works</Link></li>
-                <li><Link href="/#features"     className="text-slate-400 hover:text-white text-sm transition-colors">Features</Link></li>
-                <li><Link href="/#calculator"   className="text-slate-400 hover:text-white text-sm transition-colors">Savings Calculator</Link></li>
-                <li><Link href="/#file-types"   className="text-slate-400 hover:text-white text-sm transition-colors">Supported Files</Link></li>
-                <li><Link href="/pricing"        className="text-slate-400 hover:text-white text-sm transition-colors">Pricing</Link></li>
-                <li><Link href="/#faq"           className="text-slate-400 hover:text-white text-sm transition-colors">FAQ</Link></li>
+                <li><Link href="/#about"        className="text-slate-400 hover:text-white text-sm transition-colors">{f.aboutUs}</Link></li>
+                <li><Link href="/#how-it-works" className="text-slate-400 hover:text-white text-sm transition-colors">{f.howItWorks}</Link></li>
+                <li><Link href="/#features"     className="text-slate-400 hover:text-white text-sm transition-colors">{f.features}</Link></li>
+                <li><Link href="/#calculator"   className="text-slate-400 hover:text-white text-sm transition-colors">{f.calculator}</Link></li>
+                <li><Link href="/#file-types"   className="text-slate-400 hover:text-white text-sm transition-colors">{f.supportedFiles}</Link></li>
+                <li><Link href="/pricing"        className="text-slate-400 hover:text-white text-sm transition-colors">{f.pricing}</Link></li>
+                <li><Link href="/#faq"           className="text-slate-400 hover:text-white text-sm transition-colors">{f.faq}</Link></li>
               </ul>
             </div>
 
             {/* Company */}
             <div>
-              <h4 className="text-white font-semibold mb-5 text-xs uppercase tracking-widest">Company</h4>
+              <h4 className="text-white font-semibold mb-5 text-xs uppercase tracking-widest">{f.colCompany}</h4>
               <ul className="space-y-3">
-                <li><Link href="/blog"    className="text-slate-400 hover:text-white text-sm transition-colors">Blog</Link></li>
-                <li><Link href="/contact" className="text-slate-400 hover:text-white text-sm transition-colors">Contact Us</Link></li>
-                <li><Link href="/privacy" className="text-slate-400 hover:text-white text-sm transition-colors">Privacy Policy</Link></li>
-                <li><Link href="/terms"   className="text-slate-400 hover:text-white text-sm transition-colors">Terms of Service</Link></li>
-                <li><Link href="/refund"  className="text-slate-400 hover:text-white text-sm transition-colors">Refund Policy</Link></li>
+                <li><Link href="/blog"    className="text-slate-400 hover:text-white text-sm transition-colors">{f.blog}</Link></li>
+                <li><Link href="/contact" className="text-slate-400 hover:text-white text-sm transition-colors">{f.contactUs}</Link></li>
+                <li><Link href="/privacy" className="text-slate-400 hover:text-white text-sm transition-colors">{f.privacyPolicy}</Link></li>
+                <li><Link href="/terms"   className="text-slate-400 hover:text-white text-sm transition-colors">{f.termsService}</Link></li>
+                <li><Link href="/refund"  className="text-slate-400 hover:text-white text-sm transition-colors">{f.refundPolicy}</Link></li>
               </ul>
             </div>
 
             {/* Get Started */}
             <div>
-              <h4 className="text-white font-semibold mb-5 text-xs uppercase tracking-widest">Get Started</h4>
+              <h4 className="text-white font-semibold mb-5 text-xs uppercase tracking-widest">{f.colStart}</h4>
               <ul className="space-y-3">
-                <li><Link href="/sign-up"   className="text-slate-400 hover:text-white text-sm transition-colors">Create Free Account</Link></li>
-                <li><Link href="/sign-in"   className="text-slate-400 hover:text-white text-sm transition-colors">Sign In</Link></li>
-                <li><Link href="/pricing"   className="text-slate-400 hover:text-white text-sm transition-colors">View Pricing</Link></li>
-                <li><Link href="/dashboard" className="text-slate-400 hover:text-white text-sm transition-colors">Dashboard</Link></li>
+                <li><Link href="/sign-up"   className="text-slate-400 hover:text-white text-sm transition-colors">{f.createAccount}</Link></li>
+                <li><Link href="/sign-in"   className="text-slate-400 hover:text-white text-sm transition-colors">{f.signIn}</Link></li>
+                <li><Link href="/pricing"   className="text-slate-400 hover:text-white text-sm transition-colors">{f.viewPricing}</Link></li>
+                <li><Link href="/dashboard" className="text-slate-400 hover:text-white text-sm transition-colors">{f.dashboard}</Link></li>
               </ul>
             </div>
           </div>
 
           {/* Bottom bar */}
           <div className="border-t border-white/10 pt-8 flex flex-col sm:flex-row items-center justify-between gap-4">
-            <p className="text-slate-500 text-sm">© 2026 Datafyle. All rights reserved.</p>
+            <p className="text-slate-500 text-sm">{f.copyright}</p>
             <div className="flex items-center gap-4 flex-wrap justify-center">
               <div className="flex items-center gap-1.5">
                 <span className="w-1.5 h-1.5 rounded-full bg-[#22C55E] animate-pulse shrink-0" />
-                <span className="text-slate-500 text-xs">99.7% uptime</span>
+                <span className="text-slate-500 text-xs">{f.uptime}</span>
               </div>
               <span className="text-slate-700 hidden sm:inline">·</span>
-              <Link href="/privacy" className="text-slate-500 text-xs hover:text-white transition-colors">Privacy</Link>
+              <Link href="/privacy" className="text-slate-500 text-xs hover:text-white transition-colors">{f.privacyShort}</Link>
               <span className="text-slate-700">·</span>
-              <Link href="/terms"   className="text-slate-500 text-xs hover:text-white transition-colors">Terms</Link>
+              <Link href="/terms"   className="text-slate-500 text-xs hover:text-white transition-colors">{f.termsShort}</Link>
               <span className="text-slate-700">·</span>
-              <Link href="/refund"  className="text-slate-500 text-xs hover:text-white transition-colors">Refund</Link>
+              <Link href="/refund"  className="text-slate-500 text-xs hover:text-white transition-colors">{f.refundShort}</Link>
               <span className="text-slate-700">·</span>
-              <Link href="/blog"    className="text-slate-500 text-xs hover:text-white transition-colors">Blog</Link>
+              <Link href="/blog"    className="text-slate-500 text-xs hover:text-white transition-colors">{f.blogShort}</Link>
             </div>
           </div>
         </div>

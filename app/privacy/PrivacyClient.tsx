@@ -5,6 +5,7 @@ import { PublicNav } from '@/components/PublicNav'
 import { PublicFooter } from '@/components/PublicFooter'
 import { MouseBlobClient } from '@/components/MouseBlobClient'
 import { useLanguage } from '@/lib/i18n/context'
+import { privacyBody, type LegalLang } from '@/lib/i18n/legal'
 
 function Section({ num, title, children }: { num: string; title: string; children: React.ReactNode }) {
   return (
@@ -34,9 +35,10 @@ function UL({ items }: { items: React.ReactNode[] }) {
 }
 
 export default function PrivacyClient() {
-  const { t } = useLanguage()
+  const { t, lang } = useLanguage()
   const p = t.pages.privacy
   const s = t.pages
+  const b = privacyBody[lang as LegalLang] ?? privacyBody.en
 
   return (
     <div className="min-h-screen bg-[#F8FAFC] flex flex-col">
@@ -58,47 +60,28 @@ export default function PrivacyClient() {
       <main className="flex-1 max-w-4xl mx-auto w-full px-4 sm:px-6 py-10">
         <div className="space-y-4">
           <Section num="1" title={p.s1}>
-            <P>Datafyle (&ldquo;we&rdquo;, &ldquo;our&rdquo;, &ldquo;us&rdquo;) operates the AI document processing platform at datafyle.com. We are committed to protecting the personal data of our users. This Privacy Policy explains what information we collect, how we use it, and your rights.</P>
+            <P>{b.b1}</P>
           </Section>
           <Section num="2" title={p.s2}>
-            <P>We collect the following categories of data:</P>
+            <P>{b.b2i}</P>
             <div className="mt-4">
-              <UL items={[
-                <><strong className="text-[#1E293B]">Account data:</strong> Name, email address, and authentication credentials provided when you sign up via Clerk.</>,
-                <><strong className="text-[#1E293B]">Document data:</strong> Files you upload for processing (invoices, receipts, statements). Stored on Cloudflare R2 infrastructure.</>,
-                <><strong className="text-[#1E293B]">Extracted data:</strong> Structured data extracted by AI from your documents — vendor names, amounts, dates, line items.</>,
-                <><strong className="text-[#1E293B]">Billing data:</strong> Subscription and payment information processed by Paddle. We do not store credit card numbers.</>,
-                <><strong className="text-[#1E293B]">Usage data:</strong> Number of documents processed, feature usage, and error logs for platform improvement.</>,
-                <><strong className="text-[#1E293B]">Technical data:</strong> IP addresses, browser type, device identifiers, and request logs for security and rate limiting.</>,
-              ]} />
+              <UL items={b.b2items.map(({ label, desc }) => (
+                <><strong className="text-[#1E293B]">{label}:</strong> {desc}</>
+              ))} />
             </div>
           </Section>
           <Section num="3" title={p.s3}>
             <div className="mb-4">
-              <UL items={[
-                'To provide the document processing service you subscribed to.',
-                'To improve AI extraction accuracy using aggregated, anonymised patterns — never individual document content.',
-                'To send transactional emails (account creation, payment confirmations, anomaly alerts).',
-                'To enforce usage limits and subscription plans.',
-                'To comply with legal obligations and prevent fraudulent activity.',
-              ]} />
+              <UL items={b.b3items} />
             </div>
             <div className="mt-5 p-4 bg-[#EFF6FF] rounded-lg border border-blue-100">
-              <p className="text-sm text-[#1E293B] font-semibold">🔒 We never sell your data. Your documents are never used to train AI models. Your data is never shared with third parties except as described below.</p>
+              <p className="text-sm text-[#1E293B] font-semibold">{b.b3note}</p>
             </div>
           </Section>
           <Section num="4" title={p.s4}>
-            <P>We use the following trusted third-party services to operate the platform:</P>
+            <P>{b.b4i}</P>
             <div className="mt-4 grid sm:grid-cols-2 gap-3">
-              {[
-                { name: 'Clerk', desc: 'Authentication and user identity management' },
-                { name: 'Cloudflare R2', desc: 'Encrypted file storage for uploaded documents' },
-                { name: 'Supabase (PostgreSQL)', desc: 'Relational database for extracted data and user records' },
-                { name: 'Anthropic Claude', desc: 'AI model used to extract structured data from documents' },
-                { name: 'Google Cloud Vision', desc: 'OCR processing for image-based documents' },
-                { name: 'Paddle', desc: 'Payment processing and subscription management' },
-                { name: 'Resend', desc: 'Transactional email delivery' },
-              ].map(({ name, desc }) => (
+              {b.b4services.map(({ name, desc }) => (
                 <div key={name} className="flex gap-3 p-3 bg-[#F8FAFC] rounded-lg border border-[#E2E8F0]">
                   <div className="w-2 h-2 rounded-full bg-[#2563EB] mt-1.5 shrink-0" />
                   <div>
@@ -110,46 +93,34 @@ export default function PrivacyClient() {
             </div>
           </Section>
           <Section num="5" title={p.s5}>
-            <P>All data is encrypted in transit using TLS 1.2+. Documents are encrypted at rest on Cloudflare R2. Database connections use SSL. We apply rate limiting and authentication to all API endpoints. Employees do not have routine access to customer documents.</P>
+            <P>{b.b5}</P>
           </Section>
           <Section num="6" title={p.s6}>
-            <UL items={[
-              'Documents and extracted data are retained for the duration of your account.',
-              'You can delete individual documents at any time from your dashboard.',
-              'On account deletion, all your data is permanently deleted within 30 days.',
-              'Billing records are retained for 7 years as required by tax law.',
-            ]} />
+            <UL items={b.b6items} />
           </Section>
           <Section num="7" title={p.s7}>
-            <P>You have the following rights regarding your personal data:</P>
+            <P>{b.b7i}</P>
             <div className="mt-4 grid sm:grid-cols-2 gap-3">
-              {[
-                { right: 'Access', desc: 'Request a copy of all personal data we hold about you' },
-                { right: 'Rectification', desc: 'Correct any inaccurate personal data' },
-                { right: 'Erasure', desc: 'Request deletion of your data ("right to be forgotten")' },
-                { right: 'Portability', desc: 'Export your data in a machine-readable format' },
-                { right: 'Objection', desc: 'Object to processing for direct marketing purposes' },
-                { right: 'Restriction', desc: 'Request we restrict processing in certain circumstances' },
-              ].map(({ right, desc }) => (
+              {b.b7rights.map(({ right, desc }) => (
                 <div key={right} className="p-3 bg-[#F8FAFC] rounded-lg border border-[#E2E8F0]">
                   <p className="text-sm font-semibold text-[#1E293B]">{right}</p>
                   <p className="text-xs text-slate-500 mt-0.5">{desc}</p>
                 </div>
               ))}
             </div>
-            <p className="text-sm text-slate-600 mt-4">To exercise any of these rights, email <a href="mailto:privacy@datafyle.com" className="text-[#2563EB] hover:underline font-medium">privacy@datafyle.com</a>.</p>
+            <p className="text-sm text-slate-600 mt-4">{b.b7email} <a href="mailto:privacy@datafyle.com" className="text-[#2563EB] hover:underline font-medium">privacy@datafyle.com</a>.</p>
           </Section>
           <Section num="8" title={p.s8}>
-            <P>We use only essential cookies required for authentication (set by Clerk) and session management. We do not use advertising cookies or third-party tracking pixels.</P>
+            <P>{b.b8}</P>
           </Section>
           <Section num="9" title={p.s9}>
-            <P>We may update this policy periodically. Material changes will be notified via email to registered users at least 14 days before taking effect. Continued use of Datafyle after the effective date constitutes acceptance of the updated policy.</P>
+            <P>{b.b9}</P>
           </Section>
           <Section num="10" title={p.s10}>
             <div className="flex items-start gap-3">
               <Mail size={18} className="text-[#2563EB] mt-0.5 shrink-0" />
               <div>
-                <p className="text-sm text-slate-600">For privacy questions or to exercise your rights:</p>
+                <p className="text-sm text-slate-600">{b.b10}</p>
                 <a href="mailto:privacy@datafyle.com" className="text-sm text-[#2563EB] hover:underline font-medium mt-1 inline-block">privacy@datafyle.com</a>
               </div>
             </div>

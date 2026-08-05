@@ -1,11 +1,10 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
-import Link from 'next/link'
 import { motion } from 'framer-motion'
 import {
   X, Mail, Clock, MapPin, CheckCircle2,
-  Loader2, Send, ArrowRight, ChevronDown,
+  Loader2, Send, ChevronDown,
 } from 'lucide-react'
 import { PublicNav } from '@/components/PublicNav'
 import { PublicFooter } from '@/components/PublicFooter'
@@ -284,22 +283,6 @@ export default function ContactClient() {
             </motion.div>
           </div>
         </div>
-      </section>
-
-      {/* CTA */}
-      <section className="relative py-24 px-4 bg-black overflow-hidden">
-        <div className="absolute inset-0 pointer-events-none" style={{ background: 'radial-gradient(ellipse 80% 60% at 50% 50%, rgba(37,99,235,0.25) 0%, transparent 70%)' }} />
-        <div className="absolute inset-0 pointer-events-none" style={{ backgroundImage: 'radial-gradient(circle, rgba(255,255,255,0.07) 1px, transparent 1px)', backgroundSize: '28px 28px' }} />
-        <motion.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} transition={{ duration: 0.5 }}
-          className="relative z-10 max-w-2xl mx-auto text-center">
-          <h2 className="text-3xl sm:text-4xl font-bold text-white mb-4">{c.ctaTitle}</h2>
-          <p className="text-slate-400 mb-8 text-lg">{c.ctaSub}</p>
-          <Link href="/sign-up" className="inline-flex items-center gap-2 px-8 py-4 bg-[#2563EB] text-white text-lg font-bold rounded-xl hover:bg-blue-600 transition-all shadow-lg hover:-translate-y-0.5 min-h-[56px]">
-            {c.ctaBtn}
-            <ArrowRight size={20} />
-          </Link>
-          <p className="mt-4 text-sm text-slate-500">{c.ctaNote}</p>
-        </motion.div>
       </section>
 
       <PublicFooter />

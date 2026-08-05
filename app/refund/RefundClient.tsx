@@ -6,6 +6,7 @@ import { PublicNav } from '@/components/PublicNav'
 import { PublicFooter } from '@/components/PublicFooter'
 import { MouseBlobClient } from '@/components/MouseBlobClient'
 import { useLanguage } from '@/lib/i18n/context'
+import { refundBody, type LegalLang } from '@/lib/i18n/legal'
 
 function Section({ num, title, children }: { num: string; title: string; children: React.ReactNode }) {
   return (
@@ -35,9 +36,10 @@ function UL({ items }: { items: React.ReactNode[] }) {
 }
 
 export default function RefundClient() {
-  const { t } = useLanguage()
+  const { t, lang } = useLanguage()
   const r = t.pages.refund
   const s = t.pages
+  const b = refundBody[lang as LegalLang] ?? refundBody.en
 
   return (
     <div className="min-h-screen bg-[#F8FAFC] flex flex-col">
@@ -69,34 +71,25 @@ export default function RefundClient() {
           </div>
           <Section num="1" title={r.s1}>
             <div className="space-y-4">
-              <P>You are eligible for a full refund if all of the following conditions are met:</P>
-              <UL items={[
-                'Your refund request is submitted within 7 days of your initial subscription payment.',
-                'This is your first purchase on Datafyle — refunds apply to first-time payments only.',
-                'You contact us at support@datafyle.com with your account email and reason for the refund.',
-              ]} />
+              <P>{b.b1i}</P>
+              <UL items={b.b1items} />
             </div>
           </Section>
           <Section num="2" title={r.s2}>
-            <P>After the 7-day window has passed, we are unable to issue refunds for any reason — including unused documents, partial usage of the plan, or dissatisfaction with the service. We encourage you to evaluate Datafyle thoroughly within the first 7 days of your subscription.</P>
+            <P>{b.b2}</P>
           </Section>
           <Section num="3" title={r.s3}>
             <div className="space-y-4">
-              <P>Monthly and annual subscription renewals are non-refundable. You may cancel your subscription at any time before the next billing date to avoid future charges.</P>
-              <P>Cancellation takes effect at the end of your current billing period — you retain full access to Datafyle until then.</P>
+              <UL items={b.b3items} />
             </div>
           </Section>
           <Section num="4" title={r.s4}>
-            <P>Downgrading your plan mid-cycle does not entitle you to a partial refund for the price difference. The downgrade will take effect at the start of your next billing cycle.</P>
+            <P>{b.b4}</P>
           </Section>
           <Section num="5" title={r.s5}>
             <div className="space-y-4">
-              <P>To request a refund, email us with the following information:</P>
-              <UL items={[
-                'Your Datafyle account email address.',
-                'The date of your purchase.',
-                'A brief reason for requesting the refund (optional but appreciated).',
-              ]} />
+              <P>{b.b5i}</P>
+              <UL items={b.b5items} />
               <div className="pt-2">
                 <a
                   href="mailto:support@datafyle.com"
@@ -108,19 +101,20 @@ export default function RefundClient() {
                   support@datafyle.com
                 </a>
               </div>
-              <P>We aim to respond to all refund requests within 1 business day. Approved refunds are processed within 5–10 business days depending on your payment provider.</P>
+              <P>{b.b5note}</P>
             </div>
           </Section>
           <Section num="6" title={r.s6}>
-            <P>We reserve the right to update this refund policy at any time. Changes will be posted on this page with an updated date. Continued use of Datafyle after changes are posted constitutes your acceptance of the revised policy.</P>
+            <P>{b.b6}</P>
           </Section>
           <div className="bg-white rounded-xl border border-[#E2E8F0] p-6 sm:p-8">
             <h2 className="text-base font-bold text-[#1E293B] mb-2">{r.contactQ}</h2>
             <p className="text-slate-600 text-sm leading-relaxed">
-              Contact us at{' '}
-              <a href="mailto:support@datafyle.com" className="text-[#2563EB] font-medium hover:underline">support@datafyle.com</a>{' '}
-              — we reply within 1 business day. You can also visit our{' '}
-              <Link href="/contact" className="text-[#2563EB] font-medium hover:underline">Contact page</Link>.
+              {b.bq.split('support@datafyle.com')[0]}
+              <a href="mailto:support@datafyle.com" className="text-[#2563EB] font-medium hover:underline">support@datafyle.com</a>
+              {b.bq.split('support@datafyle.com')[1]?.split('/contact')[0]}
+              <Link href="/contact" className="text-[#2563EB] font-medium hover:underline">{lang === 'ja' ? 'お問い合わせページ' : lang === 'zh' ? '联系页面' : lang === 'de' ? 'Kontaktseite' : lang === 'fr' ? 'page Contact' : lang === 'es' ? 'página de Contacto' : lang === 'pt' ? 'página de Contato' : lang === 'it' ? 'pagina Contatti' : 'Contact page'}</Link>
+              {b.bq.split('/contact')[1] ?? ''}
             </p>
           </div>
         </div>

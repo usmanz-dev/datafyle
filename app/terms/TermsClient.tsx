@@ -6,6 +6,7 @@ import { PublicNav } from '@/components/PublicNav'
 import { PublicFooter } from '@/components/PublicFooter'
 import { MouseBlobClient } from '@/components/MouseBlobClient'
 import { useLanguage } from '@/lib/i18n/context'
+import { termsBody, type LegalLang } from '@/lib/i18n/legal'
 
 function Section({ num, title, children }: { num: string; title: string; children: React.ReactNode }) {
   return (
@@ -35,9 +36,10 @@ function UL({ items }: { items: React.ReactNode[] }) {
 }
 
 export default function TermsClient() {
-  const { t } = useLanguage()
+  const { t, lang } = useLanguage()
   const tr = t.pages.terms
   const s = t.pages
+  const b = termsBody[lang as LegalLang] ?? termsBody.en
 
   return (
     <div className="min-h-screen bg-[#F8FAFC] flex flex-col">
@@ -59,73 +61,55 @@ export default function TermsClient() {
       <main className="flex-1 max-w-4xl mx-auto w-full px-4 sm:px-6 py-10">
         <div className="space-y-4">
           <Section num="1" title={tr.s1}>
-            <P>By accessing or using Datafyle (&ldquo;Service&rdquo;), you agree to be bound by these Terms of Service (&ldquo;Terms&rdquo;). If you do not agree, do not use the Service. These Terms apply to all users, including free and paid subscribers.</P>
+            <P>{b.b1}</P>
           </Section>
           <Section num="2" title={tr.s2}>
-            <P>Datafyle is an AI-powered document processing platform that extracts structured data from invoices, receipts, and other business documents. The Service uses AI models to extract data including vendor names, amounts, dates, and line items, and provides outputs in Excel, Google Sheets, and PDF formats.</P>
+            <P>{b.b2}</P>
           </Section>
           <Section num="3" title={tr.s3}>
-            <UL items={[
-              'You must be at least 18 years old to create an account.',
-              'You are responsible for maintaining the security of your account credentials.',
-              'You must not create accounts on behalf of others without authorisation.',
-              'One account is required per user. Team plans allow multiple seats under one billing account.',
-            ]} />
+            <UL items={b.b3items} />
           </Section>
           <Section num="4" title={tr.s4}>
-            <UL items={[
-              'Paid plans are billed monthly or annually via Paddle. Payment is charged immediately upon plan selection — there are no free trials.',
-              'You may cancel at any time. Your plan remains active until the end of the billing period; you then revert to the Free plan.',
-              'Upgrades take effect immediately. Downgrades take effect at the end of the current billing period.',
-              'Annual plans are non-refundable except where required by applicable law.',
-              'We reserve the right to change pricing with 30 days’ notice to existing subscribers.',
-              'Document limits reset at the start of each billing cycle. Unused documents do not roll over.',
-            ]} />
+            <UL items={b.b4items} />
             <div className="mt-5 p-4 bg-amber-50 rounded-lg border border-amber-100">
-              <p className="text-sm text-amber-800 font-medium">⚡ No free trials — subscriptions are charged immediately upon plan selection.</p>
+              <p className="text-sm text-amber-800 font-medium">{b.b4note}</p>
             </div>
           </Section>
           <Section num="5" title={tr.s5}>
-            <P>You agree not to:</P>
+            <P>{b.b5i}</P>
             <div className="mt-4">
-              <UL items={[
-                'Upload documents containing illegal content, malware, or content that violates third-party intellectual property rights.',
-                'Attempt to reverse-engineer, scrape, or abuse the AI models or API infrastructure.',
-                'Use the Service to process documents on behalf of others without their authorisation.',
-                'Circumvent rate limits, usage limits, or authentication systems.',
-                'Resell or sublicense access to the Service without written agreement from Datafyle.',
-              ]} />
+              <UL items={b.b5items} />
             </div>
           </Section>
           <Section num="6" title={tr.s6}>
-            <P>The AI extraction provided by Datafyle achieves high accuracy but is not infallible. You are responsible for verifying extracted data before using it in financial records, tax filings, or other critical applications. Datafyle provides confidence scores to help you identify fields requiring manual review. We do not accept liability for errors arising from unchecked AI output.</P>
+            <P>{b.b6}</P>
           </Section>
           <Section num="7" title={tr.s7}>
-            <P>You retain all rights to your documents and the data within them. By uploading documents, you grant Datafyle a limited licence to process them solely for the purpose of providing the Service. Datafyle retains all rights to the platform, software, AI models, and infrastructure. You may not copy, modify, or distribute the Datafyle software.</P>
+            <P>{b.b7}</P>
           </Section>
           <Section num="8" title={tr.s8}>
-            <P>Your use of the Service is also governed by our{' '}<Link href="/privacy" className="text-[#2563EB] hover:underline font-medium">Privacy Policy</Link>, which is incorporated into these Terms by reference. We process your data in accordance with GDPR and UK GDPR where applicable.</P>
+            <P>{b.b8}{' '}<Link href="/privacy" className="text-[#2563EB] hover:underline font-medium">Privacy Policy</Link>.</P>
           </Section>
           <Section num="9" title={tr.s9}>
-            <P>To the maximum extent permitted by law, Datafyle&apos;s total liability for any claim arising from these Terms or your use of the Service shall not exceed the amount you paid in the 3 months immediately preceding the claim. We are not liable for indirect, consequential, incidental, or punitive damages, or loss of profits or data.</P>
+            <P>{b.b9}</P>
           </Section>
           <Section num="10" title={tr.s10}>
-            <P>We aim for 99.7% uptime. We may perform scheduled maintenance with reasonable notice and cannot guarantee uninterrupted access. We are not liable for losses arising from downtime beyond our reasonable control.</P>
+            <P>{b.b10}</P>
           </Section>
           <Section num="11" title={tr.s11}>
-            <P>We may suspend or terminate your account immediately if you breach these Terms or engage in fraudulent activity. You may terminate your account at any time via your account settings. On termination, your data is deleted within 30 days per our Privacy Policy.</P>
+            <P>{b.b11}</P>
           </Section>
           <Section num="12" title={tr.s12}>
-            <P>We may update these Terms. Material changes will be notified by email at least 14 days before taking effect. Continued use of the Service after the effective date constitutes acceptance of the updated Terms.</P>
+            <P>{b.b12}</P>
           </Section>
           <Section num="13" title={tr.s13}>
-            <P>These Terms are governed by the laws of England and Wales. Any disputes shall be subject to the exclusive jurisdiction of the courts of England and Wales.</P>
+            <P>{b.b13}</P>
           </Section>
           <Section num="14" title={tr.s14}>
             <div className="flex items-start gap-3">
               <Mail size={18} className="text-[#2563EB] mt-0.5 shrink-0" />
               <div>
-                <p className="text-sm text-slate-600">For questions about these Terms:</p>
+                <p className="text-sm text-slate-600">{b.b14}</p>
                 <a href="mailto:legal@datafyle.com" className="text-sm text-[#2563EB] hover:underline font-medium mt-1 inline-block">legal@datafyle.com</a>
               </div>
             </div>
