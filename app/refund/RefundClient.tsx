@@ -53,10 +53,7 @@ export default function RefundClient() {
           </div>
           <h1 className="text-3xl sm:text-4xl font-bold text-[#1E293B] mb-3">{r.title}</h1>
           <p className="text-slate-500 text-sm">{s.lastUpdated} July 2026</p>
-          <p className="text-slate-600 mt-4 max-w-2xl leading-relaxed text-sm">
-            We offer a 7-day money-back guarantee on all paid plans. If Datafyle is not the right fit
-            for your business, contact us within 7 days of your purchase and we will refund you in full.
-          </p>
+          <p className="text-slate-600 mt-4 max-w-2xl leading-relaxed text-sm">{r.desc}</p>
         </div>
       </div>
       <main className="flex-1 max-w-4xl mx-auto w-full px-4 sm:px-6 py-10">
@@ -67,11 +64,7 @@ export default function RefundClient() {
             </div>
             <div>
               <p className="text-[#1E293B] font-bold text-base mb-1">{r.guarantee}</p>
-              <p className="text-slate-600 text-sm leading-relaxed">
-                Not happy? Email us at{' '}
-                <a href="mailto:support@datafyle.com" className="text-[#2563EB] font-medium hover:underline">support@datafyle.com</a>{' '}
-                within 7 days of your first payment and we will issue a full refund — no questions asked.
-              </p>
+              <p className="text-slate-600 text-sm leading-relaxed">{r.guaranteeNote}</p>
             </div>
           </div>
           <Section num="1" title={r.s1}>

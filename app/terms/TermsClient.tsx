@@ -53,10 +53,7 @@ export default function TermsClient() {
           </div>
           <h1 className="text-3xl sm:text-4xl font-bold text-[#1E293B] mb-3">{tr.title}</h1>
           <p className="text-slate-500 text-sm">{s.lastUpdated} January 2026</p>
-          <p className="text-slate-600 mt-4 max-w-2xl leading-relaxed text-sm">
-            These terms govern your use of the Datafyle platform. By using our service,
-            you agree to these terms. Please read them carefully before signing up.
-          </p>
+          <p className="text-slate-600 mt-4 max-w-2xl leading-relaxed text-sm">{tr.desc}</p>
         </div>
       </div>
       <main className="flex-1 max-w-4xl mx-auto w-full px-4 sm:px-6 py-10">

@@ -1,6 +1,5 @@
 'use client'
 
-import Link from 'next/link'
 import { Shield, Mail } from 'lucide-react'
 import { PublicNav } from '@/components/PublicNav'
 import { PublicFooter } from '@/components/PublicFooter'
@@ -53,10 +52,7 @@ export default function PrivacyClient() {
           </div>
           <h1 className="text-3xl sm:text-4xl font-bold text-[#1E293B] mb-3">{p.title}</h1>
           <p className="text-slate-500 text-sm">{s.lastUpdated} January 2026</p>
-          <p className="text-slate-600 mt-4 max-w-2xl leading-relaxed text-sm">
-            Datafyle is committed to protecting your privacy. This policy explains what data we collect,
-            how we use it, and your rights as a user of our platform.
-          </p>
+          <p className="text-slate-600 mt-4 max-w-2xl leading-relaxed text-sm">{p.desc}</p>
         </div>
       </div>
       <main className="flex-1 max-w-4xl mx-auto w-full px-4 sm:px-6 py-10">

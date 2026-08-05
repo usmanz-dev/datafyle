@@ -2,92 +2,14 @@
 
 import { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
-import Image from 'next/image'
 import { motion } from 'framer-motion'
 import {
-  Menu, X, Mail, Clock, MapPin, CheckCircle2,
+  X, Mail, Clock, MapPin, CheckCircle2,
   Loader2, Send, ArrowRight, ChevronDown,
 } from 'lucide-react'
-import { LanguageSwitcher } from '@/components/LanguageSwitcher'
+import { PublicNav } from '@/components/PublicNav'
+import { PublicFooter } from '@/components/PublicFooter'
 import { useLanguage } from '@/lib/i18n/context'
-
-// ─── Navbar ──────────────────────────────────────────────────────────────────
-function Navbar() {
-  const [scrolled, setScrolled] = useState(false)
-  const [menuOpen, setMenuOpen] = useState(false)
-
-  useEffect(() => {
-    const handler = () => setScrolled(window.scrollY > 10)
-    window.addEventListener('scroll', handler, { passive: true })
-    return () => window.removeEventListener('scroll', handler)
-  }, [])
-
-  const links = [
-    { href: '/',         label: 'Home'    },
-    { href: '/#features',label: 'Features'},
-    { href: '/pricing',  label: 'Pricing' },
-    { href: '/contact',  label: 'Contact' },
-  ]
-
-  return (
-    <>
-      <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled || menuOpen ? 'backdrop-blur-sm bg-white/80 border-b border-[#E2E8F0] shadow-sm' : 'bg-transparent'}`}>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-6">
-          <Link href="/" className="flex items-center gap-2.5 shrink-0">
-            <div className={`w-8 h-8 rounded-xl flex items-center justify-center shrink-0 ${!scrolled && !menuOpen ? 'bg-white/15' : 'bg-[#2563EB]'}`}>
-              <Image src="/images/datafyle.png" alt="" width={22} height={22} className="w-5 h-5 object-contain brightness-0 invert" priority />
-            </div>
-            <span className={`font-bold text-[18px] tracking-tight transition-colors ${!scrolled && !menuOpen ? 'text-white' : 'text-[#1E293B]'}`}>
-              Data<span className={!scrolled && !menuOpen ? 'text-blue-300' : 'text-[#2563EB]'}>fyle</span>
-            </span>
-          </Link>
-
-          <div className="hidden md:flex items-center gap-1 flex-1">
-            {links.map(({ href, label }) => (
-              <Link key={href} href={href}
-                className={`px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
-                  label === 'Contact'
-                    ? scrolled ? 'text-[#2563EB] font-semibold' : 'text-white font-semibold'
-                    : scrolled ? 'text-[#1E293B] hover:text-[#2563EB] hover:bg-[#EFF6FF]' : 'text-white/80 hover:text-white hover:bg-white/10'
-                }`}>
-                {label}
-              </Link>
-            ))}
-          </div>
-
-          <div className="hidden md:flex items-center gap-3 shrink-0">
-            <LanguageSwitcher variant={scrolled || menuOpen ? 'navbar-light' : 'navbar-dark'} />
-            <Link href="/sign-in" className={`text-sm font-medium transition-colors ${scrolled ? 'text-[#1E293B] hover:text-[#2563EB]' : 'text-white/80 hover:text-white'}`}>Login</Link>
-            <Link href="/sign-up" className="inline-flex items-center gap-1.5 px-5 py-2.5 bg-[#2563EB] text-white text-sm font-semibold rounded-lg hover:bg-blue-700 transition-colors min-h-[44px]">
-              Get Started Free
-            </Link>
-          </div>
-
-          <button className={`md:hidden p-2 transition-colors ${scrolled || menuOpen ? 'text-[#1E293B]' : 'text-white'}`} onClick={() => setMenuOpen(o => !o)} aria-label="Toggle menu">
-            {menuOpen ? <X size={24} /> : <Menu size={24} />}
-          </button>
-        </div>
-      </nav>
-
-      {menuOpen && (
-        <div className="fixed inset-0 z-40 bg-white flex flex-col pt-16 overflow-y-auto">
-          <div className="flex flex-col px-6 py-8 gap-1">
-            {links.map(({ href, label }) => (
-              <Link key={href} href={href} onClick={() => setMenuOpen(false)}
-                className="px-4 py-3.5 rounded-xl text-base font-medium text-[#1E293B] hover:bg-[#EFF6FF] hover:text-[#2563EB] transition-colors">
-                {label}
-              </Link>
-            ))}
-            <div className="mt-6 flex flex-col gap-3">
-              <Link href="/sign-in" onClick={() => setMenuOpen(false)} className="px-4 py-3.5 rounded-xl text-base font-medium text-center border-2 border-[#E2E8F0] text-[#1E293B] hover:border-[#2563EB]">Login</Link>
-              <Link href="/sign-up" onClick={() => setMenuOpen(false)} className="px-4 py-3.5 rounded-xl text-base font-bold text-center bg-[#2563EB] text-white hover:bg-blue-700">Get Started Free</Link>
-            </div>
-          </div>
-        </div>
-      )}
-    </>
-  )
-}
 
 // ─── Contact Form ─────────────────────────────────────────────────────────────
 const TEAM_SIZES = ['1–5', '6–20', '21–50', '51–200', '200+']
@@ -144,9 +66,7 @@ function ContactForm() {
         </div>
         <div>
           <h3 className="text-2xl font-bold text-[#1E293B] mb-2">{c.successTitle}</h3>
-          <p className="text-slate-500 max-w-sm">
-            {c.successDesc}
-          </p>
+          <p className="text-slate-500 max-w-sm">{c.successDesc}</p>
         </div>
         <button onClick={() => { setForm({ name:'',email:'',company:'',phone:'',teamSize:'',inquiryType:'general',message:'' }); setStage('idle') }}
           className="mt-2 px-6 py-2.5 bg-[#2563EB] text-white text-sm font-semibold rounded-xl hover:bg-blue-700 transition-colors">
@@ -234,104 +154,6 @@ function ContactForm() {
   )
 }
 
-// ─── Footer ───────────────────────────────────────────────────────────────────
-function Footer() {
-  return (
-    <footer className="relative bg-black overflow-hidden pt-20 pb-10 px-4">
-      <div className="absolute bottom-0 left-0 right-0 pointer-events-none"
-        style={{ height: '320px', background: 'radial-gradient(ellipse 100% 70% at 50% 105%, rgba(37,99,235,0.55) 0%, rgba(37,99,235,0.15) 50%, transparent 72%)' }} />
-      <div className="absolute inset-0 pointer-events-none"
-        style={{ backgroundImage: 'radial-gradient(circle, rgba(255,255,255,0.07) 1px, transparent 1px)', backgroundSize: '28px 28px' }} />
-
-      <div className="relative z-10 max-w-6xl mx-auto">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-10 mb-14">
-          <div className="col-span-2 md:col-span-1">
-            <div className="flex items-center gap-2.5 mb-4">
-              <div className="w-8 h-8 rounded-xl bg-white/10 flex items-center justify-center shrink-0">
-                <Image src="/images/datafyle.png" alt="" width={22} height={22} className="w-5 h-5 object-contain brightness-0 invert" />
-              </div>
-              <span className="font-bold text-[18px] text-white tracking-tight">Data<span className="text-blue-400">fyle</span></span>
-            </div>
-            <p className="text-slate-400 text-sm leading-relaxed mb-4">AI-powered document processing for accounting and bookkeeping firms.</p>
-            <div className="flex items-center gap-2">
-              <a href="https://www.linkedin.com/company/datafyle" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn"
-                className="w-9 h-9 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-slate-400 hover:bg-[#0A66C2] hover:border-[#0A66C2] hover:text-white hover:scale-110 transition-all duration-200">
-                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/>
-                </svg>
-              </a>
-              <a href="https://www.facebook.com/datafylecom" target="_blank" rel="noopener noreferrer" aria-label="Facebook"
-                className="w-9 h-9 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-slate-400 hover:bg-[#1877F2] hover:border-[#1877F2] hover:text-white hover:scale-110 transition-all duration-200">
-                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/>
-                </svg>
-              </a>
-              <a href="https://www.instagram.com/datafyle" target="_blank" rel="noopener noreferrer" aria-label="Instagram"
-                className="w-9 h-9 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-slate-400 hover:bg-[#E1306C] hover:border-[#E1306C] hover:text-white hover:scale-110 transition-all duration-200">
-                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/>
-                </svg>
-              </a>
-              <a href="https://x.com/datafyle" target="_blank" rel="noopener noreferrer" aria-label="X (Twitter)"
-                className="w-9 h-9 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-slate-400 hover:bg-white hover:border-white hover:text-black hover:scale-110 transition-all duration-200">
-                <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.746l7.73-8.835L1.254 2.25H8.08l4.26 5.632 5.904-5.632zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
-                </svg>
-              </a>
-              <a href="https://www.tiktok.com/@datafyle.com" target="_blank" rel="noopener noreferrer" aria-label="TikTok"
-                className="w-9 h-9 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-slate-400 hover:bg-white hover:border-white hover:text-black hover:scale-110 transition-all duration-200">
-                <svg width="13" height="15" viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1V9.01a6.27 6.27 0 0 0-.79-.05 6.34 6.34 0 0 0-6.34 6.34 6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.33-6.34V8.58a8.32 8.32 0 0 0 4.87 1.56V6.64a4.85 4.85 0 0 1-1.1.05z"/>
-                </svg>
-              </a>
-            </div>
-          </div>
-          <div>
-            <h4 className="text-white font-semibold mb-5 text-xs uppercase tracking-widest">Product</h4>
-            <ul className="space-y-3">
-              <li><Link href="/#features" className="text-slate-400 hover:text-white text-sm transition-colors">Features</Link></li>
-              <li><Link href="/pricing" className="text-slate-400 hover:text-white text-sm transition-colors">Pricing</Link></li>
-              <li><Link href="/#faq" className="text-slate-400 hover:text-white text-sm transition-colors">FAQ</Link></li>
-            </ul>
-          </div>
-          <div>
-            <h4 className="text-white font-semibold mb-5 text-xs uppercase tracking-widest">Company</h4>
-            <ul className="space-y-3">
-              <li><Link href="/blog" className="text-slate-400 hover:text-white text-sm transition-colors">Blog</Link></li>
-              <li><Link href="/contact" className="text-slate-400 hover:text-white text-sm transition-colors">Contact Us</Link></li>
-              <li><Link href="/privacy" className="text-slate-400 hover:text-white text-sm transition-colors">Privacy Policy</Link></li>
-              <li><Link href="/terms" className="text-slate-400 hover:text-white text-sm transition-colors">Terms of Service</Link></li>
-            </ul>
-          </div>
-          <div>
-            <h4 className="text-white font-semibold mb-5 text-xs uppercase tracking-widest">Get Started</h4>
-            <ul className="space-y-3">
-              <li><Link href="/sign-up" className="text-slate-400 hover:text-white text-sm transition-colors">Create Free Account</Link></li>
-              <li><Link href="/sign-in" className="text-slate-400 hover:text-white text-sm transition-colors">Sign In</Link></li>
-              <li><Link href="/pricing" className="text-slate-400 hover:text-white text-sm transition-colors">View Pricing</Link></li>
-            </ul>
-          </div>
-        </div>
-        <div className="border-t border-white/10 pt-8 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <p className="text-slate-500 text-sm">© 2026 Datafyle. All rights reserved.</p>
-          <div className="flex items-center gap-4 flex-wrap justify-center">
-            <div className="flex items-center gap-1.5">
-              <span className="w-1.5 h-1.5 rounded-full bg-[#22C55E] animate-pulse shrink-0" />
-              <span className="text-slate-500 text-xs">99.7% uptime</span>
-            </div>
-            <span className="text-slate-700 hidden sm:inline">·</span>
-            <Link href="/privacy" className="text-slate-500 text-xs hover:text-white transition-colors">Privacy</Link>
-            <span className="text-slate-700">·</span>
-            <Link href="/terms" className="text-slate-500 text-xs hover:text-white transition-colors">Terms</Link>
-            <span className="text-slate-700">·</span>
-            <Link href="/contact" className="text-slate-500 text-xs hover:text-white transition-colors">Contact</Link>
-          </div>
-        </div>
-      </div>
-    </footer>
-  )
-}
-
 // ─── Page ─────────────────────────────────────────────────────────────────────
 export default function ContactClient() {
   const { t } = useLanguage()
@@ -366,10 +188,10 @@ export default function ContactClient() {
         }}
       />
 
-      <Navbar />
+      <PublicNav />
 
       {/* Hero */}
-      <section className="relative pt-32 pb-20 px-4 bg-[#0F172A] overflow-hidden">
+      <section className="relative pt-16 pb-20 px-4 bg-[#0F172A] overflow-hidden">
         <div className="absolute inset-0 pointer-events-none"
           style={{ backgroundImage: 'radial-gradient(circle, rgba(255,255,255,0.07) 1px, transparent 1px)', backgroundSize: '28px 28px' }} />
         <div className="absolute inset-0 pointer-events-none"
@@ -397,9 +219,7 @@ export default function ContactClient() {
               className="lg:col-span-2 space-y-8">
               <div>
                 <h2 className="text-3xl font-bold text-[#1E293B] mb-4 leading-tight">{c.leftHeading}</h2>
-                <p className="text-slate-500 text-base leading-relaxed">
-                  Datafyle helps accounting and bookkeeping firms eliminate manual data entry with AI. If you&apos;re processing invoices, receipts, or financial documents — we built this for you.
-                </p>
+                <p className="text-slate-500 text-base leading-relaxed">{c.firmDesc}</p>
               </div>
 
               <div className="space-y-4">
@@ -435,7 +255,7 @@ export default function ContactClient() {
               </div>
 
               <div className="p-5 bg-[#EFF6FF] border border-blue-100 rounded-2xl">
-                <p className="text-xs font-bold text-[#2563EB] uppercase tracking-wide mb-3">Trusted by firms worldwide</p>
+                <p className="text-xs font-bold text-[#2563EB] uppercase tracking-wide mb-3">{c.trustedTitle}</p>
                 <div className="grid grid-cols-2 gap-4 text-center">
                   {[
                     { num: '50+',   label: 'Accounting Firms',     sub: 'actively using Datafyle'              },
@@ -482,7 +302,7 @@ export default function ContactClient() {
         </motion.div>
       </section>
 
-      <Footer />
+      <PublicFooter />
     </div>
   )
 }
