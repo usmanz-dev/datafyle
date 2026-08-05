@@ -254,7 +254,7 @@ export const privacyBody: Record<LegalLang, PrivacyBody> = {
     b10: "Bei Datenschutzfragen oder zur Ausübung Ihrer Rechte:",
   },
   zh: {
-    b1: "Datafyle（"我们"、"我们的"）运营位于 datafyle.com 的 AI 文档处理平台。我们致力于保护用户的个人数据。本隐私政策解释了我们收集哪些信息、如何使用这些信息以及您的权利。",
+    b1: "Datafyle（'我们'、'我们的'）运营位于 datafyle.com 的 AI 文档处理平台。我们致力于保护用户的个人数据。本隐私政策解释了我们收集哪些信息、如何使用这些信息以及您的权利。",
     b2i: "我们收集以下类别的数据：",
     b2items: [
       { label: "账户数据", desc: "通过 Clerk 注册时提供的姓名、电子邮件地址和身份验证凭据。" },
@@ -293,7 +293,7 @@ export const privacyBody: Record<LegalLang, PrivacyBody> = {
     b7rights: [
       { right: "访问权", desc: "请求获取我们持有的所有个人数据的副本" },
       { right: "更正权", desc: "更正任何不准确的个人数据" },
-      { right: "删除权", desc: "请求删除您的数据（"被遗忘权"）" },
+      { right: "删除权", desc: '请求删除您的数据（"被遗忘权"）' },
       { right: "可携带权", desc: "以机器可读格式导出您的数据" },
       { right: "反对权", desc: "反对出于直接营销目的的处理" },
       { right: "限制权", desc: "在某些情况下请求我们限制处理" },
@@ -603,7 +603,7 @@ export const termsBody: Record<LegalLang, TermsBody> = {
     b14: "Bei Fragen zu diesen Bedingungen:",
   },
   zh: {
-    b1: "访问或使用 Datafyle（"服务"）即表示您同意受这些服务条款（"条款"）的约束。如果您不同意，请勿使用该服务。这些条款适用于所有用户，包括免费和付费订阅者。",
+    b1: '访问或使用 Datafyle（"服务"）即表示您同意受这些服务条款（"条款"）的约束。如果您不同意，请勿使用该服务。这些条款适用于所有用户，包括免费和付费订阅者。',
     b2: "Datafyle 是一个 AI 驱动的文档处理平台，可从发票、收据和其他商业文件中提取结构化数据。该服务使用 AI 模型提取数据（包括供应商名称、金额、日期和行项目），并以 Excel、Google Sheets 和 PDF 格式提供输出。",
     b3items: [
       "您必须年满 18 周岁才能创建账户。",
