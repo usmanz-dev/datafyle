@@ -57,6 +57,9 @@ export const metadata: Metadata = {
     index: true,
     follow: true,
   },
+  verification: {
+    google: 'qjHUY3kdVYV0YCfZ_ud2mgNPI0nKUcxiG6FCFka3RSQ',
+  },
   icons: {
     icon: '/images/datafyle-favicon.ico',
     shortcut: '/images/datafyle-favicon.ico',
