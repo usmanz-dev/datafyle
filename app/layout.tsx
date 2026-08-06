@@ -5,6 +5,7 @@ import { Toaster } from 'sonner'
 import { NavigationLoader } from '@/components/NavigationLoader'
 import { PaddleInit } from '@/components/PaddleInit'
 import { LanguageProvider } from '@/lib/i18n/context'
+import { GoogleAnalytics } from '@next/third-parties/google'
 import './globals.css'
 
 const inter = Inter({ subsets: ['latin'] })
@@ -83,6 +84,7 @@ export default function RootLayout({
           </LanguageProvider>
         </ClerkProvider>
       </body>
+      <GoogleAnalytics gaId="G-288KFBQ327" />
     </html>
   )
 }
