@@ -48,6 +48,9 @@ export async function POST(req: NextRequest) {
   const rawBody = await req.text()
   const signatureHeader = req.headers.get('paddle-signature') ?? ''
 
+  console.log('[Paddle webhook] sig header:', signatureHeader.slice(0, 40))
+  console.log('[Paddle webhook] secret prefix:', secret.slice(0, 20))
+
   if (!verifyPaddleSignature(rawBody, signatureHeader, secret)) {
     console.error('Invalid Paddle webhook signature')
     return NextResponse.json({ error: 'Invalid signature' }, { status: 401 })
